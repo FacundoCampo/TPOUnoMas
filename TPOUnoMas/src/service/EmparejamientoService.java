@@ -184,4 +184,147 @@ public class EmparejamientoService {
     public boolean estaPartidoCompleto(Partido partido) {
         return calcularJugadoresFaltantes(partido) == 0;
     }
+    
+    /**
+     * Obtiene estadísticas de emparejamiento
+     * @param partido el partido para el cual obtener estadísticas
+     * @param candidatos lista de candidatos evaluados
+     * @return string con estadísticas del emparejamiento
+     */
+    public String obtenerEstadisticasEmparejamiento(Partido partido, List<Usuario> candidatos) {
+        if (partido == null || candidatos == null) {
+            return "Datos insuficientes para generar estadísticas";
+        }
+        
+        StringBuilder stats = new StringBuilder();
+        stats.append("=== Estadísticas de Emparejamiento ===\n");
+        stats.append("Estrategia utilizada: ").append(getInformacionEstrategia()).append("\n");
+        stats.append("Total de candidatos: ").append(candidatos.size()).append("\n");
+        
+        if (tieneEstrategiaConfigurada()) {
+            long candidatosAptos = candidatos.stream()
+                .filter(candidato -> estrategia.esJugadorApto(partido, candidato))
+                .count();
+            
+            stats.append("Candidatos aptos: ").append(candidatosAptos).append("\n");
+            stats.append("Tasa de aptitud: ").append(String.format("%.1f%%", 
+                (candidatosAptos * 100.0) / candidatos.size())).append("\n");
+        }
+        
+        stats.append("Jugadores necesarios: ").append(calcularJugadoresFaltantes(partido)).append("\n");
+        stats.append("Estado del partido: ").append(
+            partido.getEstado() != null ? partido.getEstado().getNombre() : "Sin estado").append("\n");
+        
+        return stats.toString();
+    }
+    
+    /**
+     * Ejecuta un emparejamiento completo y devuelve información detallada
+     * @param partido el partido para emparejar
+     * @param candidatos lista de candidatos
+     * @return resultado del emparejamiento con estadísticas
+     */
+    public ResultadoEmparejamiento ejecutarEmparejamientoCompleto(Partido partido, List<Usuario> candidatos) {
+        if (estrategia == null) {
+            throw new IllegalStateException("No hay estrategia configurada");
+        }
+        
+        if (partido == null || candidatos == null) {
+            throw new IllegalArgumentException("Parámetros inválidos");
+        }
+        
+        long tiempoInicio = System.currentTimeMillis();
+        
+        try {
+            List<Usuario> jugadoresSeleccionados = estrategia.emparejarJugadores(partido, candidatos);
+            long tiempoFin = System.currentTimeMillis();
+            
+            return new ResultadoEmparejamiento(
+                jugadoresSeleccionados,
+                candidatos.size(),
+                tiempoFin - tiempoInicio,
+                getInformacionEstrategia(),
+                true,
+                null
+            );
+        } catch (Exception e) {
+            long tiempoFin = System.currentTimeMillis();
+            
+            return new ResultadoEmparejamiento(
+                null,
+                candidatos.size(),
+                tiempoFin - tiempoInicio,
+                getInformacionEstrategia(),
+                false,
+                e.getMessage()
+            );
+        }
+    }
+    
+    /**
+     * Clase interna para representar el resultado de un emparejamiento
+     */
+    public static class ResultadoEmparejamiento {
+        private final List<Usuario> jugadoresSeleccionados;
+        private final int totalCandidatos;
+        private final long tiempoEjecucion;
+        private final String estrategiaUtilizada;
+        private final boolean exitoso;
+        private final String mensajeError;
+        
+        public ResultadoEmparejamiento(List<Usuario> jugadoresSeleccionados, 
+                                     int totalCandidatos, 
+                                     long tiempoEjecucion,
+                                     String estrategiaUtilizada, 
+                                     boolean exitoso, 
+                                     String mensajeError) {
+            this.jugadoresSeleccionados = jugadoresSeleccionados;
+            this.totalCandidatos = totalCandidatos;
+            this.tiempoEjecucion = tiempoEjecucion;
+            this.estrategiaUtilizada = estrategiaUtilizada;
+            this.exitoso = exitoso;
+            this.mensajeError = mensajeError;
+        }
+        
+        public List<Usuario> getJugadoresSeleccionados() { return jugadoresSeleccionados; }
+        public int getTotalCandidatos() { return totalCandidatos; }
+        public long getTiempoEjecucion() { return tiempoEjecucion; }
+        public String getEstrategiaUtilizada() { return estrategiaUtilizada; }
+        public boolean esExitoso() { return exitoso; }
+        public String getMensajeError() { return mensajeError; }
+        
+        public int getCantidadSeleccionados() {
+            return jugadoresSeleccionados != null ? jugadoresSeleccionados.size() : 0;
+        }
+        
+        public double getTasaSeleccion() {
+            if (totalCandidatos == 0) return 0.0;
+            return (getCantidadSeleccionados() * 100.0) / totalCandidatos;
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("=== Resultado de Emparejamiento ===\n");
+            sb.append("Exitoso: ").append(exitoso ? "Sí" : "No").append("\n");
+            
+            if (exitoso) {
+                sb.append("Estrategia: ").append(estrategiaUtilizada).append("\n");
+                sb.append("Candidatos evaluados: ").append(totalCandidatos).append("\n");
+                sb.append("Jugadores seleccionados: ").append(getCantidadSeleccionados()).append("\n");
+                sb.append("Tasa de selección: ").append(String.format("%.1f%%", getTasaSeleccion())).append("\n");
+                sb.append("Tiempo de ejecución: ").append(tiempoEjecucion).append(" ms\n");
+            } else {
+                sb.append("Error: ").append(mensajeError).append("\n");
+            }
+            
+            return sb.toString();
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("EmparejamientoService{estrategia=%s}", 
+                           estrategia != null ? estrategia.getClass().getSimpleName() : "null");
+    }
 }

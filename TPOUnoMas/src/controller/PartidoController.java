@@ -29,6 +29,16 @@ public class PartidoController {
     public PartidoController(PartidoService partidoService, 
                            EmparejamientoService emparejamientoService,
                            UsuarioService usuarioService) {
+        if (partidoService == null) {
+            throw new IllegalArgumentException("PartidoService no puede ser null");
+        }
+        if (emparejamientoService == null) {
+            throw new IllegalArgumentException("EmparejamientoService no puede ser null");
+        }
+        if (usuarioService == null) {
+            throw new IllegalArgumentException("UsuarioService no puede ser null");
+        }
+        
         this.partidoService = partidoService;
         this.emparejamientoService = emparejamientoService;
         this.usuarioService = usuarioService;
@@ -73,6 +83,7 @@ public class PartidoController {
      * Busca partidos según los filtros especificados
      * @param filtros mapa con los criterios de búsqueda
      * @return lista de partidos que cumplen los criterios
+     * @throws RuntimeException si hay error en la búsqueda
      */
     public List<Partido> buscarPartidos(Map<String, Object> filtros) {
         try {
@@ -122,8 +133,6 @@ public class PartidoController {
         }
         
         try {
-            // Lógica para confirmar asistencia
-            // Esto podría involucrar cambios de estado del partido
             return partidoService.confirmarAsistencia(idPartido, idUsuario);
         } catch (Exception e) {
             throw new RuntimeException("Error al confirmar asistencia: " + e.getMessage(), e);
@@ -152,10 +161,20 @@ public class PartidoController {
      * Registra un nuevo usuario (delegado al servicio de usuario)
      * @param usuario el usuario a registrar
      * @return el usuario registrado
+     * @throws IllegalArgumentException si el usuario es null
      */
     public Usuario registrarUsuario(Usuario usuario) {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser null");
+        }
+        
+        // Validaciones adicionales
+        if (usuario.getNombre() == null || usuario.getNombre().trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del usuario es requerido");
+        }
+        
+        if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("El email del usuario es requerido");
         }
         
         try {
@@ -175,7 +194,125 @@ public class PartidoController {
             throw new IllegalArgumentException("La estrategia de emparejamiento no puede ser null");
         }
         
-        emparejamientoService.setEstrategia(estrategia);
+        try {
+            emparejamientoService.setEstrategia(estrategia);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al establecer estrategia: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Obtiene candidatos aptos para un partido usando la estrategia actual
+     * @param idPartido el ID del partido
+     * @param candidatos lista de usuarios candidatos
+     * @return lista de usuarios aptos para el partido
+     * @throws IllegalArgumentException si los parámetros son inválidos
+     */
+    public List<Usuario> obtenerCandidatosAptos(String idPartido, List<Usuario> candidatos) {
+        if (idPartido == null || idPartido.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del partido no puede ser null o vacío");
+        }
+        
+        if (candidatos == null) {
+            throw new IllegalArgumentException("La lista de candidatos no puede ser null");
+        }
+        
+        try {
+            // Buscar el partido
+            List<Partido> partidos = partidoService.buscarPartidos(null);
+            Partido partido = partidos.stream()
+                .filter(p -> idPartido.equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+                
+            if (partido == null) {
+                throw new RuntimeException("Partido no encontrado: " + idPartido);
+            }
+            
+            return emparejamientoService.filtrarCandidatosAptos(partido, candidatos);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener candidatos aptos: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Ejecuta un emparejamiento completo para un partido
+     * @param idPartido el ID del partido
+     * @param candidatos lista de usuarios candidatos
+     * @return lista de usuarios seleccionados por la estrategia
+     * @throws IllegalArgumentException si los parámetros son inválidos
+     */
+    public List<Usuario> ejecutarEmparejamiento(String idPartido, List<Usuario> candidatos) {
+        if (idPartido == null || idPartido.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del partido no puede ser null o vacío");
+        }
+        
+        if (candidatos == null) {
+            throw new IllegalArgumentException("La lista de candidatos no puede ser null");
+        }
+        
+        try {
+            // Buscar el partido
+            List<Partido> partidos = partidoService.buscarPartidos(null);
+            Partido partido = partidos.stream()
+                .filter(p -> idPartido.equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+                
+            if (partido == null) {
+                throw new RuntimeException("Partido no encontrado: " + idPartido);
+            }
+            
+            return emparejamientoService.emparejarJugadores(partido, candidatos);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al ejecutar emparejamiento: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Obtiene información sobre la estrategia actual de emparejamiento
+     * @return información de la estrategia configurada
+     */
+    public String getInformacionEstrategia() {
+        try {
+            return emparejamientoService.getInformacionEstrategia();
+        } catch (Exception e) {
+            return "Error al obtener información de estrategia: " + e.getMessage();
+        }
+    }
+    
+    /**
+     * Verifica si hay una estrategia de emparejamiento configurada
+     * @return true si hay estrategia configurada, false en caso contrario
+     */
+    public boolean tieneEstrategiaConfigurada() {
+        try {
+            return emparejamientoService.tieneEstrategiaConfigurada();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Busca un partido específico por su ID
+     * @param idPartido el ID del partido a buscar
+     * @return el partido encontrado o null si no existe
+     * @throws IllegalArgumentException si el ID es inválido
+     */
+    public Partido buscarPartidoPorId(String idPartido) {
+        if (idPartido == null || idPartido.trim().isEmpty()) {
+            throw new IllegalArgumentException("El ID del partido no puede ser null o vacío");
+        }
+        
+        try {
+            List<Partido> partidos = partidoService.buscarPartidos(null);
+            return partidos.stream()
+                .filter(p -> idPartido.equals(p.getId()))
+                .findFirst()
+                .orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar partido: " + e.getMessage(), e);
+        }
     }
     
     /**
@@ -200,5 +337,47 @@ public class PartidoController {
      */
     public UsuarioService getUsuarioService() {
         return usuarioService;
+    }
+    
+    /**
+     * Establece el servicio de partido (para testing)
+     * @param partidoService el nuevo servicio de partido
+     */
+    public void setPartidoService(PartidoService partidoService) {
+        if (partidoService == null) {
+            throw new IllegalArgumentException("PartidoService no puede ser null");
+        }
+        this.partidoService = partidoService;
+    }
+    
+    /**
+     * Establece el servicio de emparejamiento (para testing)
+     * @param emparejamientoService el nuevo servicio de emparejamiento
+     */
+    public void setEmparejamientoService(EmparejamientoService emparejamientoService) {
+        if (emparejamientoService == null) {
+            throw new IllegalArgumentException("EmparejamientoService no puede ser null");
+        }
+        this.emparejamientoService = emparejamientoService;
+    }
+    
+    /**
+     * Establece el servicio de usuario (para testing)
+     * @param usuarioService el nuevo servicio de usuario
+     */
+    public void setUsuarioService(UsuarioService usuarioService) {
+        if (usuarioService == null) {
+            throw new IllegalArgumentException("UsuarioService no puede ser null");
+        }
+        this.usuarioService = usuarioService;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("PartidoController{estrategia=%s, servicios=[%s, %s, %s]}", 
+                           getInformacionEstrategia(),
+                           partidoService != null ? "PartidoService" : "null",
+                           emparejamientoService != null ? "EmparejamientoService" : "null",
+                           usuarioService != null ? "UsuarioService" : "null");
     }
 }
