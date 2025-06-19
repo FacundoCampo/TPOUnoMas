@@ -1,13 +1,19 @@
 package controller;
 
-import model.Usuario;
-import service.UsuarioService;
+import model.dto.UsuarioDTO;
+import model.entity.Usuario;
+import model.service.UsuarioService;
 
 public class UsuarioController {
     private UsuarioService usuarioService;
+    private Usuario usuario;
     
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
+    }
+    
+    public UsuarioController() {
+    	usuario = new Usuario();
     }
     
     public Usuario registrarUsuario(Usuario usuario) {
@@ -51,4 +57,12 @@ public class UsuarioController {
     }
     
     public UsuarioService getUsuarioService() { return usuarioService; }
+
+	public void crearUsuario(UsuarioDTO usuarioDTO) {
+		Usuario nuevo = new Usuario();
+		nuevo.setId(usuarioDTO.getId());
+		
+		usuario.crearUsuario(nuevo);
+		
+	}
 }

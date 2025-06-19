@@ -1,10 +1,10 @@
 package controller;
 
-import model.Partido;
-import model.Usuario;
-import service.PartidoService;
-import service.EmparejamientoService;
-import service.UsuarioService;
+import model.entity.Partido;
+import model.entity.Usuario;
+import model.service.EmparejamientoService;
+import model.service.PartidoService;
+import model.service.UsuarioService;
 import strategy.EstrategiaEmparejamiento;
 
 import java.util.List;

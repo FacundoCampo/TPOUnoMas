@@ -6,9 +6,9 @@ public class EmailServiceAdapter implements EmailAdapter {
     private String usuario;
     
     public enum TipoServicio {
-        JAVA_MAIL("JavaMail", "smtp.gmail.com", 587),
-        SENDGRID("SendGrid", "smtp.sendgrid.net", 587),
-        OUTLOOK("Outlook", "smtp-mail.outlook.com", 587);
+        JAVA_MAIL("JavaMail", "facundo@gmail.com", 587),
+        SENDGRID("SendGrid", "facundo@sendgrid.net", 587),
+        OUTLOOK("Outlook", "facundo@outlook.com", 587);
         
         private final String nombre;
         private final String servidor;

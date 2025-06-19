@@ -13,4 +13,5 @@ public interface EstadoPartido {
     default boolean puedeAgregarJugadores() { return false; }
     default boolean puedeCancelar() { return false; }
     default boolean puedeConfirmar() { return false; }
+	
 }
