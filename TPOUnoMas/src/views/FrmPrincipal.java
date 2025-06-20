@@ -17,6 +17,7 @@ public class FrmPrincipal extends JFrame {
     private Button btnIngresar;
     private JTextField tUsuario;
     private JTextField tPassword;
+    private Button btnRegistrarse;
 
     /**
      * Create the frame.
@@ -54,7 +55,6 @@ public class FrmPrincipal extends JFrame {
         pnlIntro.setLayout(null);
         pnlPrincipal.add(pnlIntro);
 
-        // Imagen ajustada al tamaño del panel
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/pic2.jpg"));
         Image scaledImage = icon.getImage().getScaledInstance(770, 620, Image.SCALE_SMOOTH);
         JLabel background = new JLabel(new ImageIcon(scaledImage));
@@ -62,7 +62,7 @@ public class FrmPrincipal extends JFrame {
         pnlIntro.add(background);
 
         // Título UnoMas
-        lblTitle = new JLabel("UnoMas", SwingConstants.CENTER);
+        lblTitle = new JLabel(titulo, SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 48));  // Más grande
         lblTitle.setForeground(Color.WHITE);
         lblTitle.setBounds(185, 60, 400, 60);
@@ -102,6 +102,15 @@ public class FrmPrincipal extends JFrame {
         btnIngresar.setBounds(290, 305, 200, 45);
         pnlIntro.add(btnIngresar);
 
+        // Botón REGISTRARSE
+        btnRegistrarse = new Button("REGISTRARSE");
+        btnRegistrarse.setFont(new Font("Tahoma", Font.BOLD, 14));
+        btnRegistrarse.setForeground(Color.WHITE);
+        btnRegistrarse.setBackground(new Color(52, 152, 219)); // azul
+        btnRegistrarse.setBounds(290, 365, 200, 40);
+        btnRegistrarse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        pnlIntro.add(btnRegistrarse);
+
         // Fondo al fondo
         pnlIntro.setComponentZOrder(background, pnlIntro.getComponentCount() - 1);
     }
@@ -122,6 +131,14 @@ public class FrmPrincipal extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
+        });
+
+        btnRegistrarse.addActionListener(e -> {
+            cleanPanel();
+            RegistroUsuarioForm registroForm = new RegistroUsuarioForm();
+            pnlIntro.add(registroForm);
+            pnlIntro.revalidate();
+            pnlIntro.repaint();
         });
     }
 

@@ -3,6 +3,8 @@ package services;
 import model.Usuario;
 import repository.UsuarioRepository;
 
+import java.util.Optional;
+
 public class UsuarioService {
     private UsuarioRepository usuarioRepository;
     
@@ -10,7 +12,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
     
-    public Usuario registrarUsuario(Usuario usuario) {
+    public void registrarUsuario(Usuario usuario) {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser null");
         }
@@ -19,7 +21,7 @@ public class UsuarioService {
             usuario.setId("USR_" + System.currentTimeMillis());
         }
         
-        return usuarioRepository.guardar(usuario);
+        usuarioRepository.guardar(usuario);
     }
     
     public Usuario buscarUsuario(String id) {
@@ -29,7 +31,7 @@ public class UsuarioService {
         return usuarioRepository.buscarPorId(id);
     }
     
-    public Usuario actualizarPerfil(Usuario usuario) {
+    public boolean actualizarPerfil(Usuario usuario) {
         if (usuario == null || usuario.getId() == null) {
             throw new IllegalArgumentException("Usuario inválido para actualizar");
         }

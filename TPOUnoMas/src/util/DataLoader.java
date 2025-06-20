@@ -32,21 +32,22 @@ public class DataLoader {
 
         List<PartidoDTO> partidos = new ArrayList<>();
 
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Cancha 1", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(deporteTenis, 60, "Club Tenis", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(deporteFutbol, 120, "Estadio", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Cancha 2", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(deporteFutbol, 60, "Parque Central", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(deporteTenis, 45, "Cancha rápida", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(deporteTenis, 90, "Tenis Club A", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 75, "Barrio Norte", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Escuela 23", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 60, "Estadio Chiquito", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteTenis, 120, "Canchas Doradas", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteTenis, 80, "Cancha de tierra", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Cancha sur", obtenerFecha(5)));
-        partidos.add(new PartidoDTO(deporteTenis, 60, "Tenis Club B", obtenerFecha(5)));
-        partidos.add(new PartidoDTO(deporteFutbol, 100, "Cancha Municipal", obtenerFecha(5)));
+        partidos.add(new PartidoDTO(deporteFutbol, 90, "Palermo", obtenerFecha(1)));
+        partidos.add(new PartidoDTO(deporteTenis, 60, "Caballito", obtenerFecha(1)));
+        partidos.add(new PartidoDTO(deporteFutbol, 120, "Recoleta", obtenerFecha(1)));
+        partidos.add(new PartidoDTO(deporteFutbol, 90, "Villa Urquiza", obtenerFecha(2)));
+        partidos.add(new PartidoDTO(deporteFutbol, 60, "Belgrano", obtenerFecha(2)));
+        partidos.add(new PartidoDTO(deporteTenis, 45, "Flores", obtenerFecha(2)));
+        partidos.add(new PartidoDTO(deporteTenis, 90, "Almagro", obtenerFecha(3)));
+        partidos.add(new PartidoDTO(deporteFutbol, 75, "Barracas", obtenerFecha(3)));
+        partidos.add(new PartidoDTO(deporteFutbol, 90, "Boedo", obtenerFecha(3)));
+        partidos.add(new PartidoDTO(deporteFutbol, 60, "Chacarita", obtenerFecha(4)));
+        partidos.add(new PartidoDTO(deporteTenis, 120, "San Telmo", obtenerFecha(4)));
+        partidos.add(new PartidoDTO(deporteTenis, 80, "Parque Chas", obtenerFecha(4)));
+        partidos.add(new PartidoDTO(deporteFutbol, 90, "Constitución", obtenerFecha(5)));
+        partidos.add(new PartidoDTO(deporteTenis, 60, "Parque Patricios", obtenerFecha(5)));
+        partidos.add(new PartidoDTO(deporteFutbol, 100, "Villa Crespo", obtenerFecha(5)));
+
 
         for (PartidoDTO dto : partidos) {
             controller.crearPartido(dto);

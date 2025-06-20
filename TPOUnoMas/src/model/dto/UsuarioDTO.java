@@ -1,5 +1,8 @@
 package model.dto;
 
+import model.DeporteUsuario;
+import model.Partido;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -10,6 +13,8 @@ public class UsuarioDTO {
     private String email;
     private String contraseña;
     private String ubicacion;
+    private List<DeporteUsuario> deportesUsuario;
+    private List<Partido> historialPartidos;
     
     public UsuarioDTO(String nombre, String email, String contraseña, String ubicacion) {
         super();
@@ -18,7 +23,6 @@ public class UsuarioDTO {
         this.contraseña = contraseña;
         this.ubicacion = ubicacion;
     }
-    
     
     // Getters y Setters
     public String getId() { return id; }
@@ -50,5 +54,15 @@ public class UsuarioDTO {
     
     public String getUbicacion() { return ubicacion; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
+
+    public List<DeporteUsuario> getDeportesUsuario() { return new ArrayList<>(deportesUsuario); }
+    public void setDeportesUsuario(List<DeporteUsuario> deportesUsuario) {
+        this.deportesUsuario = deportesUsuario != null ? new ArrayList<>(deportesUsuario) : new ArrayList<>();
+    }
+
+    public List<Partido> getHistorialPartidos() { return new ArrayList<>(historialPartidos); }
+    public void setHistorialPartidos(List<Partido> historialPartidos) {
+        this.historialPartidos = historialPartidos != null ? new ArrayList<>(historialPartidos) : new ArrayList<>();
+    }
 
 }

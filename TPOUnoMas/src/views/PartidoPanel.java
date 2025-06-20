@@ -80,7 +80,7 @@ public class PartidoPanel {
         panelPrincipal.add(btnVerListados);
         panelPrincipal.add(Box.createVerticalGlue());
 
-        crearPartidoTab = new CrearPartidoForm(tabbedPane, panelPrincipal);
+        crearPartidoTab = new PartidoForm(tabbedPane, panelPrincipal);
         listadoTab = new ListaPartidosPanel(usuarioid);
 
         tabbedPane.add("Menu", panelPrincipal);

@@ -1,15 +1,12 @@
 package controller;
 
 import model.dto.PartidoDTO;
-import model.dto.UsuarioDTO;
 import model.state.IEstadoPartido;
 import services.PartidoService;
-import services.UsuarioService;
 import strategy.EmparejamientoContext;
 import strategy.IEstrategiaEmparejamiento;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PartidoController {
     private static PartidoController instance = null;
