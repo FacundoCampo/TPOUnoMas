@@ -2,9 +2,11 @@ package services;
 
 import mapper.PartidoMapper;
 import model.Partido;
+import model.Usuario;
 import model.dto.PartidoDTO;
 import model.state.IEstadoPartido;
 import repository.PartidoRepository;
+import repository.UsuarioRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,12 @@ import java.util.Optional;
 
 public class PartidoService {
 
-    private final PartidoRepository repository;
+    private PartidoRepository repository;
+    private UsuarioRepository usuarioRepository;
 
     public PartidoService() {
         this.repository = new PartidoRepository();
+        this.usuarioRepository = new UsuarioRepository();
     }
 
     public void crearPartido(PartidoDTO dto) {
@@ -52,5 +56,11 @@ public class PartidoService {
         }
 
         return false;
+    }
+
+    public boolean sumarseAlPartido(String partidoid, String usuarioid) {
+        Partido partido = repository.buscarPorId(partidoid).orElseThrow();
+        Usuario usuario = usuarioRepository.buscarPorId(usuarioid);
+        return partido.getEstado().manejarNuevoJugador(partido, usuario);
     }
 }

@@ -1,7 +1,7 @@
 package strategy;
 
 import model.Deporte;
-import model.NivelJuego;
+import enums.NivelJuego;
 import model.Partido;
 import model.Usuario;
 

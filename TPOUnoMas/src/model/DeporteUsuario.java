@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Objects;
+import enums.NivelJuego;
 
 public class DeporteUsuario {
     private Deporte deporte;

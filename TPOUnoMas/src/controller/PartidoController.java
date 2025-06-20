@@ -1,8 +1,10 @@
 package controller;
 
 import model.dto.PartidoDTO;
+import model.dto.UsuarioDTO;
 import model.state.IEstadoPartido;
 import services.PartidoService;
+import services.UsuarioService;
 import strategy.EmparejamientoContext;
 import strategy.IEstrategiaEmparejamiento;
 
@@ -50,7 +52,8 @@ public class PartidoController {
     }
 
     public boolean sumarseAlPartido(String partidoid, String usuarioid) {
-        return true;
+        return partidoService.sumarseAlPartido(partidoid, usuarioid);
     }
+
 }
 

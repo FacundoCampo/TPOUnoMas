@@ -1,5 +1,7 @@
 package model;
 
+import enums.NivelJuego;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -109,19 +111,6 @@ public class Usuario {
                nombre != null && !nombre.trim().isEmpty() &&
                email != null && !email.trim().isEmpty() &&
                contraseña != null && contraseña.length() >= 6;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Usuario usuario = (Usuario) obj;
-        return Objects.equals(id, usuario.id) && Objects.equals(email, usuario.email);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, email);
     }
     
     @Override
