@@ -2,6 +2,7 @@ package repository;
 
 import model.Deporte;
 import model.staticdb.DataBase;
+import repository.interfaces.IDeporteRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-public class DeporteRepository {
+public class DeporteRepository implements IDeporteRepository {
 
     public List<Deporte> obtenerTodos() {
         return new ArrayList<>(DataBase.deportes);
@@ -18,12 +19,6 @@ public class DeporteRepository {
     public Optional<Deporte> buscarPorNombre(String nombre) {
         return DataBase.deportes.stream()
                 .filter(d -> d.getNombre().equalsIgnoreCase(nombre))
-                .findFirst();
-    }
-
-    public Optional<Deporte> buscarPorId(String id) {
-        return DataBase.deportes.stream()
-                .filter(d -> d.getId().equals(id))
                 .findFirst();
     }
 
@@ -49,5 +44,14 @@ public class DeporteRepository {
         return DataBase.deportes.stream()
                 .map(Deporte::getNombre)
                 .collect(Collectors.toList());
+    }
+
+    public Deporte buscarPorId(String id) {
+        for (Deporte u : DataBase.deportes) {
+            if (u.getId().equals(id)) {
+                return u;
+            }
+        }
+        return null;
     }
 }

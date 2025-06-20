@@ -17,10 +17,10 @@ public class DataLoader {
 
     public static void cargarDeportes() {
         DeporteController controller = DeporteController.getInstance();
-        controller.crearDeporte(new DeporteDTO("Fútbol", 11));
-        controller.crearDeporte(new DeporteDTO("Básquet", 5));
-        controller.crearDeporte(new DeporteDTO("Tenis", 1));
-        controller.crearDeporte(new DeporteDTO("Paddle", 2));
+        controller.crearDeporte(new DeporteDTO(null, "Fútbol", 11));
+        controller.crearDeporte(new DeporteDTO(null, "Básquet", 5));
+        controller.crearDeporte(new DeporteDTO(null, "Tenis", 1));
+        controller.crearDeporte(new DeporteDTO(null, "Paddle", 2));
     }
 
     public static void cargarPartidos() {

@@ -2,12 +2,13 @@ package controller;
 
 import model.dto.DeporteDTO;
 import services.DeporteService;
+import services.interfaces.IDeporteService;
 
 import java.util.List;
 
 public class DeporteController {
     private static DeporteController instance;
-    private final DeporteService servicio;
+    private IDeporteService servicio;
 
     private DeporteController() {
         this.servicio = new DeporteService();

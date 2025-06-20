@@ -4,6 +4,7 @@ import controller.DeporteController;
 import controller.UsuarioController;
 import enums.NivelJuego;
 import model.dto.DeporteDTO;
+import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
 
 import javax.swing.*;
@@ -187,23 +188,34 @@ public class RegistroUsuarioForm extends JPanel {
                 return;
             }
 
-            Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
-            for (String dep : listaDeportes.getSelectedValuesList()) {
-                NivelJuego nivel = (NivelJuego) nivelesPorDeporte.get(dep).getSelectedItem();
-                DeporteDTO dto = DeporteController.getInstance().obtenerTodos().stream()
-                        .filter(d -> d.getNombre().equals(dep))
-                        .findFirst().orElse(null);
-                if (dto != null && nivel != null) preferencias.put(dto, nivel);
+            UsuarioDTO usuario = new UsuarioDTO(nombre, email, contraseña, ubicacion);
+            boolean ok = UsuarioController.getInstance().registrar(usuario);
+
+            if (!ok) {
+                lblMensaje.setText("Error: ya existe un usuario con ese email.");
+                return;
             }
 
-            UsuarioDTO dto = new UsuarioDTO(nombre, email, contraseña, ubicacion);
-            //dto.setPreferenciasDeportivas(preferencias);
+            Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
+            for (String nombreDeporte : listaDeportes.getSelectedValuesList()) {
+                NivelJuego nivel = (NivelJuego) nivelesPorDeporte.get(nombreDeporte).getSelectedItem();
 
-            boolean ok = true; //UsuarioController.getInstance().crearUsuario(dto);
+                DeporteDTO dto = DeporteController.getInstance().obtenerTodos().stream()
+                        .filter(d -> d.getNombre().equals(nombreDeporte))
+                        .findFirst().orElse(null);
 
-            lblMensaje.setText(ok ? "✓ Usuario registrado/modificado con éxito." : "Error en el registro.");
+                if (dto != null && nivel != null) {
+                    preferencias.put(dto, nivel);
+                }
+            }
+
+            UsuarioController.getInstance().actualizarPreferencias(usuario.getId(), (List<DeporteUsuarioDTO>) preferencias);
+
+            lblMensaje.setText("✓ Usuario registrado y preferencias guardadas.");
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
+
 }

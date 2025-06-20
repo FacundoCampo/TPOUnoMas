@@ -1,0 +1,15 @@
+package services.interfaces;
+
+import model.Partido;
+import model.dto.PartidoDTO;
+import model.state.IEstadoPartido;
+
+import java.util.List;
+
+public interface IPartidoService {
+    void crearPartido(PartidoDTO dto);
+    List<PartidoDTO> obtenerTodos();
+    Partido buscarPorID(String id);
+    boolean cambiarEstado(String idPartido, IEstadoPartido estado);
+    boolean sumarseAlPartido(String partidoid, String usuarioid);
+}

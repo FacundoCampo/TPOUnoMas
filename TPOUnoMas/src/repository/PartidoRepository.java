@@ -2,13 +2,13 @@ package repository;
 
 import model.Partido;
 import model.staticdb.DataBase;
+import repository.interfaces.IPartidoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public class PartidoRepository {
+public class PartidoRepository implements IPartidoRepository {
 
     public void guardar(Partido partido) {
         if (partido.getId() == null || partido.getId().isBlank()) {
@@ -21,10 +21,13 @@ public class PartidoRepository {
         return new ArrayList<>(DataBase.partidos);
     }
 
-    public Optional<Partido> buscarPorId(String id) {
-        return DataBase.partidos.stream()
-                .filter(p -> p.getId().equals(id))
-                .findFirst();
+    public Partido buscarPorId(String id) {
+        for (Partido u : DataBase.partidos) {
+            if (u.getId().equals(id)) {
+                return u;
+            }
+        }
+        return null;
     }
 
 }

@@ -7,12 +7,12 @@ import model.dto.PartidoDTO;
 import model.state.IEstadoPartido;
 import repository.PartidoRepository;
 import repository.UsuarioRepository;
+import services.interfaces.IPartidoService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class PartidoService {
+public class PartidoService implements IPartidoService {
 
     private PartidoRepository repository;
     private UsuarioRepository usuarioRepository;
@@ -38,19 +38,19 @@ public class PartidoService {
         return resultado;
     }
 
-    public Optional<Partido> buscarPorID(String id) {
+    public Partido buscarPorID(String id) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");
         }
+        Partido p = repository.buscarPorId(id);
 
         return repository.buscarPorId(id);
     }
 
     public boolean cambiarEstado(String idPartido, IEstadoPartido estado) {
-        Optional<Partido> partidoOpt = buscarPorID(idPartido);
+        Partido partido = buscarPorID(idPartido);
 
-        if (partidoOpt.isPresent()) {
-            Partido partido = partidoOpt.get();
+        if (partido != null) {
             partido.setEstado(estado);
             return true;
         }
@@ -59,7 +59,7 @@ public class PartidoService {
     }
 
     public boolean sumarseAlPartido(String partidoid, String usuarioid) {
-        Partido partido = repository.buscarPorId(partidoid).orElseThrow();
+        Partido partido = repository.buscarPorId(partidoid);
         Usuario usuario = usuarioRepository.buscarPorId(usuarioid);
         return partido.getEstado().manejarNuevoJugador(partido, usuario);
     }

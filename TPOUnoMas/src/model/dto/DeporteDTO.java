@@ -7,14 +7,8 @@ public class DeporteDTO {
     private String nombre;
     private int cantidadJugadoresEstandar;
 
-    public DeporteDTO(String nombre, int cantidadJugadoresEstandar) {
-        this.id = UUID.randomUUID().toString();
-        this.nombre = nombre;
-        this.cantidadJugadoresEstandar = cantidadJugadoresEstandar;
-    }
-
     public DeporteDTO(String id, String nombre, int cantidadJugadoresEstandar) {
-        this.id = id;
+        this.id = id == null ? UUID.randomUUID().toString() : id;
         this.nombre = nombre;
         this.cantidadJugadoresEstandar = cantidadJugadoresEstandar;
     }

@@ -38,28 +38,13 @@ public class Usuario {
     public void setId(String id) { this.id = id; }
     
     public String getNombre() { return nombre; }
-    public void setNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
-        }
-        this.nombre = nombre.trim();
-    }
+    public void setNombre(String nombre) { this.nombre = nombre.trim(); }
     
     public String getEmail() { return email; }
-    public void setEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("El email no puede estar vacío");
-        }
-        this.email = email.trim().toLowerCase();
-    }
+    public void setEmail(String email) { this.email = email.trim().toLowerCase(); }
     
     public String getContraseña() { return contraseña; }
-    public void setContraseña(String contraseña) {
-        if (contraseña == null || contraseña.length() < 6) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
-        }
-        this.contraseña = contraseña;
-    }
+    public void setContraseña(String contraseña) { this.contraseña = contraseña; }
     
     public String getUbicacion() { return ubicacion; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
@@ -68,22 +53,23 @@ public class Usuario {
     public void setDeportesUsuario(List<DeporteUsuario> deportesUsuario) {
         this.deportesUsuario = deportesUsuario != null ? new ArrayList<>(deportesUsuario) : new ArrayList<>();
     }
-    
+
     public List<Partido> getHistorialPartidos() { return new ArrayList<>(historialPartidos); }
     public void setHistorialPartidos(List<Partido> historialPartidos) {
         this.historialPartidos = historialPartidos != null ? new ArrayList<>(historialPartidos) : new ArrayList<>();
     }
-    
+
     public void agregarPartidoAHistorial(Partido partido) {
         if (partido != null && !historialPartidos.contains(partido)) {
             historialPartidos.add(partido);
         }
     }
-    
+
     public int getCantidadPartidosJugados() {
         return historialPartidos.size();
     }
-    
+
+
     public void agregarDeporteUsuario(DeporteUsuario deporteUsuario) {
         if (deporteUsuario == null || !deporteUsuario.esValido()) {
             throw new IllegalArgumentException("El DeporteUsuario no es válido");
@@ -105,14 +91,7 @@ public class Usuario {
     public boolean juegarDeporte(Deporte deporte) {
         return getNivelJuegoParaDeporte(deporte) != null;
     }
-    
-    public boolean esValido() {
-        return id != null && !id.trim().isEmpty() &&
-               nombre != null && !nombre.trim().isEmpty() &&
-               email != null && !email.trim().isEmpty() &&
-               contraseña != null && contraseña.length() >= 6;
-    }
-    
+
     @Override
     public String toString() {
         return "Usuario{id='" + id + "', nombre='" + nombre + "', email='" + email + "'}";

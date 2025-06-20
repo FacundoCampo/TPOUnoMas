@@ -339,8 +339,8 @@ public class EmparejamientoPorNivel implements IEstrategiaEmparejamiento {
      */
     public String getInformacionConfiguracion() {
         return String.format("EmparejamientoPorNivel{rango: %s - %s}", 
-                           nivelMinimo != null ? nivelMinimo.getDescripcion() : "null",
-                           nivelMaximo != null ? nivelMaximo.getDescripcion() : "null");
+                           nivelMinimo != null ? nivelMinimo.toString() : "null",
+                           nivelMaximo != null ? nivelMaximo.toString() : "null");
     }
     
     @Override

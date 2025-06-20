@@ -3,13 +3,14 @@ package services;
 import model.Deporte;
 import model.dto.DeporteDTO;
 import repository.DeporteRepository;
+import services.interfaces.IDeporteService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DeporteService {
+public class DeporteService implements IDeporteService {
 
     private static DeporteService instance;
     private final DeporteRepository repository;

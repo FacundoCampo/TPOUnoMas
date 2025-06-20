@@ -3,6 +3,7 @@ package controller;
 import model.dto.PartidoDTO;
 import model.state.IEstadoPartido;
 import services.PartidoService;
+import services.interfaces.IPartidoService;
 import strategy.EmparejamientoContext;
 import strategy.IEstrategiaEmparejamiento;
 
@@ -11,7 +12,7 @@ import java.util.List;
 public class PartidoController {
     private static PartidoController instance = null;
 
-    private final PartidoService partidoService;
+    private final IPartidoService partidoService;
     private final EmparejamientoContext emparejamientoService;
 
     public static PartidoController getInstance() {

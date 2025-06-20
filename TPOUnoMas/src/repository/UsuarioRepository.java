@@ -2,13 +2,14 @@ package repository;
 
 import model.Usuario;
 import model.staticdb.DataBase;
+import repository.interfaces.IUsuarioRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class UsuarioRepository {
+public class UsuarioRepository implements IUsuarioRepository {
 
     public List<Usuario> obtenerTodos() {
         return new ArrayList<>(DataBase.usuarios);
