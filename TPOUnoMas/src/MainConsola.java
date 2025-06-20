@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import util.DataLoader;
 
 public class MainConsola {
     private static final Scanner scanner = new Scanner(System.in);
@@ -15,6 +16,9 @@ public class MainConsola {
     private static final DeporteController deporteController = DeporteController.getInstance();
 
     public static void main(String[] args) {
+        DataLoader.cargarDeportes();
+        DataLoader.cargarPartidos();
+
         while (true) {
             System.out.println("\n=== MENÚ DE PARTIDOS ===");
             System.out.println("1. Crear partido");
