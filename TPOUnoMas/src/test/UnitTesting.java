@@ -14,7 +14,7 @@ public class UnitTesting {
 	public static void PopulateDB() {
 		UsuarioDTO nuevo = new UsuarioDTO("", "", "", "");
 		UsuarioController usuarioController = new UsuarioController();
-		usuarioController.crearUsuario(nuevo);
+		//usuarioController.crearUsuario(nuevo);
 	}
 
 }

@@ -4,7 +4,6 @@ import model.Deporte;
 import model.NivelJuego;
 import model.Partido;
 import model.Usuario;
-import model.DeporteUsuario;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
  * Filtra jugadores según un rango de niveles (mínimo y máximo)
  * Implementa el patrón Strategy
  */
-public class EmparejamientoPorNivel implements EstrategiaEmparejamiento {
+public class EmparejamientoPorNivel implements IEstrategiaEmparejamiento {
     
     private NivelJuego nivelMinimo;
     private NivelJuego nivelMaximo;

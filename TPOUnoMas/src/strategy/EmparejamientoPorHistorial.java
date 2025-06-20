@@ -5,7 +5,7 @@ import model.Usuario;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EmparejamientoPorHistorial implements EstrategiaEmparejamiento {
+public class EmparejamientoPorHistorial implements IEstrategiaEmparejamiento {
     private int minimoPartidosRequeridos;
     
     public EmparejamientoPorHistorial() {

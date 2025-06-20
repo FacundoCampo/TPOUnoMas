@@ -5,7 +5,7 @@ import model.Usuario;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EmparejamientoPorCercania implements EstrategiaEmparejamiento {
+public class EmparejamientoPorCercania implements IEstrategiaEmparejamiento {
     private int radioKilometros;
     
     public EmparejamientoPorCercania() {

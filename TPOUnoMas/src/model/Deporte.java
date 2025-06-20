@@ -21,9 +21,11 @@ public class Deporte {
     }
     
     public String getId() { return id; }
+
     public void setId(String id) { this.id = id; }
     
     public String getNombre() { return nombre; }
+
     public void setNombre(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del deporte no puede ser null o vacío");
@@ -32,6 +34,7 @@ public class Deporte {
     }
     
     public int getCantidadJugadoresEstandar() { return cantidadJugadoresEstandar; }
+
     public void setCantidadJugadoresEstandar(int cantidadJugadoresEstandar) {
         if (cantidadJugadoresEstandar <= 0) {
             throw new IllegalArgumentException("La cantidad de jugadores debe ser mayor a cero");
