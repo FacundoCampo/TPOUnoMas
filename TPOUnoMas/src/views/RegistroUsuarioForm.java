@@ -9,7 +9,9 @@ import model.dto.UsuarioDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RegistroUsuarioForm extends JPanel {
 
@@ -17,18 +19,29 @@ public class RegistroUsuarioForm extends JPanel {
     private JTextField txtEmail;
     private JPasswordField txtContraseña;
     private JTextField txtUbicacion;
-    private JComboBox<String> comboDeporteFavorito;
-    private JComboBox<NivelJuego> comboNivel;
+    private JList<String> listaDeportes;
+    private JPanel panelNiveles;
+    private Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
     private JButton btnRegistrar;
     private JButton btnVolver;
     private JLabel lblMensaje;
+    private Runnable onVolver;
+    private UsuarioDTO usuarioExistente;
 
-    public RegistroUsuarioForm() {
+    public RegistroUsuarioForm(Runnable onVolver) {
+        this(onVolver, null);
+    }
+
+    public RegistroUsuarioForm(Runnable onVolver, UsuarioDTO usuarioExistente) {
+        this.onVolver = onVolver;
+        this.usuarioExistente = usuarioExistente;
+        this.nivelesPorDeporte = new HashMap<>();
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(40, 100, 40, 100));
 
-        JLabel lblTitulo = new JLabel("Registro de Usuario");
+        JLabel lblTitulo = new JLabel(usuarioExistente == null ? "Registro de Usuario" : "Modificar Usuario");
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
         lblTitulo.setForeground(new Color(46, 204, 113));
@@ -39,16 +52,39 @@ public class RegistroUsuarioForm extends JPanel {
         txtEmail = crearCampoTexto("Email");
         txtContraseña = crearCampoPassword("Contraseña");
         txtUbicacion = crearCampoTexto("Ubicación");
-        comboDeporteFavorito = crearComboBox("Deporte Favorito", obtenerNombresDeportes());
-        comboNivel = crearComboBox("Nivel de Juego", NivelJuego.values());
 
-        btnRegistrar = crearBoton("Registrar", new Color(46, 204, 113));
+        JLabel lblDep = new JLabel("Deportes Favoritos");
+        lblDep.setForeground(Color.WHITE);
+        lblDep.setFont(new Font("Tahoma", Font.BOLD, 14));
+        lblDep.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(lblDep);
+
+        String[] deportes = obtenerNombresDeportes();
+        listaDeportes = new JList<>(deportes);
+        listaDeportes.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        listaDeportes.setVisibleRowCount(5);
+        JScrollPane scroll = new JScrollPane(listaDeportes);
+        scroll.setMaximumSize(new Dimension(400, 80));
+        scroll.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(scroll);
+
+        panelNiveles = new JPanel();
+        panelNiveles.setLayout(new BoxLayout(panelNiveles, BoxLayout.Y_AXIS));
+        panelNiveles.setOpaque(false);
+        panelNiveles.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(panelNiveles);
+
+        listaDeportes.addListSelectionListener(e -> actualizarPanelNiveles());
+
+        btnRegistrar = crearBoton(usuarioExistente == null ? "Registrar" : "Guardar Cambios", new Color(46, 204, 113));
         btnRegistrar.addActionListener(this::registrarUsuario);
         add(btnRegistrar);
         add(Box.createVerticalStrut(10));
 
         btnVolver = crearBoton("Volver", new Color(44, 62, 80));
-        btnVolver.addActionListener(e -> SwingUtilities.getWindowAncestor(this).dispose());
+        btnVolver.addActionListener(e -> {
+            if (onVolver != null) onVolver.run();
+        });
         add(btnVolver);
 
         lblMensaje = new JLabel("", SwingConstants.CENTER);
@@ -56,6 +92,39 @@ public class RegistroUsuarioForm extends JPanel {
         lblMensaje.setForeground(Color.LIGHT_GRAY);
         add(Box.createVerticalStrut(10));
         add(lblMensaje);
+
+    }
+
+
+    private void actualizarPanelNiveles() {
+        panelNiveles.removeAll();
+        nivelesPorDeporte.clear();
+        for (String nombre : listaDeportes.getSelectedValuesList()) {
+            JPanel fila = new JPanel();
+            fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
+            fila.setOpaque(false);
+            fila.setMaximumSize(new Dimension(400, 60));
+            fila.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JLabel lbl = new JLabel("Nivel para " + nombre);
+            lbl.setForeground(Color.WHITE);
+            lbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            JComboBox<NivelJuego> combo = new JComboBox<>(NivelJuego.values());
+            combo.setMaximumSize(new Dimension(400, 30));
+            combo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            fila.add(lbl);
+            fila.add(Box.createVerticalStrut(5));
+            fila.add(combo);
+
+            panelNiveles.add(fila);
+            panelNiveles.add(Box.createVerticalStrut(10));
+            nivelesPorDeporte.put(nombre, combo);
+        }
+        panelNiveles.revalidate();
+        panelNiveles.repaint();
     }
 
     private JButton crearBoton(String texto, Color fondo) {
@@ -101,21 +170,6 @@ public class RegistroUsuarioForm extends JPanel {
         return field;
     }
 
-    private <T> JComboBox<T> crearComboBox(String label, T[] items) {
-        JLabel lbl = new JLabel(label);
-        lbl.setForeground(Color.WHITE);
-        lbl.setFont(new Font("Tahoma", Font.BOLD, 14));
-        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(lbl);
-
-        JComboBox<T> combo = new JComboBox<>(items);
-        combo.setMaximumSize(new Dimension(400, 35));
-        combo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(combo);
-        add(Box.createVerticalStrut(10));
-        return combo;
-    }
-
     private String[] obtenerNombresDeportes() {
         List<DeporteDTO> lista = DeporteController.getInstance().obtenerTodos();
         return lista.stream().map(DeporteDTO::getNombre).toArray(String[]::new);
@@ -133,10 +187,21 @@ public class RegistroUsuarioForm extends JPanel {
                 return;
             }
 
+            Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
+            for (String dep : listaDeportes.getSelectedValuesList()) {
+                NivelJuego nivel = (NivelJuego) nivelesPorDeporte.get(dep).getSelectedItem();
+                DeporteDTO dto = DeporteController.getInstance().obtenerTodos().stream()
+                        .filter(d -> d.getNombre().equals(dep))
+                        .findFirst().orElse(null);
+                if (dto != null && nivel != null) preferencias.put(dto, nivel);
+            }
+
             UsuarioDTO dto = new UsuarioDTO(nombre, email, contraseña, ubicacion);
+            //dto.setPreferenciasDeportivas(preferencias);
+
             boolean ok = true; //UsuarioController.getInstance().crearUsuario(dto);
 
-            lblMensaje.setText(ok ? "\u2713 Usuario registrado con éxito." : "Error: ya existe un usuario con ese email.");
+            lblMensaje.setText(ok ? "✓ Usuario registrado/modificado con éxito." : "Error en el registro.");
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
         }
