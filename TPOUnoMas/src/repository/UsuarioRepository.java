@@ -24,6 +24,15 @@ public class UsuarioRepository implements IUsuarioRepository {
         return null;
     }
 
+    public Usuario buscarPorEmail(String email) {
+        for (Usuario u : DataBase.usuarios) {
+            if (u.getEmail().equalsIgnoreCase(email)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
     public Optional<Usuario> buscarPorNombre(String nombre) {
         return DataBase.usuarios.stream()
                 .filter(u -> u.getNombre().equalsIgnoreCase(nombre))

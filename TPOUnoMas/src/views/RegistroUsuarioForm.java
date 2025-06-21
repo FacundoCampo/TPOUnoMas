@@ -178,6 +178,7 @@ public class RegistroUsuarioForm extends JPanel {
 
     private void registrarUsuario(ActionEvent e) {
         try {
+            UsuarioController uc = UsuarioController.getInstance();
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
             String contraseña = new String(txtContraseña.getPassword()).trim();
@@ -189,12 +190,14 @@ public class RegistroUsuarioForm extends JPanel {
             }
 
             UsuarioDTO usuario = new UsuarioDTO(nombre, email, contraseña, ubicacion);
-            boolean ok = UsuarioController.getInstance().registrar(usuario);
+            boolean ok = uc.registrar(usuario);
 
             if (!ok) {
                 lblMensaje.setText("Error: ya existe un usuario con ese email.");
                 return;
             }
+
+            lblMensaje.setText("✓ Usuario registrado y preferencias guardadas.");
 
             Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
             for (String nombreDeporte : listaDeportes.getSelectedValuesList()) {
@@ -209,9 +212,7 @@ public class RegistroUsuarioForm extends JPanel {
                 }
             }
 
-            UsuarioController.getInstance().actualizarPreferencias(usuario.getId(), (List<DeporteUsuarioDTO>) preferencias);
-
-            lblMensaje.setText("✓ Usuario registrado y preferencias guardadas.");
+            uc.actualizarPreferencias(usuario.getId(), (List<DeporteUsuarioDTO>) preferencias);
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
             ex.printStackTrace();

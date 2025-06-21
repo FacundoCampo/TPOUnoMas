@@ -1,13 +1,12 @@
 package model;
 
-import model.state.IEstadoPartido;
-import model.state.NecesitamosJugadores;
+import model.estadosDelPartido.IEstadoPartido;
+import model.estadosDelPartido.NecesitamosJugadores;
 import strategy.IEstrategiaEmparejamiento;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class Partido {
     private String id;

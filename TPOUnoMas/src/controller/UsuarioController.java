@@ -25,20 +25,20 @@ public class UsuarioController {
 
     public boolean registrar(UsuarioDTO usuario) {
         UsuarioDTO u = usuarioService.registrarUsuario(usuario);
-        if(u != null) return true;
-        return false;
+        return u != null;
     }
 
     public UsuarioDTO buscarPorId(String id) {
         return usuarioService.buscarUsuario(id);
     }
 
-    public void actualizarPerfil(UsuarioDTO usuario) {
-        usuarioService.actualizarPerfil(usuario);
-    }
-
     public void actualizarPreferencias(String usuarioId, List<DeporteUsuarioDTO> preferenciasDTO) {
         usuarioService.actualizarPreferencias(usuarioId, preferenciasDTO);
+    }
+
+    public boolean login(String email, String contrasena) {
+        UsuarioDTO u = usuarioService.login(email, contrasena);
+        return u != null;
     }
 
 }

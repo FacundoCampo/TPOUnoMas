@@ -12,4 +12,5 @@ public interface IUsuarioRepository {
     void guardar(Usuario usuario);
     boolean actualizar(Usuario usuarioActualizado);
     List<String> obtenerNombresDisponibles();
+    Usuario buscarPorEmail(String email);
 }

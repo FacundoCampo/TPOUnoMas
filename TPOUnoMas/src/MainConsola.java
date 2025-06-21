@@ -17,6 +17,7 @@ public class MainConsola {
 
     public static void main(String[] args) {
         DataLoader.cargarDeportes();
+        DataLoader.cargarUsuarios();
         DataLoader.cargarPartidos();
 
         while (true) {

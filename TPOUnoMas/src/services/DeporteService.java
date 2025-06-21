@@ -3,6 +3,7 @@ package services;
 import model.Deporte;
 import model.dto.DeporteDTO;
 import repository.DeporteRepository;
+import repository.interfaces.IDeporteRepository;
 import services.interfaces.IDeporteService;
 
 import java.util.ArrayList;
@@ -12,19 +13,12 @@ import java.util.UUID;
 
 public class DeporteService implements IDeporteService {
 
-    private static DeporteService instance;
-    private final DeporteRepository repository;
+    private IDeporteRepository repository;
 
     public DeporteService() {
         this.repository = new DeporteRepository();
     }
 
-    public static DeporteService getInstance() {
-        if (instance == null) {
-            instance = new DeporteService();
-        }
-        return instance;
-    }
 
     public List<DeporteDTO> obtenerTodos() {
         List<Deporte> lista = repository.obtenerTodos();

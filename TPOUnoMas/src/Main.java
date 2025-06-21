@@ -8,6 +8,7 @@ public class Main {
 
         try {
             DataLoader.cargarDeportes();
+            DataLoader.cargarUsuarios();
             DataLoader.cargarPartidos();
 
         	frame = new FrmPrincipal(titulo);

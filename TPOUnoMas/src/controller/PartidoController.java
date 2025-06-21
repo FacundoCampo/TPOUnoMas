@@ -1,7 +1,7 @@
 package controller;
 
 import model.dto.PartidoDTO;
-import model.state.IEstadoPartido;
+import model.estadosDelPartido.IEstadoPartido;
 import services.PartidoService;
 import services.interfaces.IPartidoService;
 import strategy.EmparejamientoContext;

@@ -1,6 +1,7 @@
 package views;
 
-import controller.PartidoController;
+import controller.UsuarioController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -68,7 +69,7 @@ public class FrmPrincipal extends JFrame {
         lblTitle.setBounds(185, 60, 400, 60);
         panel.add(lblTitle);
 
-        lblSelect = new JLabel("DNI", SwingConstants.CENTER);
+        lblSelect = new JLabel("EMAIL", SwingConstants.CENTER);
         lblSelect.setForeground(Color.WHITE);
         lblSelect.setFont(new Font("Tahoma", Font.BOLD, 16));
         lblSelect.setBounds(240, 140, 295, 25);
@@ -114,12 +115,18 @@ public class FrmPrincipal extends JFrame {
     private void asociarEventos() {
         btnIngresar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int id = Integer.parseInt(tUsuario.getText());
-                if (validateUser(id)) {
+                String email = tUsuario.getText();
+                String pass = tPassword.getText();
+
+                if(email == null || pass == null) {
+                    return;
+                }
+
+                if (validateUser(email, pass)) {
                     try {
                         pnlIntro.removeAll();
                         pnlIntro.setLayout(new BoxLayout(pnlIntro, BoxLayout.X_AXIS));
-                        addTabbedOPanel(id);
+                        addTabbedOPanel(email);
                         pnlIntro.revalidate();
                         pnlIntro.repaint();
                     } catch (Exception ex) {
@@ -135,12 +142,11 @@ public class FrmPrincipal extends JFrame {
         btnRegistrarse.addActionListener(e -> cardLayout.show(pnlIntro, "registro"));
     }
 
-    private boolean validateUser(int id) {
-        PartidoController eController = PartidoController.getInstance();
+    private boolean validateUser(String email, String pass) {
+        UsuarioController uc = UsuarioController.getInstance();
         boolean isValid = false;
         try {
-            //isValid = eController.Autenticador(id, tPassword.getText());
-            isValid = true;
+            isValid = uc.login(email, pass);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,8 +154,8 @@ public class FrmPrincipal extends JFrame {
         return isValid;
     }
 
-    private void addTabbedOPanel(int id) {
-        InternalPanel frame = new InternalPanel(Integer.toString(id));
+    private void addTabbedOPanel(String email) {
+        InternalPanel frame = new InternalPanel(email);
         pnlIntro.removeAll();
         pnlIntro.setLayout(new BoxLayout(pnlIntro, BoxLayout.X_AXIS));
         pnlIntro.add(frame);

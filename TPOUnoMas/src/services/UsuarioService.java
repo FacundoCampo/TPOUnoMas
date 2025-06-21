@@ -9,6 +9,8 @@ import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
 import repository.DeporteRepository;
 import repository.UsuarioRepository;
+import repository.interfaces.IDeporteRepository;
+import repository.interfaces.IUsuarioRepository;
 import services.interfaces.IUsuarioService;
 
 import java.util.ArrayList;
@@ -16,8 +18,8 @@ import java.util.List;
 
 public class UsuarioService implements IUsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final DeporteRepository deporteRepository;
+    private IUsuarioRepository usuarioRepository;
+    private IDeporteRepository deporteRepository;
 
     public UsuarioService() {
         this.usuarioRepository = new UsuarioRepository();
@@ -29,6 +31,11 @@ public class UsuarioService implements IUsuarioService {
             throw new IllegalArgumentException("El usuario no puede ser null");
         }
 
+        Usuario existente = usuarioRepository.buscarPorEmail(dto.getEmail());
+        if (existente != null) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese email.");
+        }
+
         Usuario usuario = UsuarioMapper.fromDto(dto);
 
         if (usuario.getId() == null || usuario.getId().trim().isEmpty()) {
@@ -38,6 +45,7 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.guardar(usuario);
         return UsuarioMapper.toDTO(usuario);
     }
+
 
     public UsuarioDTO buscarUsuario(String id) {
         if (id == null || id.trim().isEmpty()) {
@@ -76,4 +84,19 @@ public class UsuarioService implements IUsuarioService {
         usuario.setDeportesUsuario(preferencias);
         usuarioRepository.actualizar(usuario);
     }
+
+    public UsuarioDTO login(String email, String contrasena) {
+        if (email == null || email.trim().isEmpty() || contrasena == null || contrasena.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email y contraseña son obligatorios");
+        }
+
+        Usuario usuario = usuarioRepository.buscarPorEmail(email.trim().toLowerCase());
+
+        if (usuario == null || !usuario.getContraseña().equals(contrasena)) {
+            throw new IllegalArgumentException("Credenciales inválidas");
+        }
+
+        return UsuarioMapper.toDTO(usuario);
+    }
+
 }

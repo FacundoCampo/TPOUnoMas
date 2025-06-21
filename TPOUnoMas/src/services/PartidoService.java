@@ -4,9 +4,11 @@ import mapper.PartidoMapper;
 import model.Partido;
 import model.Usuario;
 import model.dto.PartidoDTO;
-import model.state.IEstadoPartido;
+import model.estadosDelPartido.IEstadoPartido;
 import repository.PartidoRepository;
 import repository.UsuarioRepository;
+import repository.interfaces.IPartidoRepository;
+import repository.interfaces.IUsuarioRepository;
 import services.interfaces.IPartidoService;
 
 import java.util.ArrayList;
@@ -14,8 +16,8 @@ import java.util.List;
 
 public class PartidoService implements IPartidoService {
 
-    private PartidoRepository repository;
-    private UsuarioRepository usuarioRepository;
+    private IPartidoRepository repository;
+    private IUsuarioRepository usuarioRepository;
 
     public PartidoService() {
         this.repository = new PartidoRepository();

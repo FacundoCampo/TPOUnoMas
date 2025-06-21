@@ -2,7 +2,7 @@ package services.interfaces;
 
 import model.Partido;
 import model.dto.PartidoDTO;
-import model.state.IEstadoPartido;
+import model.estadosDelPartido.IEstadoPartido;
 
 import java.util.List;
 

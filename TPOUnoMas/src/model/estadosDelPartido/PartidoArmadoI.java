@@ -1,4 +1,4 @@
-package model.state;
+package model.estadosDelPartido;
 
 import model.Partido;
 import model.Usuario;
