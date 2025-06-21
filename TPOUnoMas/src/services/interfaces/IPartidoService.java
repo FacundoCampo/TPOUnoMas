@@ -7,7 +7,7 @@ import model.estadosDelPartido.IEstadoPartido;
 import java.util.List;
 
 public interface IPartidoService {
-    void crearPartido(PartidoDTO dto);
+    String crearPartido(PartidoDTO dto);
     List<PartidoDTO> obtenerTodos();
     Partido buscarPorID(String id);
     boolean cambiarEstado(String idPartido, IEstadoPartido estado);

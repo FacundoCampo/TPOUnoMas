@@ -18,8 +18,9 @@ public class Partido {
     private IEstadoPartido estado;
     private List<Notificacion> notificaciones;
     private IEstrategiaEmparejamiento estrategia;
+    private String organizadorID;
 
-    public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora) {
+    public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora, String organizadorID) {
         this.deporte = deporte;
         this.duracion = duracion;
         this.ubicacion = ubicacion;
@@ -27,9 +28,11 @@ public class Partido {
         this.estado = new NecesitamosJugadores();
         this.jugadoresInscritos = new ArrayList<>();
         this.notificaciones = new ArrayList<>();
+        this.organizadorID = organizadorID;
     }
 
     // Getters y Setters
+    public String getOrganizadorID() { return organizadorID; }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

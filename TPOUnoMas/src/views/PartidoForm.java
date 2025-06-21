@@ -25,8 +25,10 @@ public class PartidoForm extends JPanel {
     private JButton btnCrear;
     private JButton btnVolver;
     private JLabel lblMensaje;
+    private String usuarioID;
 
-    public PartidoForm(JTabbedPane tabbedPane, JPanel panelAnterior) {
+    public PartidoForm(JTabbedPane tabbedPane, JPanel panelAnterior, String usuarioID) {
+        this.usuarioID = usuarioID;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(40, 100, 40, 100));
@@ -130,9 +132,10 @@ public class PartidoForm extends JPanel {
                 return;
             }
 
-            PartidoDTO dto = new PartidoDTO(deporte, duracion, ubicacion, fecha);
+            PartidoDTO dto = new PartidoDTO(deporte, duracion, ubicacion, fecha, this.usuarioID);
             IEstrategiaEmparejamiento estrategia = EmparejamientoStrategyFactory.crear(tipo);
-            PartidoController.getInstance().crearPartido(dto, estrategia);
+            String partidoID = PartidoController.getInstance().crearPartido(dto, estrategia);
+            PartidoController.getInstance().sumarseAlPartido(partidoID, this.usuarioID);
 
             lblMensaje.setText("\u2713 Partido creado correctamente.");
         } catch (Exception ex) {

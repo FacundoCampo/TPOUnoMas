@@ -12,10 +12,10 @@ public class PartidoPanel {
     private JTabbedPane tabbedPane;
     private JButton btnAgregar;
     private JButton btnEliminar;
-    private JButton btnUnirse;
     private JButton btnVerListados;
     private JPanel panelPrincipal;
     private JPanel crearPartidoTab;
+    private JPanel misPartidosTab;
     private JPanel listadoTab;
 
     /**
@@ -65,8 +65,7 @@ public class PartidoPanel {
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(60, 200, 60, 200));
 
         btnAgregar = crearBoton("Agregar partido", new Color(46, 204, 113));
-        btnEliminar = crearBoton("Eliminar partido", new Color(44, 62, 80));
-        btnUnirse = crearBoton("Partidos por jugar", new Color(44, 62, 80));
+        btnEliminar = crearBoton("Cancelar partido", new Color(44, 62, 80));
         btnVerListados = crearBoton("Ver listados de partidos", new Color(44, 62, 80));
 
         panelPrincipal.add(Box.createVerticalGlue());
@@ -74,16 +73,16 @@ public class PartidoPanel {
         panelPrincipal.add(Box.createVerticalStrut(25));
         panelPrincipal.add(btnEliminar);
         panelPrincipal.add(Box.createVerticalStrut(25));
-        panelPrincipal.add(btnUnirse);
-        panelPrincipal.add(Box.createVerticalStrut(25));
         panelPrincipal.add(btnVerListados);
         panelPrincipal.add(Box.createVerticalGlue());
 
-        crearPartidoTab = new PartidoForm(tabbedPane, panelPrincipal);
+        crearPartidoTab = new PartidoForm(tabbedPane, panelPrincipal, usuarioid);
         listadoTab = new ListaPartidosPanel(usuarioid);
+        misPartidosTab = new MisPartidosPanel(usuarioid);
 
         tabbedPane.add("Menu", panelPrincipal);
         tabbedPane.add("Crear", crearPartidoTab);
+        tabbedPane.add("Mis partidos", misPartidosTab);
         tabbedPane.add("Listado", listadoTab);
         tabbedPane.add("Historial", crearPanelPlaceholder());
         setAnchoFijoTabs(tabbedPane, 120);
@@ -143,13 +142,7 @@ public class PartidoPanel {
 
         btnEliminar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // controller.abrirFormularioEliminar();
-            }
-        });
-
-        btnUnirse.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // controller.abrirFormularioUnirse();
+                tabbedPane.setSelectedComponent(misPartidosTab);
             }
         });
 

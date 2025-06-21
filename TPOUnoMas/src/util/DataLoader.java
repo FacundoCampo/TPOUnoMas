@@ -70,35 +70,67 @@ public class DataLoader {
     public static void cargarPartidos() {
         PartidoController controller = PartidoController.getInstance();
         DeporteController deporteController = DeporteController.getInstance();
+        UsuarioController usuarioController = UsuarioController.getInstance();
+
+        List<UsuarioDTO> usuarios = usuarioController.obtenerTodos();
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados para asignar como organizadores.");
+            return;
+        }
 
         DeporteDTO futbol = deporteController.buscarPorNombre("Fútbol");
         DeporteDTO tenis = deporteController.buscarPorNombre("Tenis");
 
         List<PartidoDTO> partidos = new ArrayList<>();
-        partidos.add(new PartidoDTO(futbol, 90, "Palermo", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(tenis, 60, "Caballito", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(futbol, 120, "Recoleta", obtenerFecha(1)));
-        partidos.add(new PartidoDTO(futbol, 90, "Villa Urquiza", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(futbol, 60, "Belgrano", obtenerFecha(2)));
+        Random rand = new Random();
 
-        for (PartidoDTO dto : partidos) {
-            controller.crearPartido(dto);
+        for (int i = 0; i < 5; i++) {
+            DeporteDTO deporte = (i == 1) ? tenis : futbol;
+            String ubicacion = switch (i) {
+                case 0 -> "Palermo";
+                case 1 -> "Caballito";
+                case 2 -> "Recoleta";
+                case 3 -> "Villa Urquiza";
+                default -> "Belgrano";
+            };
+            Date fecha = obtenerFecha(i < 3 ? 1 : 2);
+            String organizadorEmail = usuarios.get(rand.nextInt(usuarios.size())).getEmail();
+
+            PartidoDTO dto = new PartidoDTO(deporte, 90, ubicacion, fecha, organizadorEmail);
+            String partidoId = controller.crearPartido(dto);
+
+            try {
+                controller.sumarseAlPartido(partidoId, organizadorEmail);
+            } catch (Exception e) {
+                System.out.println("No se pudo inscribir al organizador: " + organizadorEmail);
+            }
         }
 
         asignarJugadoresAPartidos();
         cambiarEstados();
     }
 
+
     private static void asignarJugadoresAPartidos() {
         List<UsuarioDTO> usuarios = UsuarioController.getInstance().obtenerTodos();
         List<PartidoDTO> partidos = PartidoController.getInstance().obtenerTodos();
 
         Random rand = new Random();
-        for (PartidoDTO partido : partidos) {
+        boolean partidoConUnLugar = false;
+
+        for (int i = 0; i < partidos.size(); i++) {
+            PartidoDTO partido = partidos.get(i);
             int cupo = partido.getDeporte().getCantidadJugadoresEstandar();
             Set<Integer> usados = new HashSet<>();
 
-            while (partido.getJugadoresInscritos().size() < cupo && usados.size() < usuarios.size()) {
+            int cantidadAInscribir = cupo;
+
+            if (!partidoConUnLugar) {
+                cantidadAInscribir = cupo - 1;
+                partidoConUnLugar = true;
+            }
+
+            while (partido.getJugadoresInscritos().size() < cantidadAInscribir && usados.size() < usuarios.size()) {
                 int index = rand.nextInt(usuarios.size());
                 if (usados.contains(index)) continue;
                 usados.add(index);
@@ -112,14 +144,31 @@ public class DataLoader {
         }
     }
 
+
     private static void cambiarEstados() {
         List<PartidoDTO> creados = PartidoController.getInstance().obtenerTodos();
+
         for (int i = 0; i < creados.size(); i++) {
-            if (i % 4 == 0) PartidoController.getInstance().cambiarEstado(creados.get(i).getId(), new EnJuego());
-            else if (i % 4 == 1) PartidoController.getInstance().cambiarEstado(creados.get(i).getId(), new Confirmado());
-            else if (i % 4 == 2) PartidoController.getInstance().cambiarEstado(creados.get(i).getId(), new Finalizado());
+            PartidoDTO partido = creados.get(i);
+            int inscritos = partido.getJugadoresInscritos().size();
+            int necesarios = partido.getDeporte().getCantidadJugadoresEstandar();
+
+            if (i % 4 == 0) {
+                if (inscritos >= necesarios) {
+                    PartidoController.getInstance().cambiarEstado(partido.getId(), new EnJuego());
+                }
+            } else if (i % 4 == 1) {
+                if (inscritos >= necesarios) {
+                    PartidoController.getInstance().cambiarEstado(partido.getId(), new Confirmado());
+                }
+            } else if (i % 4 == 2) {
+                if (inscritos >= necesarios) {
+                    PartidoController.getInstance().cambiarEstado(partido.getId(), new Finalizado());
+                }
+            }
         }
     }
+
 
     private static Date obtenerFecha(int diasFuturos) {
         Calendar cal = Calendar.getInstance();

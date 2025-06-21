@@ -10,11 +10,12 @@ import java.util.UUID;
 
 public class PartidoRepository implements IPartidoRepository {
 
-    public void guardar(Partido partido) {
+    public String guardar(Partido partido) {
         if (partido.getId() == null || partido.getId().isBlank()) {
             partido.setId(UUID.randomUUID().toString());
         }
         DataBase.partidos.add(partido);
+        return partido.getId();
     }
 
     public List<Partido> obtenerTodos() {

@@ -20,7 +20,8 @@ public class UnitTesting {
 		System.out.println("============================");
 		System.out.println("TESTING PATRÓN STATE");
 
-		Partido partido = new Partido(new Deporte(null, "Fútbol", 2), 90, "Palermo", new Date());
+		String organizadorId = "organizador-001";
+		Partido partido = new Partido(new Deporte(null, "Fútbol", 2), 90, "Palermo", new Date(), organizadorId);
 		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "CABA");
 		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "CABA");
 

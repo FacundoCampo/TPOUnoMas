@@ -150,12 +150,34 @@ public class ListaPartidosPanel extends JPanel {
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
             super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
             if (value instanceof PartidoDTO dto) {
-                setText(dto.getDeporte().getNombre() + " - " + dto.getFechaHora() + " - Estado: " + dto.getEstado().getNombre());
+                String deporte = dto.getDeporte().getNombre();
+
+                String fecha = new java.text.SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
+
+                String estado = dto.getEstado().getNombre();
+                String organizador = dto.getOrganizador();
+
+                int jugadoresActuales = dto.getJugadoresInscritos().size();
+                int jugadoresTotales = dto.getDeporte().getCantidadJugadoresEstandar();
+                int faltan = jugadoresTotales - jugadoresActuales;
+
+                String faltanTexto = (faltan > 0) ? String.format(" (faltan %d)", faltan) : "";
+
+                String texto = String.format(
+                        "%s - %s - Estado: %s | Organizador: %s | Jugadores: %d/%d%s",
+                        deporte, fecha, estado, organizador, jugadoresActuales, jugadoresTotales, faltanTexto
+                );
+
+                setText(texto);
                 setForeground(Color.WHITE);
                 setBackground(isSelected ? new Color(44, 62, 80) : new Color(34, 34, 34));
             }
+
             return this;
         }
     }
+
+
 }

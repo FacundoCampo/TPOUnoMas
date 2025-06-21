@@ -1,6 +1,5 @@
 package model.dto;
 
-import model.entity.Notificacion;
 import model.entity.Usuario;
 import model.estadosDelPartido.IEstadoPartido;
 
@@ -16,18 +15,20 @@ public class PartidoDTO {
     private Date fechaHora;
     private List<UsuarioDTO> jugadoresInscritos;
     private IEstadoPartido estado;
-    private List<Notificacion> notificaciones;
+    private String organizador;
 
-    public PartidoDTO(DeporteDTO deporte, int duracion, String ubicacion, Date fechaHora) {
+    public PartidoDTO(DeporteDTO deporte, int duracion, String ubicacion, Date fechaHora, String organizador) {
         super();
         this.deporte = deporte;
         this.duracion = duracion;
         this.ubicacion = ubicacion;
         this.fechaHora = fechaHora != null ? new Date(fechaHora.getTime()) : null;
         this.jugadoresInscritos = new ArrayList<>();
+        this.organizador = organizador;
     }
 
     public String getId() { return id; }
+    public String getOrganizador() { return organizador; }
     public DeporteDTO getDeporte() { return deporte; }
     public int getDuracion() { return duracion; }
     public String getUbicacion() { return ubicacion; }
@@ -38,6 +39,9 @@ public class PartidoDTO {
     public void setDeporte(DeporteDTO deporte) { this.deporte = deporte; }
     public void setId(String id) { this.id = id; }
     public void setEstado(IEstadoPartido estado) { this.estado = estado; }
+    public void setJugadoresInscritos(List<UsuarioDTO> jugadoresInscritos) {
+        this.jugadoresInscritos = jugadoresInscritos != null ? new ArrayList<>(jugadoresInscritos) : new ArrayList<>();
+    }
 
     public boolean esValido() {
         return deporte != null

@@ -27,18 +27,18 @@ public class PartidoController {
         this.emparejamientoService = new EmparejamientoContext();
     }
 
-    public void crearPartido(PartidoDTO dto) {
+    public String crearPartido(PartidoDTO dto) {
         if (dto == null || !dto.esValido()) {
             throw new IllegalArgumentException("El partido no es válido");
         }
-        partidoService.crearPartido(dto);
+        return partidoService.crearPartido(dto);
     }
 
-    public void crearPartido(PartidoDTO dto, IEstrategiaEmparejamiento estrategia) { //es necesaria la estrategia al crearlo?
+    public String crearPartido(PartidoDTO dto, IEstrategiaEmparejamiento estrategia) {
         if (dto == null || !dto.esValido()) {
             throw new IllegalArgumentException("El partido no es válido");
         }
-        partidoService.crearPartido(dto);
+        return partidoService.crearPartido(dto);
     }
 
     public List<PartidoDTO> obtenerTodos() {

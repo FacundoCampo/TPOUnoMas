@@ -24,9 +24,9 @@ public class PartidoService implements IPartidoService {
         this.usuarioRepository = new UsuarioRepository();
     }
 
-    public void crearPartido(PartidoDTO dto) {
+    public String crearPartido(PartidoDTO dto) {
         Partido partido = PartidoMapper.fromDTO(dto);
-        repository.guardar(partido);
+        return repository.guardar(partido);
     }
 
     public List<PartidoDTO> obtenerTodos() {
