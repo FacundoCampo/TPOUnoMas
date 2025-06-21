@@ -1,6 +1,6 @@
 package services;
 
-import model.Deporte;
+import model.entity.Deporte;
 import model.dto.DeporteDTO;
 import repository.DeporteRepository;
 import repository.interfaces.IDeporteRepository;

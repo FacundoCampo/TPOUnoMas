@@ -1,7 +1,7 @@
 package model.estadosDelPartido;
 
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 
 public interface IEstadoPartido {
     boolean manejarNuevoJugador(Partido contexto, Usuario jugador);

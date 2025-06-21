@@ -1,7 +1,7 @@
 package mapper;
 
-import model.Deporte;
-import model.DeporteUsuario;
+import model.entity.Deporte;
+import model.entity.DeporteUsuario;
 import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
 

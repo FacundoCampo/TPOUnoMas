@@ -1,9 +1,9 @@
 package strategy;
 
-import model.Deporte;
+import model.entity.Deporte;
 import enums.NivelJuego;
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 
 import java.util.List;
 import java.util.ArrayList;

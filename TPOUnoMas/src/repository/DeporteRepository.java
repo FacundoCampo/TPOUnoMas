@@ -1,6 +1,6 @@
 package repository;
 
-import model.Deporte;
+import model.entity.Deporte;
 import model.staticdb.DataBase;
 import repository.interfaces.IDeporteRepository;
 

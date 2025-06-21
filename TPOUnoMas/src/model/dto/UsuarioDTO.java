@@ -23,11 +23,6 @@ public class UsuarioDTO {
     public String getContrasena() { return contrasena; }
     public String getUbicacion() { return ubicacion; }
 
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public void setEmail(String email) { this.email = email; }
-    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
-    public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
-
     public List<DeporteUsuarioDTO> getPreferenciasDeportivas() {
         return preferenciasDeportivas;
     }

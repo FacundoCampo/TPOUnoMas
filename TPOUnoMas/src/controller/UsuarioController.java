@@ -1,6 +1,6 @@
 package controller;
 
-import model.Usuario;
+import model.entity.Usuario;
 import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
 import services.UsuarioService;

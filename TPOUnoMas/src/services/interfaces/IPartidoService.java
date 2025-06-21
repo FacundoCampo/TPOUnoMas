@@ -1,6 +1,6 @@
 package services.interfaces;
 
-import model.Partido;
+import model.entity.Partido;
 import model.dto.PartidoDTO;
 import model.estadosDelPartido.IEstadoPartido;
 

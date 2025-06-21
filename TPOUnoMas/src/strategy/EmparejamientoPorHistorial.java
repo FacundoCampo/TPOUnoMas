@@ -1,7 +1,7 @@
 package strategy;
 
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 import java.util.List;
 import java.util.stream.Collectors;
 

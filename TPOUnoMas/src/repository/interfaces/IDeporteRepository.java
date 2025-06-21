@@ -1,6 +1,6 @@
 package repository.interfaces;
 
-import model.Deporte;
+import model.entity.Deporte;
 
 import java.util.List;
 import java.util.Optional;

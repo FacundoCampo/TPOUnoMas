@@ -1,6 +1,6 @@
 package repository;
 
-import model.Partido;
+import model.entity.Partido;
 import model.staticdb.DataBase;
 import repository.interfaces.IPartidoRepository;
 

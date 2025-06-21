@@ -1,6 +1,6 @@
 package model.dto;
 
-import model.Notificacion;
+import model.entity.Notificacion;
 import model.estadosDelPartido.IEstadoPartido;
 
 import java.util.Date;

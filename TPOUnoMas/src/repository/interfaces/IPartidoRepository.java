@@ -1,9 +1,8 @@
 package repository.interfaces;
 
-import model.Partido;
+import model.entity.Partido;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IPartidoRepository {
     void guardar(Partido partido);

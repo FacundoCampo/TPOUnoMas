@@ -1,7 +1,7 @@
 package mapper;
 
-import model.Deporte;
-import model.Partido;
+import model.entity.Deporte;
+import model.entity.Partido;
 import model.dto.DeporteDTO;
 import model.dto.PartidoDTO;
 

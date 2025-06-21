@@ -1,8 +1,7 @@
 package repository;
 
-import model.DeporteUsuario;
-import model.Usuario;
-import model.dto.DeporteUsuarioDTO;
+import model.entity.DeporteUsuario;
+import model.entity.Usuario;
 import model.staticdb.DataBase;
 import repository.interfaces.IUsuarioRepository;
 

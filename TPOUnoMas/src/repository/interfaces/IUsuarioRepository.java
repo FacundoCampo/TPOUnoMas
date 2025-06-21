@@ -1,7 +1,7 @@
 package repository.interfaces;
 
-import model.DeporteUsuario;
-import model.Usuario;
+import model.entity.DeporteUsuario;
+import model.entity.Usuario;
 
 import java.util.List;
 

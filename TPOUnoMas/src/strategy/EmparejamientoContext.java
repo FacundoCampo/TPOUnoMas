@@ -1,8 +1,8 @@
 package strategy;
 
-import model.Partido;
-import model.ResultadoEmparejamiento;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.ResultadoEmparejamiento;
+import model.entity.Usuario;
 
 import java.util.List;
 

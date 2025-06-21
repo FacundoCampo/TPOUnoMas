@@ -1,9 +1,9 @@
 package mapper;
 
 import enums.NivelJuego;
-import model.Deporte;
-import model.DeporteUsuario;
-import model.Usuario;
+import model.entity.Deporte;
+import model.entity.DeporteUsuario;
+import model.entity.Usuario;
 import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
@@ -55,7 +55,7 @@ public class UsuarioMapper {
 
         List<DeporteUsuario> preferencias = dto.getPreferenciasDeportivas().stream()
                 .map(dudto -> new DeporteUsuario(
-                        new model.Deporte(dudto.getDeporte().getId(), dudto.getDeporte().getCantidadJugadoresEstandar()),
+                        new Deporte(dudto.getDeporte().getId(), dudto.getDeporte().getCantidadJugadoresEstandar()),
                         dudto.getNivel()
                 )).collect(Collectors.toList());
 

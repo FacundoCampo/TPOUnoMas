@@ -1,7 +1,7 @@
-package model.observer;
+package services.notificacionService;
 
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 import java.util.List;
 
 public class NotificadorPush implements StrategyNotificacion {

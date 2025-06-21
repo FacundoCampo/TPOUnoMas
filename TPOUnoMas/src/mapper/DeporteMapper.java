@@ -1,6 +1,6 @@
 package mapper;
 
-import model.Deporte;
+import model.entity.Deporte;
 import model.dto.DeporteDTO;
 
 public class DeporteMapper {

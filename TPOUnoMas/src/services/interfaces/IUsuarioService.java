@@ -1,6 +1,6 @@
 package services.interfaces;
 
-import model.Usuario;
+import model.entity.Usuario;
 import model.dto.UsuarioDTO;
 import model.dto.DeporteUsuarioDTO;
 

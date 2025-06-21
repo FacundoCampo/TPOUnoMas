@@ -1,30 +1,32 @@
 package model.estadosDelPartido;
 
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 
 public class Finalizado implements IEstadoPartido {
-    
+
     @Override
     public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        return false; // No se pueden agregar jugadores a un partido finalizado
+        System.out.println("[Finalizado] No se pueden agregar jugadores");
+        return false;
     }
-    
+
     @Override
     public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        return false; // No se pueden confirmar jugadores en un partido finalizado
+        System.out.println("[Finalizado] No se pueden confirmar jugadores");
+        return false;
     }
-    
+
     @Override
     public void manejarCancelacion(Partido contexto) {
-        System.out.println("No se puede cancelar un partido que ya ha finalizado");
+        System.out.println("[Finalizado] No se puede cancelar un partido finalizado");
     }
-    
+
     @Override
     public void verificarTransicion(Partido contexto) {
-        System.out.println("Partido finalizado - no hay transiciones de estado disponibles");
+        System.out.println("[Finalizado] Sin transiciones posibles");
     }
-    
+
     @Override
     public String getNombre() { return "Finalizado"; }
 }

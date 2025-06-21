@@ -1,8 +1,8 @@
 package model.staticdb;
 
-import model.Deporte;
-import model.Partido;
-import model.Usuario;
+import model.entity.Deporte;
+import model.entity.Partido;
+import model.entity.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

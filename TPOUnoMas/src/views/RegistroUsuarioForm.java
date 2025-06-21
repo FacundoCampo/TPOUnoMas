@@ -25,17 +25,12 @@ public class RegistroUsuarioForm extends JPanel {
     private JButton btnRegistrar;
     private JButton btnVolver;
     private JLabel lblMensaje;
-    private Runnable onVolver;
-    private UsuarioDTO usuarioExistente;
 
     public RegistroUsuarioForm(Runnable onVolver) {
         this(onVolver, null);
     }
 
     public RegistroUsuarioForm(Runnable onVolver, UsuarioDTO usuarioExistente) {
-        this.onVolver = onVolver;
-        this.usuarioExistente = usuarioExistente;
-
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(40, 100, 40, 100));

@@ -1,8 +1,8 @@
 package services;
 
 import mapper.PartidoMapper;
-import model.Partido;
-import model.Usuario;
+import model.entity.Partido;
+import model.entity.Usuario;
 import model.dto.PartidoDTO;
 import model.estadosDelPartido.IEstadoPartido;
 import repository.PartidoRepository;
