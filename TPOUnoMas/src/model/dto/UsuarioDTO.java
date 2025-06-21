@@ -1,16 +1,9 @@
 package model.dto;
 
-import enums.NivelJuego;
-import model.DeporteUsuario;
-import model.Partido;
-
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
 
 public class UsuarioDTO {
-    private String id;
     private String nombre;
     private String email;
     private String contrasena;
@@ -24,9 +17,6 @@ public class UsuarioDTO {
         this.ubicacion = ubicacion;
         this.preferenciasDeportivas = new ArrayList<>();
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
 
     public String getNombre() { return nombre; }
     public String getEmail() { return email; }

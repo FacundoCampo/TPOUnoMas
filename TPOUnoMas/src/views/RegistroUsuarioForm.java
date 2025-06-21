@@ -10,6 +10,7 @@ import model.dto.UsuarioDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,7 +213,12 @@ public class RegistroUsuarioForm extends JPanel {
                 }
             }
 
-            uc.actualizarPreferencias(usuario.getId(), (List<DeporteUsuarioDTO>) preferencias);
+            List<DeporteUsuarioDTO> listaPreferencias = new ArrayList<>();
+            for (Map.Entry<DeporteDTO, NivelJuego> entry : preferencias.entrySet()) {
+                listaPreferencias.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue()));
+            }
+
+            uc.actualizarPreferencias(usuario.getEmail(), listaPreferencias);
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
             ex.printStackTrace();

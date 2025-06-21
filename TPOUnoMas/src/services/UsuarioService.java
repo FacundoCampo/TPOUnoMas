@@ -26,21 +26,14 @@ public class UsuarioService implements IUsuarioService {
         this.deporteRepository = new DeporteRepository();
     }
 
-    public UsuarioDTO registrarUsuario(UsuarioDTO dto) {
+    public UsuarioDTO registrarUsuario(UsuarioDTO dto) throws Exception {
         if (dto == null) {
             throw new IllegalArgumentException("El usuario no puede ser null");
         }
 
-        Usuario existente = usuarioRepository.buscarPorEmail(dto.getEmail());
-        if (existente != null) {
-            throw new IllegalArgumentException("Ya existe un usuario registrado con ese email.");
-        }
+        if(ExisteUsuario(dto)) throw new Exception("Ya existe usuario con ese email");
 
         Usuario usuario = UsuarioMapper.fromDto(dto);
-
-        if (usuario.getId() == null || usuario.getId().trim().isEmpty()) {
-            usuario.setId("USR_" + System.currentTimeMillis());
-        }
 
         usuarioRepository.guardar(usuario);
         return UsuarioMapper.toDTO(usuario);
@@ -52,12 +45,12 @@ public class UsuarioService implements IUsuarioService {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");
         }
 
-        Usuario usuario = usuarioRepository.buscarPorId(id);
+        Usuario usuario = usuarioRepository.buscarPorEmail(id);
         return usuario != null ? UsuarioMapper.toDTO(usuario) : null;
     }
 
     public boolean actualizarPerfil(UsuarioDTO dto) {
-        if (dto == null || dto.getId() == null) {
+        if (dto == null || dto.getEmail() == null) {
             throw new IllegalArgumentException("UsuarioDTO inválido para actualizar");
         }
 
@@ -66,7 +59,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     public void actualizarPreferencias(String usuarioId, List<DeporteUsuarioDTO> preferenciasDTO) {
-        Usuario usuario = usuarioRepository.buscarPorId(usuarioId);
+        Usuario usuario = usuarioRepository.buscarPorEmail(usuarioId);
         if (usuario == null) {
             throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
         }
@@ -97,6 +90,11 @@ public class UsuarioService implements IUsuarioService {
         }
 
         return UsuarioMapper.toDTO(usuario);
+    }
+
+    private boolean ExisteUsuario(UsuarioDTO dto) {
+        Usuario existente = usuarioRepository.buscarPorEmail(dto.getEmail());
+        return existente != null;
     }
 
 }

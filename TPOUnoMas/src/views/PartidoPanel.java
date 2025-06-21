@@ -59,7 +59,6 @@ public class PartidoPanel {
             }
         });
 
-        // Panel principal
         panelPrincipal = new JPanel();
         panelPrincipal.setBackground(new Color(25, 25, 25));
         panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
@@ -87,6 +86,7 @@ public class PartidoPanel {
         tabbedPane.add("Crear", crearPartidoTab);
         tabbedPane.add("Listado", listadoTab);
         tabbedPane.add("Historial", crearPanelPlaceholder());
+        setAnchoFijoTabs(tabbedPane, 120);
 
         asociarEventos();
 
@@ -115,6 +115,22 @@ public class PartidoPanel {
         placeholder.add(label);
         return placeholder;
     }
+
+    private void setAnchoFijoTabs(JTabbedPane tabbedPane, int anchoDeseado) {
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            tabbedPane.setTabComponentAt(i, crearEtiquetaTab(tabbedPane.getTitleAt(i), anchoDeseado));
+        }
+    }
+
+    private JLabel crearEtiquetaTab(String titulo, int ancho) {
+        JLabel label = new JLabel(titulo, SwingConstants.CENTER);
+        label.setPreferredSize(new Dimension(ancho, 40)); // Alto tab
+        label.setMaximumSize(new Dimension(ancho, 40));
+        label.setFont(new Font("Tahoma", Font.BOLD, 14));
+        label.setForeground(Color.WHITE);
+        return label;
+    }
+
 
     private void asociarEventos() {
         PartidoController controller = PartidoController.getInstance();

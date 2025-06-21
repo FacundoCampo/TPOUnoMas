@@ -29,7 +29,7 @@ public class DataLoader {
         List<DeporteDTO> originales = DeporteController.getInstance().obtenerTodos();
 
         for (int i = 0; i < originales.size(); i++) {
-            deportes.add(originales.get(i)); // ya son DTOs
+            deportes.add(originales.get(i));
         }
 
         Random rand = new Random();
@@ -69,6 +69,8 @@ public class DataLoader {
                 usuario.setPreferenciasDeportivas(preferenciasDTO);
             } catch (IllegalArgumentException e) {
                 System.out.println("Usuario duplicado: " + email);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -87,17 +89,6 @@ public class DataLoader {
         partidos.add(new PartidoDTO(deporteFutbol, 120, "Recoleta", obtenerFecha(1)));
         partidos.add(new PartidoDTO(deporteFutbol, 90, "Villa Urquiza", obtenerFecha(2)));
         partidos.add(new PartidoDTO(deporteFutbol, 60, "Belgrano", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(deporteTenis, 45, "Flores", obtenerFecha(2)));
-        partidos.add(new PartidoDTO(deporteTenis, 90, "Almagro", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 75, "Barracas", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Boedo", obtenerFecha(3)));
-        partidos.add(new PartidoDTO(deporteFutbol, 60, "Chacarita", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteTenis, 120, "San Telmo", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteTenis, 80, "Parque Chas", obtenerFecha(4)));
-        partidos.add(new PartidoDTO(deporteFutbol, 90, "Constitución", obtenerFecha(5)));
-        partidos.add(new PartidoDTO(deporteTenis, 60, "Parque Patricios", obtenerFecha(5)));
-        partidos.add(new PartidoDTO(deporteFutbol, 100, "Villa Crespo", obtenerFecha(5)));
-
 
         for (PartidoDTO dto : partidos) {
             controller.crearPartido(dto);

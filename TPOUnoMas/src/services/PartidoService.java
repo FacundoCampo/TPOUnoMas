@@ -62,7 +62,7 @@ public class PartidoService implements IPartidoService {
 
     public boolean sumarseAlPartido(String partidoid, String usuarioid) {
         Partido partido = repository.buscarPorId(partidoid);
-        Usuario usuario = usuarioRepository.buscarPorId(usuarioid);
+        Usuario usuario = usuarioRepository.buscarPorEmail(usuarioid);
         return partido.getEstado().manejarNuevoJugador(partido, usuario);
     }
 }

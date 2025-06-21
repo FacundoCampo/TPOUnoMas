@@ -1,4 +1,4 @@
-# Gestor de Partidos Deportivos - Java Swing MVC
+# TPO UnoMas
 
 Este proyecto implementa una aplicación de escritorio en Java usando Swing que permite gestionar la creación y administración de partidos deportivos entre usuarios, aplicando distintas estrategias de emparejamiento. Se sigue el patrón de diseño **MVC** (Modelo-Vista-Controlador) y se simula la persistencia de datos en archivos `.txt`.
 

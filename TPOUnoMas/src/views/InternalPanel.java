@@ -2,31 +2,27 @@ package views;
 
 import javax.swing.*;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Objects;
 
 public class InternalPanel extends JTabbedPane {
 
     public InternalPanel(String id) {
-        super(JTabbedPane.LEFT); 
+        super(JTabbedPane.LEFT);
         setBorder(null);
         setBounds(100, 100, 770, 620);
 
         setBackground(new Color(20, 20, 20));
         setForeground(Color.WHITE);
+        setFont(new Font("Arial", Font.BOLD, 18)); // Fuente consistente
 
         UIManager.put("TabbedPane.contentOpaque", false);
-
 
         PartidoPanel pnlPartido = new PartidoPanel();
         PreferenciasDeportivasPanel pnlPref = new PreferenciasDeportivasPanel(id);
 
         this.addTab("Partido", pnlPartido.setTab(id));
-        this.addTab("Prefrenrecias", pnlPref);
+        this.addTab("Preferencias", pnlPref);
 
         setUI(new javax.swing.plaf.basic.BasicTabbedPaneUI() {
             @Override
@@ -39,21 +35,54 @@ public class InternalPanel extends JTabbedPane {
             @Override
             protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex,
                                           int x, int y, int w, int h, boolean isSelected) {
-                // No borders
+                // Sin bordes
             }
 
             @Override
             protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
-                // No borders
+                // Sin bordes
             }
 
             @Override
             protected void paintText(Graphics g, int tabPlacement, Font font,
                                      FontMetrics metrics, int tabIndex,
                                      String title, Rectangle textRect, boolean isSelected) {
-                g.setFont(font);
+                g.setFont(new Font("Arial", Font.BOLD, 18)); // Fuente unificada
                 g.setColor(Color.WHITE);
                 g.drawString(title, textRect.x, textRect.y + metrics.getAscent());
+            }
+        });
+
+        setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        setPreferredSize(new Dimension(770, 620));
+
+        int tabWidth = 130;
+        int tabHeight = 50;
+        setUI(new javax.swing.plaf.basic.BasicTabbedPaneUI() {
+            @Override
+            protected int calculateTabHeight(int tabPlacement, int tabIndex, int fontHeight) {
+                return tabHeight;
+            }
+
+            @Override
+            protected int calculateTabWidth(int tabPlacement, int tabIndex, FontMetrics metrics) {
+                return tabWidth;
+            }
+
+            @Override
+            protected void paintText(Graphics g, int tabPlacement, Font font,
+                                     FontMetrics metrics, int tabIndex,
+                                     String title, Rectangle textRect, boolean isSelected) {
+                g.setFont(new Font("Arial", Font.BOLD, 18));
+                g.setColor(Color.WHITE);
+                g.drawString(title, textRect.x, textRect.y + metrics.getAscent());
+            }
+
+            @Override
+            protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex,
+                                              int x, int y, int w, int h, boolean isSelected) {
+                g.setColor(isSelected ? new Color(40, 40, 40) : new Color(25, 25, 25));
+                g.fillRect(x, y, w, h);
             }
         });
     }

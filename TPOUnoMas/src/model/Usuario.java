@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Usuario {
-    private String id;
     private String nombre;
-    private String email;
+    private String email; //es unico y se utiliza como ID
     private String contraseña;
     private String ubicacion;
     private List<DeporteUsuario> deportesUsuario;
@@ -30,13 +29,9 @@ public class Usuario {
     
     public Usuario(String id, String nombre, String email, String contraseña, String ubicacion) {
         this(nombre, email, contraseña, ubicacion);
-        this.id = id;
     }
     
     // Getters y Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre.trim(); }
     
@@ -94,6 +89,6 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{id='" + id + "', nombre='" + nombre + "', email='" + email + "'}";
+        return "Usuario{nombre='" + nombre + "', email='" + email + "'}";
     }
 }

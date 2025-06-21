@@ -23,7 +23,7 @@ public class UsuarioController {
         return instance;
     }
 
-    public boolean registrar(UsuarioDTO usuario) {
+    public boolean registrar(UsuarioDTO usuario) throws Exception {
         UsuarioDTO u = usuarioService.registrarUsuario(usuario);
         return u != null;
     }

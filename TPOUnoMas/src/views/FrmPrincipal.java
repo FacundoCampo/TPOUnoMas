@@ -35,7 +35,7 @@ public class FrmPrincipal extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
-        setBounds(100, 100, 770, 620);
+        setBounds(100, 100, 970, 620);
         pnlPrincipal = new JPanel();
         pnlPrincipal.setBackground(new Color(0, 0, 0));
         setContentPane(pnlPrincipal);
@@ -58,51 +58,52 @@ public class FrmPrincipal extends JFrame {
         panel.setBackground(new Color(0, 0, 0));
 
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/pic2.jpg"));
-        Image scaledImage = icon.getImage().getScaledInstance(770, 620, Image.SCALE_SMOOTH);
+        Image scaledImage = icon.getImage().getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
+
         JLabel background = new JLabel(new ImageIcon(scaledImage));
-        background.setBounds(0, 0, 770, 620);
+        background.setBounds(0, 0, 970, 620);
         panel.add(background);
 
         lblTitle = new JLabel(titulo, SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 48));
         lblTitle.setForeground(Color.WHITE);
-        lblTitle.setBounds(185, 60, 400, 60);
+        lblTitle.setBounds(250, 60, 400, 60);
         panel.add(lblTitle);
 
         lblSelect = new JLabel("EMAIL", SwingConstants.CENTER);
         lblSelect.setForeground(Color.WHITE);
         lblSelect.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblSelect.setBounds(240, 140, 295, 25);
+        lblSelect.setBounds(310, 140, 295, 25);
         panel.add(lblSelect);
 
         tUsuario = new JTextField();
         tUsuario.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        tUsuario.setBounds(240, 170, 295, 35);
+        tUsuario.setBounds(310, 170, 295, 35);
         panel.add(tUsuario);
 
         JLabel lblPassword = new JLabel("CONTRASEÑA", SwingConstants.CENTER);
         lblPassword.setForeground(Color.WHITE);
         lblPassword.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblPassword.setBounds(240, 215, 295, 25);
+        lblPassword.setBounds(310, 215, 295, 25);
         panel.add(lblPassword);
 
         tPassword = new JTextField();
         tPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        tPassword.setBounds(240, 245, 295, 35);
+        tPassword.setBounds(310, 245, 295, 35);
         panel.add(tPassword);
 
         btnIngresar = new Button("INGRESAR");
         btnIngresar.setFont(new Font("Tahoma", Font.BOLD, 18));
         btnIngresar.setForeground(Color.WHITE);
         btnIngresar.setBackground(new Color(46, 204, 113));
-        btnIngresar.setBounds(290, 305, 200, 45);
+        btnIngresar.setBounds(360, 305, 200, 45);
         panel.add(btnIngresar);
 
         btnRegistrarse = new Button("REGISTRARSE");
         btnRegistrarse.setFont(new Font("Tahoma", Font.BOLD, 14));
         btnRegistrarse.setForeground(Color.WHITE);
         btnRegistrarse.setBackground(new Color(52, 152, 219));
-        btnRegistrarse.setBounds(290, 365, 200, 40);
+        btnRegistrarse.setBounds(360, 365, 200, 40);
         btnRegistrarse.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         panel.add(btnRegistrarse);
 

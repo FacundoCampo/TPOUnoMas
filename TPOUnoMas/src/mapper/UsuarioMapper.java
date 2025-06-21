@@ -24,8 +24,6 @@ public class UsuarioMapper {
                 usuario.getUbicacion()
         );
 
-        dto.setId(usuario.getId());
-
         List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
         List<DeporteUsuario> deportesUsuario = usuario.getDeportesUsuario();
 
@@ -54,8 +52,6 @@ public class UsuarioMapper {
                 dto.getContrasena(),
                 dto.getUbicacion()
         );
-
-        usuario.setId(dto.getId());
 
         List<DeporteUsuario> preferencias = dto.getPreferenciasDeportivas().stream()
                 .map(dudto -> new DeporteUsuario(
