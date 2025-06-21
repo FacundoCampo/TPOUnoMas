@@ -13,6 +13,7 @@ public class PartidoPanel {
     private JButton btnAgregar;
     private JButton btnEliminar;
     private JButton btnVerListados;
+    private JButton btnVerHistorial;
     private JPanel panelPrincipal;
     private JPanel crearPartidoTab;
     private JPanel misPartidosTab;
@@ -66,8 +67,9 @@ public class PartidoPanel {
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(60, 200, 60, 200));
 
         btnAgregar = crearBoton("Agregar partido", new Color(46, 204, 113));
-        btnEliminar = crearBoton("Cancelar partido", new Color(44, 62, 80));
+        btnEliminar = crearBoton("Partidos creados", new Color(44, 62, 80));
         btnVerListados = crearBoton("Ver listados de partidos", new Color(44, 62, 80));
+        btnVerHistorial = crearBoton("Ver historial", new Color(44, 62, 80));
 
         panelPrincipal.add(Box.createVerticalGlue());
         panelPrincipal.add(btnAgregar);
@@ -75,6 +77,8 @@ public class PartidoPanel {
         panelPrincipal.add(btnEliminar);
         panelPrincipal.add(Box.createVerticalStrut(25));
         panelPrincipal.add(btnVerListados);
+        panelPrincipal.add(Box.createVerticalStrut(25));
+        panelPrincipal.add(btnVerHistorial);
         panelPrincipal.add(Box.createVerticalGlue());
 
         crearPartidoTab = new PartidoForm(tabbedPane, panelPrincipal, usuarioid);
@@ -151,6 +155,12 @@ public class PartidoPanel {
         btnVerListados.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tabbedPane.setSelectedComponent(listadoTab);
+            }
+        });
+
+        btnVerHistorial.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane.setSelectedComponent(historialTab);
             }
         });
     }

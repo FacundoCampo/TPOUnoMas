@@ -45,7 +45,7 @@ public class Cancelado implements IEstadoPartido {
 
     @Override
     public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
-        return false; // no se permite cambiar a otro estado desde aquí
+        return false;
     }
 
     @Override

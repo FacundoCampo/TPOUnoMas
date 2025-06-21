@@ -100,4 +100,9 @@ public class NecesitamosJugadores implements IEstadoPartido {
         }
     }
 
+    @Override
+    public boolean permiteCambioDeEstrategia() {
+        return true;
+    }
+
 }

@@ -33,7 +33,8 @@ public class DataLoader {
             String nombre = "Usuario" + i;
             String email = "usuario" + i + "@mail.com";
             String contrasena = "clave" + i;
-            String ubicacion = "Ciudad" + ((i % 5) + 1);
+            String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Almagro"};
+            String ubicacion = ubicaciones[i % ubicaciones.length];
 
             UsuarioDTO usuario = new UsuarioDTO(nombre, email, contrasena, ubicacion);
             Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
@@ -80,7 +81,7 @@ public class DataLoader {
         DeporteDTO basquet = deporteController.buscarPorNombre("Básquet");
 
         TipoEmparejamiento[] estrategias = TipoEmparejamiento.values();
-        String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Chacarita"};
+        String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Almagro"};
 
         int partidoIndex = 0;
         for (UsuarioDTO organizador : usuarios) {
@@ -222,6 +223,25 @@ public class DataLoader {
             } else if (i == 2) {
                 partidoController.cambiarEstado(partidoId, new Finalizado());
             }
+        }
+    }
+
+    public static void asignarTenisAUsuario8() {
+        UsuarioController usuarioController = UsuarioController.getInstance();
+        DeporteController deporteController = DeporteController.getInstance();
+
+        List<DeporteUsuarioDTO> preferencias = usuarioController.obtenerPreferencias("usuario8@mail.com");
+
+        DeporteDTO f = deporteController.buscarPorNombre("Fútbol");
+
+        boolean yaTieneTenis = preferencias.stream()
+                .anyMatch(p -> p.getDeporte().getNombre().equalsIgnoreCase("Fútbol"));
+
+        if (!yaTieneTenis) {
+            preferencias.add(new DeporteUsuarioDTO(f, NivelJuego.INTERMEDIO, false));
+            usuarioController.actualizarPreferencias("usuario8@mail.com", preferencias);
+        } else {
+            System.out.println("usuario8@mail.com ya tenía Tenis en sus preferencias.");
         }
     }
 

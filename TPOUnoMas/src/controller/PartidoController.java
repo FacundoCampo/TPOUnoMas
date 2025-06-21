@@ -1,6 +1,8 @@
 package controller;
 
+import enums.TipoEmparejamiento;
 import model.dto.PartidoDTO;
+import model.dto.UsuarioDTO;
 import model.estadosDelPartido.IEstadoPartido;
 import services.PartidoService;
 import services.interfaces.IPartidoService;
@@ -48,6 +50,13 @@ public class PartidoController {
 
     public boolean sumarseAlPartido(String partidoid, String usuarioid) {
         return partidoService.sumarseAlPartido(partidoid, usuarioid);
+    }
+
+    public List<UsuarioDTO> emparejar(String partidoId) {
+        return partidoService.emparejar(partidoId);
+    }
+    public boolean cambiarTipoEmparejamiento(String id, TipoEmparejamiento nuevoTipo) {
+        return partidoService.cambiarTipoEmparejamiento(id, nuevoTipo);
     }
 
 }

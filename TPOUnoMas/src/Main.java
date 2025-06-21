@@ -11,6 +11,7 @@ public class Main {
             DataLoader.cargarUsuarios();
             DataLoader.cargarPartidos();
             DataLoader.cargarPartidosParaUsuario1();
+            DataLoader.asignarTenisAUsuario8();
 
             frame = new FrmPrincipal(titulo);
             frame.setLocationRelativeTo(null);

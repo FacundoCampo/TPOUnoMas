@@ -1,6 +1,9 @@
 package services;
 
+import enums.TipoEmparejamiento;
 import mapper.PartidoMapper;
+import mapper.UsuarioMapper;
+import model.dto.UsuarioDTO;
 import model.entity.Partido;
 import model.entity.Usuario;
 import model.dto.PartidoDTO;
@@ -10,6 +13,8 @@ import repository.UsuarioRepository;
 import repository.interfaces.IPartidoRepository;
 import repository.interfaces.IUsuarioRepository;
 import services.interfaces.IPartidoService;
+import strategy.EmparejamientoContext;
+import strategy.EmparejamientoStrategyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,4 +93,31 @@ public class PartidoService implements IPartidoService {
 
         return resultado;
     }
+
+    public List<UsuarioDTO> emparejar(String partidoId) {
+        List<UsuarioDTO> lista = new ArrayList<>();
+        Partido partido = buscarPorID(partidoId);
+        if (partido != null) {
+            EmparejamientoContext ctx = new EmparejamientoContext(EmparejamientoStrategyFactory.crear(partido.getTipoEmparejamiento()));
+            List<Usuario> todos = usuarioRepository.obtenerTodos();
+            List<Usuario> u = ctx.emparejarJugadores(partido, todos);
+
+            for (Usuario usuario : u) {
+                UsuarioDTO dto = UsuarioMapper.toDTO(usuario);
+                lista.add(dto);
+            }
+        }
+
+        return lista;
+    }
+
+    public boolean cambiarTipoEmparejamiento(String id, TipoEmparejamiento nuevoTipo) {
+        Partido partido = buscarPorID(id);
+        if (partido != null && partido.getEstado().permiteCambioDeEstrategia()) {
+            partido.setTipoEmparejamiento(nuevoTipo);
+            return true;
+        }
+        return false;
+    }
+
 }

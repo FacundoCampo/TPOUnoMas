@@ -2,6 +2,8 @@ package strategy;
 
 import model.entity.Partido;
 import model.entity.Usuario;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +23,20 @@ public class EmparejamientoPorHistorial implements IEstrategiaEmparejamiento {
         if (partido == null || candidatos == null) {
             throw new IllegalArgumentException("Parámetros no pueden ser null");
         }
-        
-        return candidatos.stream()
-            .filter(candidato -> esJugadorApto(partido, candidato))
-            .sorted((u1, u2) -> Integer.compare(u2.getCantidadPartidosJugados(), u1.getCantidadPartidosJugados()))
-            .collect(Collectors.toList());
+
+        List<Usuario> aptos = new ArrayList<>();
+
+        for (Usuario candidato : candidatos) {
+            if (esJugadorApto(partido, candidato)) {
+                aptos.add(candidato);
+            }
+        }
+
+        aptos.sort((u1, u2) -> Integer.compare(u2.getCantidadPartidosJugados(), u1.getCantidadPartidosJugados()));
+
+        return aptos;
     }
+
     
     @Override
     public boolean esJugadorApto(Partido partido, Usuario jugador) {

@@ -16,5 +16,8 @@ public interface IEstadoPartido {
     default boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
         return true;
     }
+    default boolean permiteCambioDeEstrategia() {
+        return false;
+    }
 	
 }
