@@ -1,5 +1,6 @@
 import controller.DeporteController;
 import controller.PartidoController;
+import enums.TipoEmparejamiento;
 import model.dto.DeporteDTO;
 import model.dto.PartidoDTO;
 
@@ -75,7 +76,7 @@ public class MainConsola {
         if (fechaStr.equals("0")) return;
         Date fecha = parsearAFecha(fechaStr);
 
-        PartidoDTO partido = new PartidoDTO(deporte, duracion, ubicacion, fecha, "");
+        PartidoDTO partido = new PartidoDTO(deporte, duracion, ubicacion, fecha, "", TipoEmparejamiento.NIVEL);
         partidoController.crearPartido(partido);
         System.out.println("Partido creado correctamente.");
     }

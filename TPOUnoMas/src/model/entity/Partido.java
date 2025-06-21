@@ -1,5 +1,6 @@
 package model.entity;
 
+import enums.TipoEmparejamiento;
 import model.estadosDelPartido.IEstadoPartido;
 import model.estadosDelPartido.NecesitamosJugadores;
 import strategy.IEstrategiaEmparejamiento;
@@ -17,10 +18,10 @@ public class Partido {
     private List<Usuario> jugadoresInscritos;
     private IEstadoPartido estado;
     private List<Notificacion> notificaciones;
-    private IEstrategiaEmparejamiento estrategia;
+    private TipoEmparejamiento tipoEmparejamiento;
     private String organizadorID;
 
-    public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora, String organizadorID) {
+    public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora, String organizadorID, TipoEmparejamiento tipoEmparejamiento) {
         this.deporte = deporte;
         this.duracion = duracion;
         this.ubicacion = ubicacion;
@@ -29,6 +30,7 @@ public class Partido {
         this.jugadoresInscritos = new ArrayList<>();
         this.notificaciones = new ArrayList<>();
         this.organizadorID = organizadorID;
+        setTipoEmparejamiento(tipoEmparejamiento);
     }
 
     // Getters y Setters
@@ -51,6 +53,14 @@ public class Partido {
     public List<Usuario> getJugadoresInscritos() { return new ArrayList<>(jugadoresInscritos); }
     public void setJugadoresInscritos(List<Usuario> jugadoresInscritos) {
         this.jugadoresInscritos = jugadoresInscritos != null ? new ArrayList<>(jugadoresInscritos) : new ArrayList<>();
+    }
+
+    public TipoEmparejamiento getTipoEmparejamiento() {
+        return tipoEmparejamiento;
+    }
+
+    public void setTipoEmparejamiento(TipoEmparejamiento tipoEmparejamiento) {
+        this.tipoEmparejamiento = tipoEmparejamiento;
     }
 
     public IEstadoPartido getEstado() { return estado; }

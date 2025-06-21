@@ -1,64 +1,142 @@
+// Código de prueba completo con todos los patrones aplicados y al menos un jugador seleccionado
+
 package test;
 
-import model.entity.Deporte;
-import model.entity.Partido;
-import model.entity.Usuario;
-import model.estadosDelPartido.EnJuego;
-import model.estadosDelPartido.Finalizado;
+import enums.NivelJuego;
+import enums.TipoEmparejamiento;
+import model.entity.*;
+import model.estadosDelPartido.*;
 import services.notificacionService.EmailServiceAdapter;
 import services.notificacionService.NotificadorEmail;
 import services.notificacionService.NotificadorPush;
 import services.notificacionService.interfaces.IStrategyNotificacion;
+import strategy.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class UnitTesting {
+
 	public static void main(String[] args) {
-
+		testStatePattern();
+		testEmailStrategy();
+		testPushStrategy();
+		testObserverPattern();
+		testEmparejamientoStrategy();
 		System.out.println("============================");
-		System.out.println("TESTING PATRÓN STATE");
+		System.out.println("TEST COMPLETO FINALIZADO");
+	}
 
-		String organizadorId = "organizador-001";
-		Partido partido = new Partido(new Deporte(null, "Fútbol", 2), 90, "Palermo", new Date(), organizadorId);
-		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "CABA");
-		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "CABA");
+	private static Partido prepararPartidoYJugadores() {
+		Deporte futbol = new Deporte(null, "Fútbol", 2);
+		Partido partido = new Partido(futbol, 90, "Palermo", new Date(), "org-001", TipoEmparejamiento.NIVEL);
+
+		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "Palermo");
+		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "Belgrano");
+
+		List<DeporteUsuario> preferencias1 = new ArrayList<>();
+		preferencias1.add(new DeporteUsuario(futbol, NivelJuego.INTERMEDIO, true));
+		u1.setDeportesUsuario(preferencias1);
+
+		List<DeporteUsuario> preferencias2 = new ArrayList<>();
+		preferencias2.add(new DeporteUsuario(futbol, NivelJuego.AVANZADO, false));
+		u2.setDeportesUsuario(preferencias2);
 
 		partido.agregarJugadorDirecto(u1);
 		partido.agregarJugadorDirecto(u2);
 
-		partido.getEstado().manejarNuevoJugador(partido, u1);
-		partido.getEstado().manejarNuevoJugador(partido, u2);
-		partido.getEstado().verificarTransicion(partido);
+		return partido;
+	}
 
-		partido.getEstado().manejarConfirmacion(partido, u1);
+	public static void testStatePattern() {
+		System.out.println("============================");
+		System.out.println("TESTING PATRÓN STATE");
+
+		Partido partido = prepararPartidoYJugadores();
+
+		for (Usuario u : partido.getJugadoresInscritos()) {
+			partido.getEstado().manejarNuevoJugador(partido, u);
+		}
+
+		partido.getEstado().verificarTransicion(partido);
+		partido.getEstado().manejarConfirmacion(partido, partido.getJugadoresInscritos().get(0));
 		partido.getEstado().verificarTransicion(partido);
 
 		System.out.println("Estado final: " + partido.getEstado().getNombre());
+	}
 
+	public static void testEmailStrategy() {
 		System.out.println("============================");
 		System.out.println("TESTING PATRÓN STRATEGY + ADAPTER (EMAIL)");
 
+		Partido partido = prepararPartidoYJugadores();
 		IStrategyNotificacion emailNotificador = new NotificadorEmail(new EmailServiceAdapter());
-		List<Usuario> jugadores = new ArrayList<>();
-		jugadores.add(u1);
-		jugadores.add(u2);
 
-		emailNotificador.notificarNuevoPartido(partido, jugadores);
-		emailNotificador.notificarCambioEstado(partido, "Confirmado");
+		emailNotificador.notificarNuevoPartido(partido, partido.getJugadoresInscritos());
+		emailNotificador.notificarCambioEstado(partido, partido.getEstado().getNombre());
+	}
 
+	public static void testPushStrategy() {
 		System.out.println("============================");
 		System.out.println("TESTING PATRÓN STRATEGY (PUSH)");
 
-		IStrategyNotificacion pushNotificador = new NotificadorPush("123-API-KEY");
-		pushNotificador.notificarNuevoPartido(partido, jugadores);
-		pushNotificador.notificarCambioEstado(partido, "Confirmado");
+		Partido partido = prepararPartidoYJugadores();
+		IStrategyNotificacion pushNotificador = new NotificadorPush("APIKEY-123");
 
+		pushNotificador.notificarNuevoPartido(partido, partido.getJugadoresInscritos());
+		pushNotificador.notificarCambioEstado(partido, "En juego");
+	}
+
+	public static void testObserverPattern() {
 		System.out.println("============================");
 		System.out.println("TESTING PATRÓN OBSERVER");
 
+		Partido partido = prepararPartidoYJugadores();
 		partido.setEstado(new EnJuego());
 		partido.setEstado(new Finalizado());
 	}
+
+	public static void testEmparejamientoStrategy() {
+		System.out.println("============================");
+		System.out.println("TESTING ESTRATEGIA DE EMPAREJAMIENTO");
+
+		Deporte futbol = new Deporte(null, "Fútbol", 3); // Requiere 3 jugadores
+		Partido partido = new Partido(futbol, 90, "Palermo", new Date(), "org-001", TipoEmparejamiento.NIVEL);
+
+		// Candidatos con distintos niveles y ubicaciones
+		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "Palermo");
+		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "Belgrano");
+		Usuario u3 = new Usuario("Luis", "luis@mail.com", "789", "Avellaneda");
+		Usuario u4 = new Usuario("Mia", "mia@mail.com", "321", "CABA");
+		Usuario u5 = new Usuario("Leo", "leo@mail.com", "654", "Tigre");
+
+		u1.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.INTERMEDIO)));
+		u2.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.AVANZADO)));
+		u3.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.PRINCIPIANTE)));
+		u4.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.INTERMEDIO)));
+		u5.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.AVANZADO)));
+
+		List<Usuario> candidatos = List.of(u1, u2, u3, u4, u5);
+
+		EmparejamientoContext empContext = new EmparejamientoContext();
+
+		// Por nivel
+		empContext.setEstrategia(new EmparejamientoPorNivel(NivelJuego.INTERMEDIO, NivelJuego.AVANZADO));
+		ResultadoEmparejamiento r1 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println("Jugadores seleccionados (por nivel): " + r1.getJugadoresSeleccionados());
+
+		// Por cercanía
+		empContext.setEstrategia(new EmparejamientoPorCercania(15)); // 15km de Palermo
+		ResultadoEmparejamiento r2 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println("Jugadores seleccionados (por cercanía): " + r2.getJugadoresSeleccionados());
+
+		// Por historial
+		empContext.setEstrategia(new EmparejamientoPorHistorial(1));
+		ResultadoEmparejamiento r3 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println("Jugadores seleccionados (por historial): " + r3.getJugadoresSeleccionados());
+
+		System.out.println("============================");
+		System.out.println("TEST COMPLETO FINALIZADO");
+	}
+
+
 }

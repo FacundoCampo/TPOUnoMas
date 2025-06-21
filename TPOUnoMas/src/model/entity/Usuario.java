@@ -65,10 +65,12 @@ public class Usuario implements IObserver {
     }
 
     public NivelJuego getNivelJuegoParaDeporte(Deporte deporte) {
-        if (deporte == null) return null;
-        
+        if (deporte == null || deporte.getNombre() == null) return null;
+
         for (DeporteUsuario deporteUsuario : deportesUsuario) {
-            if (deporteUsuario.getDeporte().equals(deporte)) {
+            Deporte d = deporteUsuario.getDeporte();
+            if (d != null && d.getNombre() != null &&
+                    d.getNombre().equalsIgnoreCase(deporte.getNombre())) {
                 return deporteUsuario.getNivelJuego();
             }
         }

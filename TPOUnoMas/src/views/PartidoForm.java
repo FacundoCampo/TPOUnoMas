@@ -5,8 +5,6 @@ import controller.PartidoController;
 import enums.TipoEmparejamiento;
 import model.dto.DeporteDTO;
 import model.dto.PartidoDTO;
-import strategy.EmparejamientoStrategyFactory;
-import strategy.IEstrategiaEmparejamiento;
 
 import javax.swing.*;
 import java.awt.*;
@@ -132,9 +130,8 @@ public class PartidoForm extends JPanel {
                 return;
             }
 
-            PartidoDTO dto = new PartidoDTO(deporte, duracion, ubicacion, fecha, this.usuarioID);
-            IEstrategiaEmparejamiento estrategia = EmparejamientoStrategyFactory.crear(tipo);
-            String partidoID = PartidoController.getInstance().crearPartido(dto, estrategia);
+            PartidoDTO dto = new PartidoDTO(deporte, duracion, ubicacion, fecha, this.usuarioID, tipo);
+            String partidoID = PartidoController.getInstance().crearPartido(dto);
             PartidoController.getInstance().sumarseAlPartido(partidoID, this.usuarioID);
 
             lblMensaje.setText("\u2713 Partido creado correctamente.");

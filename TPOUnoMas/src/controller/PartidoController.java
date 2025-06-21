@@ -34,13 +34,6 @@ public class PartidoController {
         return partidoService.crearPartido(dto);
     }
 
-    public String crearPartido(PartidoDTO dto, IEstrategiaEmparejamiento estrategia) {
-        if (dto == null || !dto.esValido()) {
-            throw new IllegalArgumentException("El partido no es válido");
-        }
-        return partidoService.crearPartido(dto);
-    }
-
     public List<PartidoDTO> obtenerTodos() {
         return partidoService.obtenerTodos();
     }

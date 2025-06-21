@@ -4,6 +4,7 @@ import controller.DeporteController;
 import controller.PartidoController;
 import controller.UsuarioController;
 import enums.NivelJuego;
+import enums.TipoEmparejamiento;
 import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
 import model.dto.PartidoDTO;
@@ -81,7 +82,6 @@ public class DataLoader {
         DeporteDTO futbol = deporteController.buscarPorNombre("Fútbol");
         DeporteDTO tenis = deporteController.buscarPorNombre("Tenis");
 
-        List<PartidoDTO> partidos = new ArrayList<>();
         Random rand = new Random();
 
         for (int i = 0; i < 5; i++) {
@@ -96,7 +96,7 @@ public class DataLoader {
             Date fecha = obtenerFecha(i < 3 ? 1 : 2);
             String organizadorEmail = usuarios.get(rand.nextInt(usuarios.size())).getEmail();
 
-            PartidoDTO dto = new PartidoDTO(deporte, 90, ubicacion, fecha, organizadorEmail);
+            PartidoDTO dto = new PartidoDTO(deporte, 90, ubicacion, fecha, organizadorEmail, TipoEmparejamiento.NIVEL);
             String partidoId = controller.crearPartido(dto);
 
             try {
@@ -109,7 +109,6 @@ public class DataLoader {
         asignarJugadoresAPartidos();
         cambiarEstados();
     }
-
 
     private static void asignarJugadoresAPartidos() {
         List<UsuarioDTO> usuarios = UsuarioController.getInstance().obtenerTodos();
@@ -144,7 +143,6 @@ public class DataLoader {
         }
     }
 
-
     private static void cambiarEstados() {
         List<PartidoDTO> creados = PartidoController.getInstance().obtenerTodos();
 
@@ -153,22 +151,15 @@ public class DataLoader {
             int inscritos = partido.getJugadoresInscritos().size();
             int necesarios = partido.getDeporte().getCantidadJugadoresEstandar();
 
-            if (i % 4 == 0) {
-                if (inscritos >= necesarios) {
-                    PartidoController.getInstance().cambiarEstado(partido.getId(), new EnJuego());
-                }
-            } else if (i % 4 == 1) {
-                if (inscritos >= necesarios) {
-                    PartidoController.getInstance().cambiarEstado(partido.getId(), new Confirmado());
-                }
-            } else if (i % 4 == 2) {
-                if (inscritos >= necesarios) {
-                    PartidoController.getInstance().cambiarEstado(partido.getId(), new Finalizado());
-                }
+            if (i % 4 == 0 && inscritos >= necesarios) {
+                PartidoController.getInstance().cambiarEstado(partido.getId(), new EnJuego());
+            } else if (i % 4 == 1 && inscritos >= necesarios) {
+                PartidoController.getInstance().cambiarEstado(partido.getId(), new Confirmado());
+            } else if (i % 4 == 2 && inscritos >= necesarios) {
+                PartidoController.getInstance().cambiarEstado(partido.getId(), new Finalizado());
             }
         }
     }
-
 
     private static Date obtenerFecha(int diasFuturos) {
         Calendar cal = Calendar.getInstance();

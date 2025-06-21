@@ -22,7 +22,8 @@ public class PartidoMapper {
                 partido.getDuracion(),
                 partido.getUbicacion(),
                 partido.getFechaHora(),
-                partido.getOrganizadorID()
+                partido.getOrganizadorID(),
+                partido.getTipoEmparejamiento()
         );
         dto.setId(partido.getId());
         dto.setEstado(partido.getEstado());
@@ -49,7 +50,8 @@ public class PartidoMapper {
                 dto.getDuracion(),
                 dto.getUbicacion(),
                 dto.getFechaHora(),
-                dto.getOrganizador()
+                dto.getOrganizador(),
+                dto.getTipoEmparejamiento()
         );
         partido.setId(dto.getId());
         if(dto.getEstado() != null) partido.setEstado(dto.getEstado());
