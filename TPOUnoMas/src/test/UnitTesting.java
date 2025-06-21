@@ -1,9 +1,10 @@
-package model.entity;
+package test;
 
-import model.estadosDelPartido.Confirmado;
+import model.entity.Deporte;
+import model.entity.Partido;
+import model.entity.Usuario;
 import model.estadosDelPartido.EnJuego;
 import model.estadosDelPartido.Finalizado;
-import model.estadosDelPartido.NecesitamosJugadores;
 import services.notificacionService.EmailServiceAdapter;
 import services.notificacionService.NotificadorEmail;
 import services.notificacionService.NotificadorPush;
@@ -26,9 +27,9 @@ public class UnitTesting {
 		partido.agregarJugadorDirecto(u1);
 		partido.agregarJugadorDirecto(u2);
 
-		partido.getEstado().manejarNuevoJugador(partido, u1); // ya está
-		partido.getEstado().manejarNuevoJugador(partido, u2); // ya está
-		partido.getEstado().verificarTransicion(partido); // debería pasar a PartidoArmadoI
+		partido.getEstado().manejarNuevoJugador(partido, u1);
+		partido.getEstado().manejarNuevoJugador(partido, u2);
+		partido.getEstado().verificarTransicion(partido);
 
 		partido.getEstado().manejarConfirmacion(partido, u1);
 		partido.getEstado().verificarTransicion(partido);
@@ -56,7 +57,7 @@ public class UnitTesting {
 		System.out.println("============================");
 		System.out.println("TESTING PATRÓN OBSERVER");
 
-		partido.setEstado(new EnJuego()); // debe notificar a los jugadores
-		partido.setEstado(new Finalizado()); // también notifica
+		partido.setEstado(new EnJuego());
+		partido.setEstado(new Finalizado());
 	}
 }
