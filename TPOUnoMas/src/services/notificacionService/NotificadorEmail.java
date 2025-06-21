@@ -2,7 +2,7 @@ package services.notificacionService;
 
 import model.entity.Partido;
 import model.entity.Usuario;
-import model.adapter.EmailAdapter;
+import services.notificacionService.interfaces.EmailAdapter;
 import services.notificacionService.interfaces.IStrategyNotificacion;
 
 import java.util.List;

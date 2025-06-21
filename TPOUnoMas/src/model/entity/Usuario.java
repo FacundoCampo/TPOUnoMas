@@ -1,11 +1,12 @@
 package model.entity;
 
 import enums.NivelJuego;
+import model.entity.interfaces.IObserver;
 
 import java.util.List;
 import java.util.ArrayList;
 
-public class Usuario {
+public class Usuario implements IObserver {
     private String nombre;
     private String email; //es unico y se utiliza como ID
     private String contraseña;
@@ -78,8 +79,9 @@ public class Usuario {
         return getNivelJuegoParaDeporte(deporte) != null;
     }
 
+    @Override
     public void actualizar(String mensaje) {
-        System.out.println("[NOTIFICACIÓN para " + this.email + "]: " + mensaje);
+        System.out.println("[Notificación para " + this.nombre + "]: " + mensaje);
     }
 
     @Override
