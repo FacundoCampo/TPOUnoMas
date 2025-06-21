@@ -33,7 +33,7 @@ public class UsuarioMapper {
                 Deporte d = du.getDeporte();
                 DeporteDTO deporteDTO = DeporteMapper.toDeporteDTO(d);
                 NivelJuego nivel = du.getNivelJuego();
-                preferencias.add(new DeporteUsuarioDTO(deporteDTO, nivel));
+                preferencias.add(new DeporteUsuarioDTO(deporteDTO, nivel, du.esFavorito()));
             }
         }
 

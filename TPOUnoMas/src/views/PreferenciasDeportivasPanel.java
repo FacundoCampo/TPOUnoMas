@@ -19,11 +19,16 @@ public class PreferenciasDeportivasPanel extends JPanel {
     private final JPanel panelNiveles;
     private final Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
     private final JLabel lblMensaje;
+    private final ButtonGroup grupoFavoritos;
+    private final Map<String, JRadioButton> favoritosPorDeporte;
     private List<DeporteDTO> deportes;
+    private java.util.List<DeporteUsuarioDTO> preferenciasPrevias;
 
     public PreferenciasDeportivasPanel(String usuarioId) {
         this.usuarioId = usuarioId;
         this.nivelesPorDeporte = new HashMap<>();
+        this.favoritosPorDeporte = new HashMap<>();
+        this.grupoFavoritos = new ButtonGroup();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
@@ -52,12 +57,14 @@ public class PreferenciasDeportivasPanel extends JPanel {
         panelNiveles = new JPanel();
         panelNiveles.setLayout(new BoxLayout(panelNiveles, BoxLayout.Y_AXIS));
         panelNiveles.setOpaque(false);
+        panelNiveles.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel panelNivelesConMargen = new JPanel();
         panelNivelesConMargen.setOpaque(false);
         panelNivelesConMargen.setLayout(new BoxLayout(panelNivelesConMargen, BoxLayout.Y_AXIS));
         panelNivelesConMargen.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         panelNivelesConMargen.add(panelNiveles);
+        panelNivelesConMargen.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(panelNivelesConMargen);
 
         listaDeportes.addListSelectionListener(e -> actualizarPanelNiveles());
@@ -91,18 +98,38 @@ public class PreferenciasDeportivasPanel extends JPanel {
     private void actualizarPanelNiveles() {
         panelNiveles.removeAll();
         nivelesPorDeporte.clear();
+        favoritosPorDeporte.clear();
+        grupoFavoritos.clearSelection();
 
         String nombre = listaDeportes.getSelectedValue();
         if (nombre != null) {
             JLabel lbl = new JLabel("Nivel para " + nombre);
             lbl.setForeground(Color.WHITE);
             lbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
+            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             panelNiveles.add(lbl);
 
             JComboBox<NivelJuego> combo = new JComboBox<>(NivelJuego.values());
             combo.setMaximumSize(new Dimension(400, 30));
+            combo.setAlignmentX(Component.CENTER_ALIGNMENT);
             panelNiveles.add(combo);
             nivelesPorDeporte.put(nombre, combo);
+
+            JRadioButton favorito = new JRadioButton("Marcar como favorito");
+            favorito.setForeground(Color.WHITE);
+            favorito.setOpaque(false);
+            favorito.setAlignmentX(Component.CENTER_ALIGNMENT);
+            grupoFavoritos.add(favorito);
+            favoritosPorDeporte.put(nombre, favorito);
+            panelNiveles.add(Box.createVerticalStrut(5));
+            panelNiveles.add(favorito);
+
+            for (DeporteUsuarioDTO pref : preferenciasPrevias) {
+                if (pref.getDeporte().getNombre().equals(nombre)) {
+                    combo.setSelectedItem(pref.getNivel());
+                    if (pref.esFavorito()) favorito.setSelected(true);
+                }
+            }
         }
 
         panelNiveles.revalidate();
@@ -112,7 +139,7 @@ public class PreferenciasDeportivasPanel extends JPanel {
     private String[] obtenerNombresDeportes() {
         DeporteController dc = DeporteController.getInstance();
         deportes = dc.obtenerTodos();
-        List<String> nombres = new ArrayList<>();
+        java.util.List<String> nombres = new ArrayList<>();
         for (DeporteDTO d : deportes) {
             nombres.add(d.getNombre());
         }
@@ -120,7 +147,8 @@ public class PreferenciasDeportivasPanel extends JPanel {
     }
 
     private void guardarPreferencias(ActionEvent e) {
-        List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
+        java.util.List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
+        String favoritoSeleccionado = null;
 
         for (String nombre : nivelesPorDeporte.keySet()) {
             JComboBox<NivelJuego> combo = nivelesPorDeporte.get(nombre);
@@ -135,7 +163,9 @@ public class PreferenciasDeportivasPanel extends JPanel {
             }
 
             if (deporte != null && nivel != null) {
-                preferencias.add(new DeporteUsuarioDTO(deporte, nivel));
+                boolean esFavorito = favoritosPorDeporte.containsKey(nombre) && favoritosPorDeporte.get(nombre).isSelected();
+                if (esFavorito) favoritoSeleccionado = nombre;
+                preferencias.add(new DeporteUsuarioDTO(deporte, nivel, esFavorito));
             }
         }
 
@@ -149,31 +179,9 @@ public class PreferenciasDeportivasPanel extends JPanel {
 
     private void cargarPreferenciasPrevias() {
         UsuarioController uc = UsuarioController.getInstance();
-        List<DeporteUsuarioDTO> preferencias = uc.obtenerPrefrecias(usuarioId);
-        if (preferencias == null || preferencias.isEmpty()) return;
+        preferenciasPrevias = uc.obtenerPrefrecias(usuarioId);
+        if (preferenciasPrevias == null || preferenciasPrevias.isEmpty()) return;
 
-        List<String> nombresSeleccionados = new ArrayList<>();
-        for (DeporteUsuarioDTO pref : preferencias) {
-            nombresSeleccionados.add(pref.getDeporte().getNombre());
-        }
-
-        if (!nombresSeleccionados.isEmpty()) {
-            listaDeportes.setSelectedValue(nombresSeleccionados.get(0), true);
-        }
-
-        String deporteActual = listaDeportes.getSelectedValue();
-        if (deporteActual != null) {
-            for (DeporteUsuarioDTO pref : preferencias) {
-                if (pref.getDeporte().getNombre().equals(deporteActual)) {
-                    actualizarPanelNiveles();
-                    JComboBox<NivelJuego> combo = nivelesPorDeporte.get(deporteActual);
-                    if (combo != null) {
-                        combo.setSelectedItem(pref.getNivel());
-                    }
-                    break;
-                }
-            }
-        }
+        listaDeportes.setSelectedValue(preferenciasPrevias.get(0).getDeporte().getNombre(), true);
     }
-
 }

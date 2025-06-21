@@ -63,7 +63,7 @@ public class DataLoader {
                 List<DeporteUsuarioDTO> preferenciasDTO = new ArrayList<>();
 
                 for (Map.Entry<DeporteDTO, NivelJuego> entry : preferencias.entrySet()) {
-                    preferenciasDTO.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue()));
+                    preferenciasDTO.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue(), false));
                 }
 
                 usuario.setPreferenciasDeportivas(preferenciasDTO);

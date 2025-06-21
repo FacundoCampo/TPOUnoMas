@@ -12,8 +12,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
 
 public class RegistroUsuarioForm extends JPanel {
 
@@ -24,6 +24,8 @@ public class RegistroUsuarioForm extends JPanel {
     private JList<String> listaDeportes;
     private JPanel panelNiveles;
     private Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
+    private Map<String, JRadioButton> favoritosPorDeporte;
+    private ButtonGroup grupoFavoritos;
     private JButton btnRegistrar;
     private JButton btnVolver;
     private JLabel lblMensaje;
@@ -38,6 +40,8 @@ public class RegistroUsuarioForm extends JPanel {
         this.onVolver = onVolver;
         this.usuarioExistente = usuarioExistente;
         this.nivelesPorDeporte = new HashMap<>();
+        this.favoritosPorDeporte = new HashMap<>();
+        this.grupoFavoritos = new ButtonGroup();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
@@ -94,18 +98,19 @@ public class RegistroUsuarioForm extends JPanel {
         lblMensaje.setForeground(Color.LIGHT_GRAY);
         add(Box.createVerticalStrut(10));
         add(lblMensaje);
-
     }
-
 
     private void actualizarPanelNiveles() {
         panelNiveles.removeAll();
         nivelesPorDeporte.clear();
+        favoritosPorDeporte.clear();
+        grupoFavoritos = new ButtonGroup();
+
         for (String nombre : listaDeportes.getSelectedValuesList()) {
             JPanel fila = new JPanel();
             fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
             fila.setOpaque(false);
-            fila.setMaximumSize(new Dimension(400, 60));
+            fila.setMaximumSize(new Dimension(400, 100));
             fila.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             JLabel lbl = new JLabel("Nivel para " + nombre);
@@ -117,14 +122,25 @@ public class RegistroUsuarioForm extends JPanel {
             combo.setMaximumSize(new Dimension(400, 30));
             combo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+            JRadioButton favorito = new JRadioButton("Marcar como favorito");
+            favorito.setForeground(Color.LIGHT_GRAY);
+            favorito.setOpaque(false);
+            favorito.setAlignmentX(Component.CENTER_ALIGNMENT);
+            grupoFavoritos.add(favorito);
+
             fila.add(lbl);
             fila.add(Box.createVerticalStrut(5));
             fila.add(combo);
+            fila.add(Box.createVerticalStrut(5));
+            fila.add(favorito);
 
             panelNiveles.add(fila);
             panelNiveles.add(Box.createVerticalStrut(10));
+
             nivelesPorDeporte.put(nombre, combo);
+            favoritosPorDeporte.put(nombre, favorito);
         }
+
         panelNiveles.revalidate();
         panelNiveles.repaint();
     }
@@ -174,7 +190,18 @@ public class RegistroUsuarioForm extends JPanel {
 
     private String[] obtenerNombresDeportes() {
         List<DeporteDTO> lista = DeporteController.getInstance().obtenerTodos();
-        return lista.stream().map(DeporteDTO::getNombre).toArray(String[]::new);
+        List<String> nombres = new ArrayList<>();
+
+        for (DeporteDTO d : lista) {
+            nombres.add(d.getNombre());
+        }
+
+        String[] resultado = new String[nombres.size()];
+        for (int i = 0; i < nombres.size(); i++) {
+            resultado[i] = nombres.get(i);
+        }
+
+        return resultado;
     }
 
     private void registrarUsuario(ActionEvent e) {
@@ -198,31 +225,38 @@ public class RegistroUsuarioForm extends JPanel {
                 return;
             }
 
-            lblMensaje.setText("✓ Usuario registrado y preferencias guardadas.");
+            String deporteFavorito = null;
+            for (Map.Entry<String, JRadioButton> entry : favoritosPorDeporte.entrySet()) {
+                if (entry.getValue().isSelected()) {
+                    deporteFavorito = entry.getKey();
+                    break;
+                }
+            }
 
-            Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
-            for (String nombreDeporte : listaDeportes.getSelectedValuesList()) {
-                NivelJuego nivel = (NivelJuego) nivelesPorDeporte.get(nombreDeporte).getSelectedItem();
+            List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
+            for (Map.Entry<String, JComboBox<NivelJuego>> entry : nivelesPorDeporte.entrySet()) {
+                String nombreDeporte = entry.getKey();
+                NivelJuego nivel = (NivelJuego) entry.getValue().getSelectedItem();
 
                 DeporteDTO dto = DeporteController.getInstance().obtenerTodos().stream()
                         .filter(d -> d.getNombre().equals(nombreDeporte))
                         .findFirst().orElse(null);
 
                 if (dto != null && nivel != null) {
-                    preferencias.put(dto, nivel);
+                    boolean esFavorito = nombreDeporte.equals(deporteFavorito);
+                    preferencias.add(new DeporteUsuarioDTO(dto, nivel, esFavorito));
                 }
             }
 
-            List<DeporteUsuarioDTO> listaPreferencias = new ArrayList<>();
-            for (Map.Entry<DeporteDTO, NivelJuego> entry : preferencias.entrySet()) {
-                listaPreferencias.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue()));
+            if (!preferencias.isEmpty()) {
+                uc.actualizarPreferencias(usuario.getEmail(), preferencias);
             }
 
-            if(!listaPreferencias.isEmpty()) uc.actualizarPreferencias(usuario.getEmail(), listaPreferencias);
+            lblMensaje.setText("✓ Usuario registrado y preferencias guardadas.");
+
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
-
 }
