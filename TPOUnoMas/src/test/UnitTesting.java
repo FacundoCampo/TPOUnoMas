@@ -2,8 +2,15 @@
 
 package test;
 
+import controller.DeporteController;
+import controller.PartidoController;
+import controller.UsuarioController;
 import enums.NivelJuego;
 import enums.TipoEmparejamiento;
+import model.dto.DeporteDTO;
+import model.dto.DeporteUsuarioDTO;
+import model.dto.PartidoDTO;
+import model.dto.UsuarioDTO;
 import model.entity.*;
 import model.estadosDelPartido.*;
 import services.notificacionService.EmailServiceAdapter;
@@ -97,41 +104,66 @@ public class UnitTesting {
 
 	public static void testEmparejamientoStrategy() {
 		System.out.println("============================");
-		System.out.println("TESTING ESTRATEGIA DE EMPAREJAMIENTO");
+		System.out.println("TESTING ESTRATEGIA DE EMPAREJAMIENTO (USANDO MÉTODOS DEL SERVICIO)");
 
-		Deporte futbol = new Deporte(null, "Fútbol", 3); // Requiere 3 jugadores
-		Partido partido = new Partido(futbol, 90, "Palermo", new Date(), "org-001", TipoEmparejamiento.NIVEL);
+		DeporteController deporteController = DeporteController.getInstance();
+		UsuarioController usuarioController = UsuarioController.getInstance();
+		PartidoController partidoController = PartidoController.getInstance();
 
-		// Candidatos con distintos niveles y ubicaciones
-		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "Palermo");
-		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "Belgrano");
-		Usuario u3 = new Usuario("Luis", "luis@mail.com", "789", "Avellaneda");
-		Usuario u4 = new Usuario("Mia", "mia@mail.com", "321", "CABA");
-		Usuario u5 = new Usuario("Leo", "leo@mail.com", "654", "Tigre");
+		// Crear deporte
+		DeporteDTO futbolDTO = new DeporteDTO(null, "Fútbol", 3);
+		deporteController.crearDeporte(futbolDTO);
+		DeporteDTO futbol = deporteController.buscarPorNombre("Fútbol");
 
-		u1.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.INTERMEDIO)));
-		u2.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.AVANZADO)));
-		u3.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.PRINCIPIANTE)));
-		u4.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.INTERMEDIO)));
-		u5.setDeportesUsuario(List.of(new DeporteUsuario(futbol, NivelJuego.AVANZADO)));
+		// Crear partido
+		String organizador = "org@mail.com";
+		UsuarioDTO organizadorDTO = new UsuarioDTO("Org", organizador, "123", "Palermo");
+		try {
+			usuarioController.registrar(organizadorDTO);
+		} catch (Exception ignored) {}
 
-		List<Usuario> candidatos = List.of(u1, u2, u3, u4, u5);
+		PartidoDTO partidoDTO = new PartidoDTO(futbol, 90, "Palermo", new Date(), organizador, TipoEmparejamiento.NIVEL);
+		String partidoId = partidoController.crearPartido(partidoDTO);
+		partidoController.sumarseAlPartido(partidoId, organizador);
 
-		// Emparejamiento por nivel
-		EmparejamientoContext ctxNivel = new EmparejamientoContext(new EmparejamientoPorNivel(NivelJuego.INTERMEDIO, NivelJuego.AVANZADO));
-		ResultadoEmparejamiento r1 = ctxNivel.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println(r1.toString());
+		// Crear candidatos
+		String[][] datos = {
+				{"Juan", "juan@mail.com", "Palermo", "INTERMEDIO"},
+				{"Ana", "ana@mail.com", "Belgrano", "AVANZADO"},
+				{"Luis", "luis@mail.com", "Avellaneda", "PRINCIPIANTE"},
+				{"Mia", "mia@mail.com", "CABA", "INTERMEDIO"},
+				{"Leo", "leo@mail.com", "Tigre", "AVANZADO"}
+		};
 
-		// Emparejamiento por cercanía
-		EmparejamientoContext ctxCercania = new EmparejamientoContext(new EmparejamientoPorCercania(15));
-		ResultadoEmparejamiento r2 = ctxCercania.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println(r2.toString());
+		for (String[] d : datos) {
+			UsuarioDTO u = new UsuarioDTO(d[0], d[1], "123", d[2]);
+			try {
+				usuarioController.registrar(u);
+			} catch (Exception ignored) {}
 
-		// Emparejamiento por historial (simulamos partidos jugados)
-		EmparejamientoContext ctxHistorial = new EmparejamientoContext(new EmparejamientoPorHistorial(1));
-		ResultadoEmparejamiento r3 = ctxHistorial.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println(r3.toString());
+			NivelJuego nivel = NivelJuego.valueOf(d[3]);
+			usuarioController.actualizarPreferencias(d[1], List.of(new DeporteUsuarioDTO(futbol, nivel, false)));
+		}
+
+		// Estrategia por Nivel
+		partidoController.cambiarTipoEmparejamiento(partidoId, TipoEmparejamiento.NIVEL);
+		List<UsuarioDTO> nivelEmp = partidoController.emparejar(partidoId);
+		System.out.println("➤ Emparejamiento por NIVEL:");
+		nivelEmp.forEach(u -> System.out.println("- " + u.getEmail()));
+
+		// Estrategia por Cercanía
+		partidoController.cambiarTipoEmparejamiento(partidoId, TipoEmparejamiento.CERCANIA);
+		List<UsuarioDTO> cercaniaEmp = partidoController.emparejar(partidoId);
+		System.out.println("➤ Emparejamiento por CERCANÍA:");
+		cercaniaEmp.forEach(u -> System.out.println("- " + u.getEmail()));
+
+		// Estrategia por Historial
+		partidoController.cambiarTipoEmparejamiento(partidoId, TipoEmparejamiento.HISTORIAL);
+		List<UsuarioDTO> historialEmp = partidoController.emparejar(partidoId);
+		System.out.println("➤ Emparejamiento por HISTORIAL:");
+		historialEmp.forEach(u -> System.out.println("- " + u.getEmail()));
 	}
+
 
 
 
