@@ -87,7 +87,7 @@ public class FrmPrincipal extends JFrame {
         lblPassword.setBounds(310, 215, 295, 25);
         panel.add(lblPassword);
 
-        tPassword = new JTextField();
+        tPassword = new JPasswordField();
         tPassword.setFont(new Font("Tahoma", Font.PLAIN, 16));
         tPassword.setBounds(310, 245, 295, 35);
         panel.add(tPassword);

@@ -47,7 +47,7 @@ public class PreferenciasDeportivasPanel extends JPanel {
 
         String[] deportes = obtenerNombresDeportes();
         listaDeportes = new JList<>(deportes);
-        listaDeportes.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        listaDeportes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroll = new JScrollPane(listaDeportes);
         scroll.setMaximumSize(new Dimension(400, 80));
         add(scroll);
@@ -55,17 +55,18 @@ public class PreferenciasDeportivasPanel extends JPanel {
         panelNiveles = new JPanel();
         panelNiveles.setLayout(new BoxLayout(panelNiveles, BoxLayout.Y_AXIS));
         panelNiveles.setOpaque(false);
-        add(panelNiveles);
+
+        JPanel panelNivelesConMargen = new JPanel();
+        panelNivelesConMargen.setOpaque(false);
+        panelNivelesConMargen.setLayout(new BoxLayout(panelNivelesConMargen, BoxLayout.Y_AXIS));
+        panelNivelesConMargen.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+        panelNivelesConMargen.add(panelNiveles);
+        add(panelNivelesConMargen);
 
         listaDeportes.addListSelectionListener(e -> actualizarPanelNiveles());
 
-        JButton btnGuardar = new JButton("Guardar preferencias");
-        btnGuardar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnGuardar.setBackground(new Color(46, 204, 113));
-        btnGuardar.setForeground(Color.WHITE);
-        btnGuardar.setFocusPainted(false);
+        JButton btnGuardar = crearBotonVerde("Guardar preferencias");
         btnGuardar.addActionListener(this::guardarPreferencias);
-        add(Box.createVerticalStrut(10));
         add(btnGuardar);
 
         lblMensaje = new JLabel("", SwingConstants.CENTER);
@@ -75,11 +76,25 @@ public class PreferenciasDeportivasPanel extends JPanel {
         add(lblMensaje);
     }
 
+    private JButton crearBotonVerde(String texto) {
+        JButton boton = new JButton(texto);
+        boton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        boton.setMaximumSize(new Dimension(400, 45));
+        boton.setFont(new Font("Tahoma", Font.BOLD, 18));
+        boton.setForeground(Color.WHITE);
+        boton.setBackground(new Color(46, 204, 113));
+        boton.setFocusPainted(false);
+        boton.setBorderPainted(false);
+        boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return boton;
+    }
+
     private void actualizarPanelNiveles() {
         panelNiveles.removeAll();
         nivelesPorDeporte.clear();
 
-        for (String nombre : listaDeportes.getSelectedValuesList()) {
+        String nombre = listaDeportes.getSelectedValue();
+        if (nombre != null) {
             JLabel lbl = new JLabel("Nivel para " + nombre);
             lbl.setForeground(Color.WHITE);
             lbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -88,7 +103,6 @@ public class PreferenciasDeportivasPanel extends JPanel {
             JComboBox<NivelJuego> combo = new JComboBox<>(NivelJuego.values());
             combo.setMaximumSize(new Dimension(400, 30));
             panelNiveles.add(combo);
-            panelNiveles.add(Box.createVerticalStrut(5));
             nivelesPorDeporte.put(nombre, combo);
         }
 
@@ -108,7 +122,7 @@ public class PreferenciasDeportivasPanel extends JPanel {
     private void guardarPreferencias(ActionEvent e) {
         List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
 
-        for (String nombre : listaDeportes.getSelectedValuesList()) {
+        for (String nombre : nivelesPorDeporte.keySet()) {
             JComboBox<NivelJuego> combo = nivelesPorDeporte.get(nombre);
             NivelJuego nivel = (NivelJuego) combo.getSelectedItem();
 
