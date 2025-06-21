@@ -13,4 +13,5 @@ public interface IPartidoService {
     boolean cambiarEstado(String idPartido, IEstadoPartido estado);
     boolean sumarseAlPartido(String partidoid, String usuarioid);
     List<PartidoDTO> obtenerPartidosDelUsuario(String usuarioid);
+    List<PartidoDTO> obtenerHistorial(String usuarioid);
 }

@@ -2,6 +2,7 @@ package repository;
 
 import model.dto.PartidoDTO;
 import model.entity.Partido;
+import model.entity.Usuario;
 import model.staticdb.DataBase;
 import repository.interfaces.IPartidoRepository;
 
@@ -43,5 +44,21 @@ public class PartidoRepository implements IPartidoRepository {
 
         return p;
     }
+
+    public List<Partido> obtenerHistorial(String usuarioid) {
+        List<Partido> historial = new ArrayList<>();
+
+        for (Partido partido : DataBase.partidos) {
+            for (Usuario jugador : partido.getJugadoresInscritos()) {
+                if (jugador.getEmail().equalsIgnoreCase(usuarioid)) {
+                    historial.add(partido);
+                    break;
+                }
+            }
+        }
+
+        return historial;
+    }
+
 
 }

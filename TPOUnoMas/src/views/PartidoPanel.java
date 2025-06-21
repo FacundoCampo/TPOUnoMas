@@ -16,6 +16,7 @@ public class PartidoPanel {
     private JPanel panelPrincipal;
     private JPanel crearPartidoTab;
     private JPanel misPartidosTab;
+    private JPanel historialTab;
     private JPanel listadoTab;
 
     /**
@@ -79,12 +80,13 @@ public class PartidoPanel {
         crearPartidoTab = new PartidoForm(tabbedPane, panelPrincipal, usuarioid);
         listadoTab = new ListaPartidosPanel(usuarioid);
         misPartidosTab = new MisPartidosPanel(usuarioid);
+        historialTab = new HistorialPanel(usuarioid);
 
         tabbedPane.add("Menu", panelPrincipal);
         tabbedPane.add("Crear", crearPartidoTab);
         tabbedPane.add("Mis partidos", misPartidosTab);
         tabbedPane.add("Listado", listadoTab);
-        tabbedPane.add("Historial", crearPanelPlaceholder());
+        tabbedPane.add("Historial", historialTab);
         setAnchoFijoTabs(tabbedPane, 120);
 
         asociarEventos();

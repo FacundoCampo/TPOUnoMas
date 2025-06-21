@@ -38,6 +38,10 @@ public class PartidoController {
         return partidoService.obtenerPartidosDelUsuario(usuarioid);
     }
 
+    public List<PartidoDTO> obtenerHistorial(String usuarioid) {
+        return partidoService.obtenerHistorial(usuarioid);
+    }
+
     public boolean cambiarEstado(String idPartido, IEstadoPartido estado) {
         return partidoService.cambiarEstado(idPartido, estado);
     }

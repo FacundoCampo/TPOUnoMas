@@ -10,4 +10,5 @@ public interface IPartidoRepository {
     List<Partido> obtenerTodos();
     Partido buscarPorId(String id);
     List<Partido> obtenerPartidosDelUsuario(String usuarioid);
+    List<Partido> obtenerHistorial(String usuarioid);
 }

@@ -77,4 +77,15 @@ public class PartidoService implements IPartidoService {
 
         return resultado;
     }
+
+    public List<PartidoDTO> obtenerHistorial(String usuarioid) {
+        List<Partido> lista = repository.obtenerHistorial(usuarioid);
+        List<PartidoDTO> resultado = new ArrayList<>();
+
+        for (Partido p : lista) {
+            resultado.add(PartidoMapper.toDTO(p));
+        }
+
+        return resultado;
+    }
 }
