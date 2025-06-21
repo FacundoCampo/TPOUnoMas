@@ -38,7 +38,7 @@ public class UsuarioRepository implements IUsuarioRepository {
         return false;
     }
 
-    public List<DeporteUsuario> obtenerPrefrecias(String id) {
+    public List<DeporteUsuario> obtenerPreferencias(String id) {
         Usuario u = buscarPorEmail(id);
         return u.getDeportesUsuario();
     }

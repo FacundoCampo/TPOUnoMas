@@ -13,5 +13,5 @@ public interface IUsuarioService {
     void actualizarPreferencias(String usuarioId, List<DeporteUsuarioDTO> preferenciasDTO);
     UsuarioDTO login(String email, String contrasena);
     List<Usuario> obtenerTodos();
-    List<DeporteUsuarioDTO> obtenerPrefrecias(String id);
+    List<DeporteUsuarioDTO> obtenerPreferencias(String id);
 }

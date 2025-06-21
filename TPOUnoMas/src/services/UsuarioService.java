@@ -69,9 +69,10 @@ public class UsuarioService implements IUsuarioService {
         for (DeporteUsuarioDTO dto : preferenciasDTO) {
             Deporte deporte = deporteRepository.buscarPorId(dto.getDeporte().getId());
             NivelJuego nivel = dto.getNivel();
+            boolean esFav = dto.esFavorito();
 
             if (deporte != null && nivel != null) {
-                preferencias.add(new DeporteUsuario(deporte, nivel));
+                preferencias.add(new DeporteUsuario(deporte, nivel, esFav));
             }
         }
 
@@ -101,8 +102,8 @@ public class UsuarioService implements IUsuarioService {
         return existente != null;
     }
 
-    public List<DeporteUsuarioDTO> obtenerPrefrecias(String id) {
-        List<DeporteUsuario> du = usuarioRepository.obtenerPrefrecias(id);
+    public List<DeporteUsuarioDTO> obtenerPreferencias(String id) {
+        List<DeporteUsuario> du = usuarioRepository.obtenerPreferencias(id);
         List<DeporteUsuarioDTO> dtoList = new ArrayList<>();
 
         if (du != null) {

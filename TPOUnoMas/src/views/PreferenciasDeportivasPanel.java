@@ -7,28 +7,25 @@ import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PreferenciasDeportivasPanel extends JPanel {
 
     private final String usuarioId;
-    private final JList<String> listaDeportes;
-    private final JPanel panelNiveles;
-    private final Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
+    private final JTable tabla;
+    private final PreferenciasTableModel tablaModel;
     private final JLabel lblMensaje;
-    private final ButtonGroup grupoFavoritos;
-    private final Map<String, JRadioButton> favoritosPorDeporte;
-    private List<DeporteDTO> deportes;
-    private java.util.List<DeporteUsuarioDTO> preferenciasPrevias;
 
     public PreferenciasDeportivasPanel(String usuarioId) {
         this.usuarioId = usuarioId;
-        this.nivelesPorDeporte = new HashMap<>();
-        this.favoritosPorDeporte = new HashMap<>();
-        this.grupoFavoritos = new ButtonGroup();
+        this.tablaModel = new PreferenciasTableModel();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
@@ -41,39 +38,55 @@ public class PreferenciasDeportivasPanel extends JPanel {
         add(lblTitulo);
         add(Box.createVerticalStrut(20));
 
-        JLabel lblDep = new JLabel("Deportes favoritos:");
-        lblDep.setForeground(Color.WHITE);
-        lblDep.setFont(new Font("Tahoma", Font.BOLD, 14));
-        lblDep.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(lblDep);
+        tabla = new JTable(tablaModel) {
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                if (column == 0 || column == 3) {
+                    return getDefaultRenderer(Boolean.class);
+                }
+                return super.getCellRenderer(row, column);
+            }
 
-        String[] deportes = obtenerNombresDeportes();
-        listaDeportes = new JList<>(deportes);
-        listaDeportes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane scroll = new JScrollPane(listaDeportes);
-        scroll.setMaximumSize(new Dimension(400, 80));
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                if (column == 0 || column == 3) {
+                    return getDefaultEditor(Boolean.class);
+                }
+                return super.getCellEditor(row, column);
+            }
+        };
+        tabla.setBackground(new Color(30, 30, 30));
+        tabla.setForeground(Color.WHITE);
+        tabla.setGridColor(Color.DARK_GRAY);
+        tabla.setSelectionBackground(new Color(60, 60, 60));
+        tabla.setRowHeight(30);
+        tabla.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox<>(NivelJuego.values())));
+
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(new Color(30, 30, 30));
+        renderer.setForeground(Color.WHITE);
+        for (int i = 0; i < tabla.getColumnCount(); i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(renderer);
+        }
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new Dimension(700, 300));
+        scroll.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(scroll);
+        add(Box.createVerticalStrut(20));
 
-        panelNiveles = new JPanel();
-        panelNiveles.setLayout(new BoxLayout(panelNiveles, BoxLayout.Y_AXIS));
-        panelNiveles.setOpaque(false);
-        panelNiveles.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JPanel panelNivelesConMargen = new JPanel();
-        panelNivelesConMargen.setOpaque(false);
-        panelNivelesConMargen.setLayout(new BoxLayout(panelNivelesConMargen, BoxLayout.Y_AXIS));
-        panelNivelesConMargen.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
-        panelNivelesConMargen.add(panelNiveles);
-        panelNivelesConMargen.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(panelNivelesConMargen);
-
-        listaDeportes.addListSelectionListener(e -> actualizarPanelNiveles());
-
-        JButton btnGuardar = crearBotonVerde("Guardar preferencias");
+        JButton btnGuardar = new JButton("Guardar preferencias");
+        btnGuardar.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        btnGuardar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnGuardar.setFont(new Font("Tahoma", Font.BOLD, 18));
+        btnGuardar.setBackground(new Color(46, 204, 113));
+        btnGuardar.setForeground(Color.WHITE);
+        btnGuardar.setFocusPainted(false);
+        btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnGuardar.addActionListener(this::guardarPreferencias);
         add(btnGuardar);
 
-        lblMensaje = new JLabel("", SwingConstants.CENTER);
+        lblMensaje = new JLabel("");
         lblMensaje.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblMensaje.setForeground(Color.LIGHT_GRAY);
         add(Box.createVerticalStrut(10));
@@ -82,94 +95,15 @@ public class PreferenciasDeportivasPanel extends JPanel {
         cargarPreferenciasPrevias();
     }
 
-    private JButton crearBotonVerde(String texto) {
-        JButton boton = new JButton(texto);
-        boton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        boton.setMaximumSize(new Dimension(400, 45));
-        boton.setFont(new Font("Tahoma", Font.BOLD, 18));
-        boton.setForeground(Color.WHITE);
-        boton.setBackground(new Color(46, 204, 113));
-        boton.setFocusPainted(false);
-        boton.setBorderPainted(false);
-        boton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        return boton;
-    }
-
-    private void actualizarPanelNiveles() {
-        panelNiveles.removeAll();
-        nivelesPorDeporte.clear();
-        favoritosPorDeporte.clear();
-        grupoFavoritos.clearSelection();
-
-        String nombre = listaDeportes.getSelectedValue();
-        if (nombre != null) {
-            JLabel lbl = new JLabel("Nivel para " + nombre);
-            lbl.setForeground(Color.WHITE);
-            lbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
-            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelNiveles.add(lbl);
-
-            JComboBox<NivelJuego> combo = new JComboBox<>(NivelJuego.values());
-            combo.setMaximumSize(new Dimension(400, 30));
-            combo.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panelNiveles.add(combo);
-            nivelesPorDeporte.put(nombre, combo);
-
-            JRadioButton favorito = new JRadioButton("Marcar como favorito");
-            favorito.setForeground(Color.WHITE);
-            favorito.setOpaque(false);
-            favorito.setAlignmentX(Component.CENTER_ALIGNMENT);
-            grupoFavoritos.add(favorito);
-            favoritosPorDeporte.put(nombre, favorito);
-            panelNiveles.add(Box.createVerticalStrut(5));
-            panelNiveles.add(favorito);
-
-            for (DeporteUsuarioDTO pref : preferenciasPrevias) {
-                if (pref.getDeporte().getNombre().equals(nombre)) {
-                    combo.setSelectedItem(pref.getNivel());
-                    if (pref.esFavorito()) favorito.setSelected(true);
-                }
-            }
-        }
-
-        panelNiveles.revalidate();
-        panelNiveles.repaint();
-    }
-
-    private String[] obtenerNombresDeportes() {
-        DeporteController dc = DeporteController.getInstance();
-        deportes = dc.obtenerTodos();
-        java.util.List<String> nombres = new ArrayList<>();
-        for (DeporteDTO d : deportes) {
-            nombres.add(d.getNombre());
-        }
-        return nombres.toArray(new String[0]);
+    private void cargarPreferenciasPrevias() {
+        List<DeporteDTO> deportes = DeporteController.getInstance().obtenerTodos();
+        List<DeporteUsuarioDTO> preferencias = UsuarioController.getInstance().obtenerPreferencias(usuarioId);
+        tablaModel.setData(deportes, preferencias);
     }
 
     private void guardarPreferencias(ActionEvent e) {
-        java.util.List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
-        String favoritoSeleccionado = null;
-
-        for (String nombre : nivelesPorDeporte.keySet()) {
-            JComboBox<NivelJuego> combo = nivelesPorDeporte.get(nombre);
-            NivelJuego nivel = (NivelJuego) combo.getSelectedItem();
-
-            DeporteDTO deporte = null;
-            for (DeporteDTO dto : deportes) {
-                if (dto.getNombre().equals(nombre)) {
-                    deporte = dto;
-                    break;
-                }
-            }
-
-            if (deporte != null && nivel != null) {
-                boolean esFavorito = favoritosPorDeporte.containsKey(nombre) && favoritosPorDeporte.get(nombre).isSelected();
-                if (esFavorito) favoritoSeleccionado = nombre;
-                preferencias.add(new DeporteUsuarioDTO(deporte, nivel, esFavorito));
-            }
-        }
-
         try {
+            List<DeporteUsuarioDTO> preferencias = tablaModel.getPreferencias();
             UsuarioController.getInstance().actualizarPreferencias(usuarioId, preferencias);
             lblMensaje.setText("✓ Preferencias guardadas correctamente.");
         } catch (Exception ex) {
@@ -177,11 +111,103 @@ public class PreferenciasDeportivasPanel extends JPanel {
         }
     }
 
-    private void cargarPreferenciasPrevias() {
-        UsuarioController uc = UsuarioController.getInstance();
-        preferenciasPrevias = uc.obtenerPrefrecias(usuarioId);
-        if (preferenciasPrevias == null || preferenciasPrevias.isEmpty()) return;
+    private static class PreferenciasTableModel extends AbstractTableModel {
+        private final String[] columnas = {"Seleccionar", "Deporte", "Nivel", "Favorito"};
+        private final List<DeporteDTO> deportes = new ArrayList<>();
+        private final List<Boolean> seleccionados = new ArrayList<>();
+        private final List<NivelJuego> niveles = new ArrayList<>();
+        private int favoritoIndex = -1;
 
-        listaDeportes.setSelectedValue(preferenciasPrevias.get(0).getDeporte().getNombre(), true);
+        public void setData(List<DeporteDTO> disponibles, List<DeporteUsuarioDTO> previas) {
+            deportes.clear();
+            seleccionados.clear();
+            niveles.clear();
+            favoritoIndex = -1;
+            for (DeporteDTO d : disponibles) {
+                deportes.add(d);
+                boolean seleccionado = false;
+                NivelJuego nivel = NivelJuego.INTERMEDIO;
+                if (previas != null) {
+                    for (DeporteUsuarioDTO pref : previas) {
+                        if (pref.getDeporte().getNombre().equals(d.getNombre())) {
+                            seleccionado = true;
+                            nivel = pref.getNivel();
+                            if (pref.esFavorito()) favoritoIndex = deportes.size() - 1;
+                            break;
+                        }
+                    }
+                }
+                seleccionados.add(seleccionado);
+                niveles.add(nivel);
+            }
+            fireTableDataChanged();
+        }
+
+        public List<DeporteUsuarioDTO> getPreferencias() {
+            List<DeporteUsuarioDTO> lista = new ArrayList<>();
+            for (int i = 0; i < deportes.size(); i++) {
+                if (!seleccionados.get(i)) continue;
+                boolean esFavorito = (i == favoritoIndex);
+                lista.add(new DeporteUsuarioDTO(deportes.get(i), niveles.get(i), esFavorito));
+            }
+            return lista;
+        }
+
+        @Override
+        public int getRowCount() {
+            return deportes.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnas.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnas[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return switch (columnIndex) {
+                case 0 -> seleccionados.get(rowIndex);
+                case 1 -> deportes.get(rowIndex).getNombre();
+                case 2 -> niveles.get(rowIndex);
+                case 3 -> rowIndex == favoritoIndex;
+                default -> null;
+            };
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex != 1;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0 -> {
+                    if (aValue instanceof Boolean b) seleccionados.set(rowIndex, b);
+                }
+                case 2 -> {
+                    if (aValue instanceof NivelJuego nivel) niveles.set(rowIndex, nivel);
+                }
+                case 3 -> {
+                    if ((Boolean) aValue) favoritoIndex = rowIndex;
+                    else if (rowIndex == favoritoIndex) favoritoIndex = -1;
+                    fireTableRowsUpdated(0, getRowCount() - 1);
+                }
+            }
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return switch (columnIndex) {
+                case 0, 3 -> Boolean.class;
+                case 2 -> NivelJuego.class;
+                default -> String.class;
+            };
+        }
     }
 }

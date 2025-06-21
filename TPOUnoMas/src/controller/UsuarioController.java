@@ -46,7 +46,7 @@ public class UsuarioController {
         return usuarioService.obtenerTodos();
     }
 
-    public List<DeporteUsuarioDTO> obtenerPrefrecias(String id) {
-        return usuarioService.obtenerPrefrecias(id);
+    public List<DeporteUsuarioDTO> obtenerPreferencias(String id) {
+        return usuarioService.obtenerPreferencias(id);
     }
 }

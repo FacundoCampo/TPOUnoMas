@@ -10,5 +10,5 @@ public interface IUsuarioRepository {
     void guardar(Usuario usuario);
     boolean actualizar(Usuario usuarioActualizado);
     Usuario buscarPorEmail(String email);
-    List<DeporteUsuario> obtenerPrefrecias(String id);
+    List<DeporteUsuario> obtenerPreferencias(String id);
 }

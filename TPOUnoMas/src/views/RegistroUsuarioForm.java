@@ -8,11 +8,10 @@ import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 
 public class RegistroUsuarioForm extends JPanel {
@@ -21,11 +20,8 @@ public class RegistroUsuarioForm extends JPanel {
     private JTextField txtEmail;
     private JPasswordField txtContraseña;
     private JTextField txtUbicacion;
-    private JList<String> listaDeportes;
-    private JPanel panelNiveles;
-    private Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
-    private Map<String, JRadioButton> favoritosPorDeporte;
-    private ButtonGroup grupoFavoritos;
+    private JTable tabla;
+    private PreferenciasTableModel tablaModel;
     private JButton btnRegistrar;
     private JButton btnVolver;
     private JLabel lblMensaje;
@@ -39,9 +35,6 @@ public class RegistroUsuarioForm extends JPanel {
     public RegistroUsuarioForm(Runnable onVolver, UsuarioDTO usuarioExistente) {
         this.onVolver = onVolver;
         this.usuarioExistente = usuarioExistente;
-        this.nivelesPorDeporte = new HashMap<>();
-        this.favoritosPorDeporte = new HashMap<>();
-        this.grupoFavoritos = new ButtonGroup();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(25, 25, 25));
@@ -59,30 +52,23 @@ public class RegistroUsuarioForm extends JPanel {
         txtContraseña = crearCampoPassword("Contraseña");
         txtUbicacion = crearCampoTexto("Ubicación");
 
-        JLabel lblDep = new JLabel("Deportes Favoritos");
+        JLabel lblDep = new JLabel("Preferencias deportivas");
         lblDep.setForeground(Color.WHITE);
         lblDep.setFont(new Font("Tahoma", Font.BOLD, 14));
         lblDep.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(lblDep);
 
-        String[] deportes = obtenerNombresDeportes();
-        listaDeportes = new JList<>(deportes);
-        listaDeportes.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        listaDeportes.setVisibleRowCount(5);
-        JScrollPane scroll = new JScrollPane(listaDeportes);
-        scroll.setMaximumSize(new Dimension(400, 80));
+        tablaModel = new PreferenciasTableModel();
+        tabla = new JTable(tablaModel);
+        tabla.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox<>(NivelJuego.values())));
+        tabla.setRowHeight(30);
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new Dimension(600, 300));
         scroll.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(scroll);
 
-        panelNiveles = new JPanel();
-        panelNiveles.setLayout(new BoxLayout(panelNiveles, BoxLayout.Y_AXIS));
-        panelNiveles.setOpaque(false);
-        panelNiveles.setAlignmentX(Component.CENTER_ALIGNMENT);
-        add(panelNiveles);
-
-        listaDeportes.addListSelectionListener(e -> actualizarPanelNiveles());
-
-        btnRegistrar = crearBoton(usuarioExistente == null ? "Registrar" : "Guardar Cambios", new Color(46, 204, 113));
+        add(Box.createVerticalStrut(10));
+        btnRegistrar = crearBoton("Registrar", new Color(46, 204, 113));
         btnRegistrar.addActionListener(this::registrarUsuario);
         add(btnRegistrar);
         add(Box.createVerticalStrut(10));
@@ -98,51 +84,13 @@ public class RegistroUsuarioForm extends JPanel {
         lblMensaje.setForeground(Color.LIGHT_GRAY);
         add(Box.createVerticalStrut(10));
         add(lblMensaje);
+
+        cargarDeportes();
     }
 
-    private void actualizarPanelNiveles() {
-        panelNiveles.removeAll();
-        nivelesPorDeporte.clear();
-        favoritosPorDeporte.clear();
-        grupoFavoritos = new ButtonGroup();
-
-        for (String nombre : listaDeportes.getSelectedValuesList()) {
-            JPanel fila = new JPanel();
-            fila.setLayout(new BoxLayout(fila, BoxLayout.Y_AXIS));
-            fila.setOpaque(false);
-            fila.setMaximumSize(new Dimension(400, 100));
-            fila.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JLabel lbl = new JLabel("Nivel para " + nombre);
-            lbl.setForeground(Color.WHITE);
-            lbl.setFont(new Font("Tahoma", Font.BOLD, 14));
-            lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JComboBox<NivelJuego> combo = new JComboBox<>(NivelJuego.values());
-            combo.setMaximumSize(new Dimension(400, 30));
-            combo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            JRadioButton favorito = new JRadioButton("Marcar como favorito");
-            favorito.setForeground(Color.LIGHT_GRAY);
-            favorito.setOpaque(false);
-            favorito.setAlignmentX(Component.CENTER_ALIGNMENT);
-            grupoFavoritos.add(favorito);
-
-            fila.add(lbl);
-            fila.add(Box.createVerticalStrut(5));
-            fila.add(combo);
-            fila.add(Box.createVerticalStrut(5));
-            fila.add(favorito);
-
-            panelNiveles.add(fila);
-            panelNiveles.add(Box.createVerticalStrut(10));
-
-            nivelesPorDeporte.put(nombre, combo);
-            favoritosPorDeporte.put(nombre, favorito);
-        }
-
-        panelNiveles.revalidate();
-        panelNiveles.repaint();
+    private void cargarDeportes() {
+        List<DeporteDTO> deportes = DeporteController.getInstance().obtenerTodos();
+        tablaModel.setData(deportes);
     }
 
     private JButton crearBoton(String texto, Color fondo) {
@@ -188,22 +136,6 @@ public class RegistroUsuarioForm extends JPanel {
         return field;
     }
 
-    private String[] obtenerNombresDeportes() {
-        List<DeporteDTO> lista = DeporteController.getInstance().obtenerTodos();
-        List<String> nombres = new ArrayList<>();
-
-        for (DeporteDTO d : lista) {
-            nombres.add(d.getNombre());
-        }
-
-        String[] resultado = new String[nombres.size()];
-        for (int i = 0; i < nombres.size(); i++) {
-            resultado[i] = nombres.get(i);
-        }
-
-        return resultado;
-    }
-
     private void registrarUsuario(ActionEvent e) {
         try {
             UsuarioController uc = UsuarioController.getInstance();
@@ -225,29 +157,7 @@ public class RegistroUsuarioForm extends JPanel {
                 return;
             }
 
-            String deporteFavorito = null;
-            for (Map.Entry<String, JRadioButton> entry : favoritosPorDeporte.entrySet()) {
-                if (entry.getValue().isSelected()) {
-                    deporteFavorito = entry.getKey();
-                    break;
-                }
-            }
-
-            List<DeporteUsuarioDTO> preferencias = new ArrayList<>();
-            for (Map.Entry<String, JComboBox<NivelJuego>> entry : nivelesPorDeporte.entrySet()) {
-                String nombreDeporte = entry.getKey();
-                NivelJuego nivel = (NivelJuego) entry.getValue().getSelectedItem();
-
-                DeporteDTO dto = DeporteController.getInstance().obtenerTodos().stream()
-                        .filter(d -> d.getNombre().equals(nombreDeporte))
-                        .findFirst().orElse(null);
-
-                if (dto != null && nivel != null) {
-                    boolean esFavorito = nombreDeporte.equals(deporteFavorito);
-                    preferencias.add(new DeporteUsuarioDTO(dto, nivel, esFavorito));
-                }
-            }
-
+            List<DeporteUsuarioDTO> preferencias = tablaModel.getPreferencias();
             if (!preferencias.isEmpty()) {
                 uc.actualizarPreferencias(usuario.getEmail(), preferencias);
             }
@@ -257,6 +167,92 @@ public class RegistroUsuarioForm extends JPanel {
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
             ex.printStackTrace();
+        }
+    }
+
+    private static class PreferenciasTableModel extends AbstractTableModel {
+        private final String[] columnas = {"Seleccionar", "Deporte", "Nivel", "Favorito"};
+        private final List<DeporteDTO> deportes = new ArrayList<>();
+        private final List<Boolean> seleccionados = new ArrayList<>();
+        private final List<NivelJuego> niveles = new ArrayList<>();
+        private int favoritoIndex = -1;
+
+        public void setData(List<DeporteDTO> disponibles) {
+            deportes.clear();
+            seleccionados.clear();
+            niveles.clear();
+            for (DeporteDTO d : disponibles) {
+                deportes.add(d);
+                seleccionados.add(false);
+                niveles.add(NivelJuego.INTERMEDIO);
+            }
+            fireTableDataChanged();
+        }
+
+        public List<DeporteUsuarioDTO> getPreferencias() {
+            List<DeporteUsuarioDTO> lista = new ArrayList<>();
+            for (int i = 0; i < deportes.size(); i++) {
+                if (!seleccionados.get(i)) continue;
+                boolean esFavorito = (i == favoritoIndex);
+                lista.add(new DeporteUsuarioDTO(deportes.get(i), niveles.get(i), esFavorito));
+            }
+            return lista;
+        }
+
+        @Override
+        public int getRowCount() {
+            return deportes.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnas.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnas[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return switch (columnIndex) {
+                case 0 -> seleccionados.get(rowIndex);
+                case 1 -> deportes.get(rowIndex).getNombre();
+                case 2 -> niveles.get(rowIndex);
+                case 3 -> rowIndex == favoritoIndex;
+                default -> null;
+            };
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex != 1;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0 -> {
+                    if (aValue instanceof Boolean b) seleccionados.set(rowIndex, b);
+                }
+                case 2 -> {
+                    if (aValue instanceof NivelJuego nivel) niveles.set(rowIndex, nivel);
+                }
+                case 3 -> {
+                    if ((Boolean) aValue) favoritoIndex = rowIndex;
+                    fireTableRowsUpdated(0, getRowCount() - 1);
+                }
+            }
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return switch (columnIndex) {
+                case 0, 3 -> Boolean.class;
+                case 2 -> NivelJuego.class;
+                default -> String.class;
+            };
         }
     }
 }
