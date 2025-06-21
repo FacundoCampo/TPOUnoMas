@@ -36,7 +36,7 @@ public class NecesitamosJugadores implements IEstadoPartido {
 
         if (agregado) {
             System.out.println("[NecesitamosJugadores] Agregado correctamente. Agregando a historial y verificando transición.");
-            jugador.agregarPartidoAHistorial(contexto);
+            jugador.agregarPartidoAHistorial(contexto.getId());
             verificarTransicion(contexto);
         } else {
             System.out.println("[NecesitamosJugadores] No se pudo agregar el jugador.");

@@ -12,19 +12,15 @@ public class Usuario implements IObserver {
     private String contraseña;
     private String ubicacion;
     private List<DeporteUsuario> deportesUsuario;
-    private List<Partido> historialPartidos;
-    
-    public Usuario() {
-        this.deportesUsuario = new ArrayList<>();
-        this.historialPartidos = new ArrayList<>();
-    }
-    
+    private List<String> historialPartidos;
+
     public Usuario(String nombre, String email, String contraseña, String ubicacion) {
-        this();
         this.nombre = nombre;
         this.email = email;
         this.contraseña = contraseña;
         this.ubicacion = ubicacion;
+        this.deportesUsuario = new ArrayList<>();
+        this.historialPartidos = new ArrayList<>();
     }
     
     public Usuario(String id, String nombre, String email, String contraseña, String ubicacion) {
@@ -49,14 +45,9 @@ public class Usuario implements IObserver {
         this.deportesUsuario = deportesUsuario != null ? new ArrayList<>(deportesUsuario) : new ArrayList<>();
     }
 
-    public List<Partido> getHistorialPartidos() { return new ArrayList<>(historialPartidos); }
-    public void setHistorialPartidos(List<Partido> historialPartidos) {
-        this.historialPartidos = historialPartidos != null ? new ArrayList<>(historialPartidos) : new ArrayList<>();
-    }
-
-    public void agregarPartidoAHistorial(Partido partido) {
-        if (partido != null && !historialPartidos.contains(partido)) {
-            historialPartidos.add(partido);
+    public void agregarPartidoAHistorial(String id) {
+        if (!historialPartidos.contains(id)) {
+            historialPartidos.add(id);
         }
     }
 

@@ -28,7 +28,7 @@ public class EnJuego implements IEstadoPartido {
         if (debeFinalizarse(contexto)) {
             contexto.setEstado(new Finalizado());
             for (Usuario jugador : contexto.getJugadoresInscritos()) {
-                jugador.agregarPartidoAHistorial(contexto);
+                jugador.agregarPartidoAHistorial(contexto.getId());
             }
         }
     }
