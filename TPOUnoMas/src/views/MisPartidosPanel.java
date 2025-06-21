@@ -89,10 +89,7 @@ public class MisPartidosPanel extends JPanel {
 
     private void cargarPartidos() {
         listModel.clear();
-        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerTodos()
-                .stream()
-                .filter(p -> usuarioid.equals(p.getOrganizador()))
-                .collect(Collectors.toList());
+        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerPartidosDelUsuario(this.usuarioid);
 
         for (PartidoDTO dto : partidos) {
             listModel.addElement(dto);

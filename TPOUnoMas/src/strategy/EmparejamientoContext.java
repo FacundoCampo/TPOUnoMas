@@ -13,28 +13,11 @@ import java.util.List;
 public class EmparejamientoContext {
     
     private IEstrategiaEmparejamiento estrategia;
-    
-    /**
-     * Constructor por defecto del servicio de emparejamiento
-     */
-    public EmparejamientoContext() {
-        this.estrategia = null;
-    }
-    
-    /**
-     * Constructor del servicio de emparejamiento con estrategia inicial
-     * @param estrategia la estrategia de emparejamiento inicial
-     */
+
     public EmparejamientoContext(IEstrategiaEmparejamiento estrategia) {
         this.estrategia = estrategia;
     }
-    
-    /**
-     * Establece la estrategia de emparejamiento a utilizar
-     * Implementa el patrón Strategy permitiendo cambiar el algoritmo en tiempo de ejecución
-     * @param estrategia la nueva estrategia de emparejamiento
-     * @throws IllegalArgumentException si la estrategia es null
-     */
+
     public void setEstrategia(IEstrategiaEmparejamiento estrategia) {
         if (estrategia == null) {
             throw new IllegalArgumentException("La estrategia de emparejamiento no puede ser null");
@@ -126,7 +109,7 @@ public class EmparejamientoContext {
             throw new RuntimeException("Error al filtrar candidatos aptos: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * Obtiene información sobre la estrategia actual
      * @return nombre de la clase de la estrategia actual o "No configurada"
@@ -137,7 +120,7 @@ public class EmparejamientoContext {
         }
         return estrategia.getClass().getSimpleName();
     }
-    
+
     /**
      * Verifica si hay una estrategia configurada
      * @return true si hay estrategia configurada, false en caso contrario
@@ -145,15 +128,7 @@ public class EmparejamientoContext {
     public boolean tieneEstrategiaConfigurada() {
         return estrategia != null;
     }
-    
-    /**
-     * Obtiene la estrategia actual (para testing o casos especiales)
-     * @return la estrategia actual o null si no está configurada
-     */
-    public IEstrategiaEmparejamiento getEstrategia() {
-        return estrategia;
-    }
-    
+
     /**
      * Calcula cuántos jugadores más se necesitan para completar un partido
      * @param partido el partido a evaluar
@@ -219,7 +194,7 @@ public class EmparejamientoContext {
     }
     
     /**
-     * Ejecuta un emparejamiento completo y devuelve información detallada
+     * Utilizado en testeo, ejecuta un emparejamiento completo y devuelve información detallada
      * @param partido el partido para emparejar
      * @param candidatos lista de candidatos
      * @return resultado del emparejamiento con estadísticas

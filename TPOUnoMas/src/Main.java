@@ -10,8 +10,9 @@ public class Main {
             DataLoader.cargarDeportes();
             DataLoader.cargarUsuarios();
             DataLoader.cargarPartidos();
+            DataLoader.cargarPartidosParaUsuario1();
 
-        	frame = new FrmPrincipal(titulo);
+            frame = new FrmPrincipal(titulo);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
         } catch (Exception e) {

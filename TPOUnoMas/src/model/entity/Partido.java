@@ -3,7 +3,6 @@ package model.entity;
 import enums.TipoEmparejamiento;
 import model.estadosDelPartido.IEstadoPartido;
 import model.estadosDelPartido.NecesitamosJugadores;
-import strategy.IEstrategiaEmparejamiento;
 
 import java.util.ArrayList;
 import java.util.Date;

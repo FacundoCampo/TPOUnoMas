@@ -1,6 +1,7 @@
 package views;
 
 import controller.PartidoController;
+import enums.TipoEmparejamiento;
 import model.dto.PartidoDTO;
 
 import javax.swing.*;
@@ -153,21 +154,19 @@ public class ListaPartidosPanel extends JPanel {
 
             if (value instanceof PartidoDTO dto) {
                 String deporte = dto.getDeporte().getNombre();
-
                 String fecha = new java.text.SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
-
                 String estado = dto.getEstado().getNombre();
                 String organizador = dto.getOrganizador();
+                String estrategia = dto.getTipoEmparejamiento() != null ? dto.getTipoEmparejamiento().name() : "(Sin estrategia)";
 
                 int jugadoresActuales = dto.getJugadoresInscritos().size();
                 int jugadoresTotales = dto.getDeporte().getCantidadJugadoresEstandar();
                 int faltan = jugadoresTotales - jugadoresActuales;
-
                 String faltanTexto = (faltan > 0) ? String.format(" (faltan %d)", faltan) : "";
 
                 String texto = String.format(
-                        "%s - %s - Estado: %s | Organizador: %s | Jugadores: %d/%d%s",
-                        deporte, fecha, estado, organizador, jugadoresActuales, jugadoresTotales, faltanTexto
+                        "%s - %s - Estado: %s | Organizador: %s | Jugadores: %d/%d%s | Estrategia: %s",
+                        deporte, fecha, estado, organizador, jugadoresActuales, jugadoresTotales, faltanTexto, estrategia
                 );
 
                 setText(texto);
@@ -178,6 +177,5 @@ public class ListaPartidosPanel extends JPanel {
             return this;
         }
     }
-
 
 }

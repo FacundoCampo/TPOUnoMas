@@ -1,5 +1,6 @@
 package repository;
 
+import model.dto.PartidoDTO;
 import model.entity.Partido;
 import model.staticdb.DataBase;
 import repository.interfaces.IPartidoRepository;
@@ -29,6 +30,18 @@ public class PartidoRepository implements IPartidoRepository {
             }
         }
         return null;
+    }
+
+    public List<Partido> obtenerPartidosDelUsuario(String usuarioid) {
+        List<Partido> p = new ArrayList<>();
+
+        for (Partido partido : DataBase.partidos) {
+            if (partido.getOrganizadorID().toLowerCase().equals(usuarioid.toLowerCase())) {
+                p.add(partido);
+            }
+        }
+
+        return p;
     }
 
 }

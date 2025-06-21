@@ -33,6 +33,14 @@ public class EnJuego implements IEstadoPartido {
         }
     }
 
+    @Override
+    public String getNombre() { return "En juego"; }
+
+    @Override
+    public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
+        return false;
+    }
+
     private boolean debeFinalizarse(Partido contexto) {
         if (contexto.getFechaHora() == null) return false;
         long tiempoActual = System.currentTimeMillis();
@@ -41,7 +49,4 @@ public class EnJuego implements IEstadoPartido {
         long tiempoFin = tiempoInicio + duracionMs;
         return tiempoActual >= tiempoFin;
     }
-
-    @Override
-    public String getNombre() { return "En juego"; }
 }

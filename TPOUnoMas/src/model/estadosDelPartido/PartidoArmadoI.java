@@ -36,18 +36,20 @@ public class PartidoArmadoI implements IEstadoPartido {
 
         long horasHastaPartido = contexto.getHorasHastaPartido();
 
-        if (horasHastaPartido <= 2 && horasHastaPartido > 0) {
-            contexto.setEstado(new Confirmado());
-            notificarConfirmado(contexto);
-        } else if (horasHastaPartido <= 0) {
-            contexto.setEstado(new EnJuego());
-            notificarEnJuego(contexto);
-        }
-
         if (!contexto.estaCompleto()) {
             contexto.setEstado(new NecesitamosJugadores());
             notificarNecesitamosJugadores(contexto);
+            return;
         }
+
+        if (horasHastaPartido <= 0) {
+            contexto.setEstado(new EnJuego());
+            notificarEnJuego(contexto);
+        } else if (horasHastaPartido <= 2) {
+            contexto.setEstado(new Confirmado());
+            notificarConfirmado(contexto);
+        }
+
     }
 
     @Override

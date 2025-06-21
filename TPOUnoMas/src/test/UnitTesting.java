@@ -117,26 +117,22 @@ public class UnitTesting {
 
 		List<Usuario> candidatos = List.of(u1, u2, u3, u4, u5);
 
-		EmparejamientoContext empContext = new EmparejamientoContext();
+		// Emparejamiento por nivel
+		EmparejamientoContext ctxNivel = new EmparejamientoContext(new EmparejamientoPorNivel(NivelJuego.INTERMEDIO, NivelJuego.AVANZADO));
+		ResultadoEmparejamiento r1 = ctxNivel.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println(r1.toString());
 
-		// Por nivel
-		empContext.setEstrategia(new EmparejamientoPorNivel(NivelJuego.INTERMEDIO, NivelJuego.AVANZADO));
-		ResultadoEmparejamiento r1 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println("Jugadores seleccionados (por nivel): " + r1.getJugadoresSeleccionados());
+		// Emparejamiento por cercanía
+		EmparejamientoContext ctxCercania = new EmparejamientoContext(new EmparejamientoPorCercania(15));
+		ResultadoEmparejamiento r2 = ctxCercania.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println(r2.toString());
 
-		// Por cercanía
-		empContext.setEstrategia(new EmparejamientoPorCercania(15)); // 15km de Palermo
-		ResultadoEmparejamiento r2 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println("Jugadores seleccionados (por cercanía): " + r2.getJugadoresSeleccionados());
-
-		// Por historial
-		empContext.setEstrategia(new EmparejamientoPorHistorial(1));
-		ResultadoEmparejamiento r3 = empContext.ejecutarEmparejamientoCompleto(partido, candidatos);
-		System.out.println("Jugadores seleccionados (por historial): " + r3.getJugadoresSeleccionados());
-
-		System.out.println("============================");
-		System.out.println("TEST COMPLETO FINALIZADO");
+		// Emparejamiento por historial (simulamos partidos jugados)
+		EmparejamientoContext ctxHistorial = new EmparejamientoContext(new EmparejamientoPorHistorial(1));
+		ResultadoEmparejamiento r3 = ctxHistorial.ejecutarEmparejamientoCompleto(partido, candidatos);
+		System.out.println(r3.toString());
 	}
+
 
 
 }

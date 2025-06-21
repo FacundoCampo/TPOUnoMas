@@ -25,11 +25,6 @@ public class ResultadoEmparejamiento {
     }
 
     public List<Usuario> getJugadoresSeleccionados() { return jugadoresSeleccionados; }
-    public int getTotalCandidatos() { return totalCandidatos; }
-    public long getTiempoEjecucion() { return tiempoEjecucion; }
-    public String getEstrategiaUtilizada() { return estrategiaUtilizada; }
-    public boolean esExitoso() { return exitoso; }
-    public String getMensajeError() { return mensajeError; }
 
     public int getCantidadSeleccionados() {
         return jugadoresSeleccionados != null ? jugadoresSeleccionados.size() : 0;
@@ -49,7 +44,7 @@ public class ResultadoEmparejamiento {
         if (exitoso) {
             sb.append("Estrategia: ").append(estrategiaUtilizada).append("\n");
             sb.append("Candidatos evaluados: ").append(totalCandidatos).append("\n");
-            sb.append("Jugadores seleccionados: ").append(getCantidadSeleccionados()).append("\n");
+            sb.append("Jugadores seleccionados: ").append(getJugadoresSeleccionados()).append("\n");
             sb.append("Tasa de selección: ").append(String.format("%.1f%%", getTasaSeleccion())).append("\n");
             sb.append("Tiempo de ejecución: ").append(tiempoEjecucion).append(" ms\n");
         } else {

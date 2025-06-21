@@ -29,4 +29,10 @@ public class Finalizado implements IEstadoPartido {
 
     @Override
     public String getNombre() { return "Finalizado"; }
+
+    @Override
+    public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
+        return false;
+    }
+
 }

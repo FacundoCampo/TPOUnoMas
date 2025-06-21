@@ -29,7 +29,7 @@ public class DataLoader {
         List<DeporteDTO> deportes = DeporteController.getInstance().obtenerTodos();
         Random rand = new Random();
 
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 20; i++) {
             String nombre = "Usuario" + i;
             String email = "usuario" + i + "@mail.com";
             String contrasena = "clave" + i;
@@ -74,35 +74,36 @@ public class DataLoader {
         UsuarioController usuarioController = UsuarioController.getInstance();
 
         List<UsuarioDTO> usuarios = usuarioController.obtenerTodos();
-        if (usuarios.isEmpty()) {
-            System.out.println("No hay usuarios registrados para asignar como organizadores.");
-            return;
-        }
-
         DeporteDTO futbol = deporteController.buscarPorNombre("Fútbol");
         DeporteDTO tenis = deporteController.buscarPorNombre("Tenis");
+        DeporteDTO paddle = deporteController.buscarPorNombre("Paddle");
+        DeporteDTO basquet = deporteController.buscarPorNombre("Básquet");
 
-        Random rand = new Random();
+        TipoEmparejamiento[] estrategias = TipoEmparejamiento.values();
+        String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Chacarita"};
 
-        for (int i = 0; i < 5; i++) {
-            DeporteDTO deporte = (i == 1) ? tenis : futbol;
-            String ubicacion = switch (i) {
-                case 0 -> "Palermo";
-                case 1 -> "Caballito";
-                case 2 -> "Recoleta";
-                case 3 -> "Villa Urquiza";
-                default -> "Belgrano";
-            };
-            Date fecha = obtenerFecha(i < 3 ? 1 : 2);
-            String organizadorEmail = usuarios.get(rand.nextInt(usuarios.size())).getEmail();
+        int partidoIndex = 0;
+        for (UsuarioDTO organizador : usuarios) {
+            for (int i = 0; i < 2; i++) { // 2 partidos por usuario
+                DeporteDTO deporte = switch ((partidoIndex++) % 4) {
+                    case 0 -> futbol;
+                    case 1 -> tenis;
+                    case 2 -> paddle;
+                    default -> basquet;
+                };
 
-            PartidoDTO dto = new PartidoDTO(deporte, 90, ubicacion, fecha, organizadorEmail, TipoEmparejamiento.NIVEL);
-            String partidoId = controller.crearPartido(dto);
+                String ubicacion = ubicaciones[partidoIndex % ubicaciones.length];
+                Date fecha = obtenerFecha(i + 1);
+                TipoEmparejamiento tipo = estrategias[partidoIndex % estrategias.length];
 
-            try {
-                controller.sumarseAlPartido(partidoId, organizadorEmail);
-            } catch (Exception e) {
-                System.out.println("No se pudo inscribir al organizador: " + organizadorEmail);
+                PartidoDTO dto = new PartidoDTO(deporte, 90, ubicacion, fecha, organizador.getEmail(), tipo);
+                String partidoId = controller.crearPartido(dto);
+
+                try {
+                    controller.sumarseAlPartido(partidoId, organizador.getEmail());
+                } catch (Exception e) {
+                    System.out.println("No se pudo inscribir al organizador: " + organizador.getEmail());
+                }
             }
         }
 
@@ -160,6 +161,70 @@ public class DataLoader {
             }
         }
     }
+
+    public static void cargarPartidosParaUsuario1() {
+        PartidoController partidoController = PartidoController.getInstance();
+        UsuarioController usuarioController = UsuarioController.getInstance();
+        DeporteController deporteController = DeporteController.getInstance();
+
+        UsuarioDTO usuario1 = usuarioController.buscarPorId("usuario1@mail.com");
+        if (usuario1 == null) {
+            System.out.println("Usuario1@mail.com no encontrado.");
+            return;
+        }
+
+        List<DeporteDTO> deportes = deporteController.obtenerTodos();
+        if (deportes.isEmpty()) return;
+
+        TipoEmparejamiento[] estrategias = TipoEmparejamiento.values();
+        String[] ubicaciones = {"Palermo", "Belgrano", "Caballito", "Recoleta", "Almagro"};
+
+        for (int i = 0; i < 5; i++) {
+            DeporteDTO deporte = deportes.get(i % deportes.size());
+            String ubicacion = ubicaciones[i % ubicaciones.length];
+            Date fecha = obtenerFecha(i + 2);
+            TipoEmparejamiento estrategia = estrategias[i % estrategias.length];
+
+            PartidoDTO dto = new PartidoDTO(deporte, 60, ubicacion, fecha, usuario1.getEmail(), estrategia);
+            String partidoId = partidoController.crearPartido(dto);
+
+            try {
+                partidoController.sumarseAlPartido(partidoId, usuario1.getEmail());
+            } catch (Exception e) {
+                System.out.println("No se pudo inscribir al organizador: " + usuario1.getEmail());
+            }
+
+            // Simular inscripción de jugadores para alcanzar cupo según el estado
+            int cupo = deporte.getCantidadJugadoresEstandar();
+            List<UsuarioDTO> otrosUsuarios = usuarioController.obtenerTodos();
+            int cantidadAInscribir = switch (i) {
+                case 0 -> cupo;       // Confirmado
+                case 1 -> cupo;       // EnJuego
+                case 2 -> cupo;       // Finalizado
+                case 3 -> cupo - 1;   // NecesitamosJugadores (por defecto)
+                case 4 -> cupo / 2;   // Incompleto (para mostrar variedad)
+                default -> 0;
+            };
+
+            int inscriptos = 0;
+            for (UsuarioDTO u : otrosUsuarios) {
+                if (inscriptos >= cantidadAInscribir || u.getEmail().equalsIgnoreCase(usuario1.getEmail())) continue;
+                try {
+                    partidoController.sumarseAlPartido(partidoId, u.getEmail());
+                    inscriptos++;
+                } catch (Exception ignored) {}
+            }
+
+            if (i == 0) {
+                partidoController.cambiarEstado(partidoId, new Confirmado());
+            } else if (i == 1) {
+                partidoController.cambiarEstado(partidoId, new EnJuego());
+            } else if (i == 2) {
+                partidoController.cambiarEstado(partidoId, new Finalizado());
+            }
+        }
+    }
+
 
     private static Date obtenerFecha(int diasFuturos) {
         Calendar cal = Calendar.getInstance();

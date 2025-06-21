@@ -49,20 +49,32 @@ public class PartidoService implements IPartidoService {
         return repository.buscarPorId(id);
     }
 
-    public boolean cambiarEstado(String idPartido, IEstadoPartido estado) {
+    public boolean cambiarEstado(String idPartido, IEstadoPartido nuevoEstado) {
         Partido partido = buscarPorID(idPartido);
 
-        if (partido != null) {
-            partido.setEstado(estado);
+        if (partido != null && partido.getEstado().permiteTransicionA(nuevoEstado)) {
+            partido.setEstado(nuevoEstado);
             return true;
         }
 
         return false;
     }
 
+
     public boolean sumarseAlPartido(String partidoid, String usuarioid) {
         Partido partido = repository.buscarPorId(partidoid);
         Usuario usuario = usuarioRepository.buscarPorEmail(usuarioid);
         return partido.getEstado().manejarNuevoJugador(partido, usuario);
+    }
+
+    public List<PartidoDTO> obtenerPartidosDelUsuario(String usuarioid) {
+        List<Partido> lista = repository.obtenerPartidosDelUsuario(usuarioid);
+        List<PartidoDTO> resultado = new ArrayList<>();
+
+        for (Partido p : lista) {
+            resultado.add(PartidoMapper.toDTO(p));
+        }
+
+        return resultado;
     }
 }

@@ -13,5 +13,8 @@ public interface IEstadoPartido {
     default boolean puedeAgregarJugadores() { return false; }
     default boolean puedeCancelar() { return false; }
     default boolean puedeConfirmar() { return false; }
+    default boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
+        return true;
+    }
 	
 }

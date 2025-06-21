@@ -4,8 +4,6 @@ import model.dto.PartidoDTO;
 import model.estadosDelPartido.IEstadoPartido;
 import services.PartidoService;
 import services.interfaces.IPartidoService;
-import strategy.EmparejamientoContext;
-import strategy.IEstrategiaEmparejamiento;
 
 import java.util.List;
 
@@ -13,7 +11,6 @@ public class PartidoController {
     private static PartidoController instance = null;
 
     private final IPartidoService partidoService;
-    private final EmparejamientoContext emparejamientoService;
 
     public static PartidoController getInstance() {
         if (instance == null) {
@@ -24,7 +21,6 @@ public class PartidoController {
 
     private PartidoController() {
         this.partidoService = new PartidoService();
-        this.emparejamientoService = new EmparejamientoContext();
     }
 
     public String crearPartido(PartidoDTO dto) {
@@ -36,6 +32,10 @@ public class PartidoController {
 
     public List<PartidoDTO> obtenerTodos() {
         return partidoService.obtenerTodos();
+    }
+
+    public List<PartidoDTO> obtenerPartidosDelUsuario(String usuarioid) {
+        return partidoService.obtenerPartidosDelUsuario(usuarioid);
     }
 
     public boolean cambiarEstado(String idPartido, IEstadoPartido estado) {
