@@ -1,5 +1,6 @@
 package controller;
 
+import model.Usuario;
 import model.dto.DeporteUsuarioDTO;
 import model.dto.UsuarioDTO;
 import services.UsuarioService;
@@ -41,4 +42,11 @@ public class UsuarioController {
         return u != null;
     }
 
+    public List<Usuario> obtenerTodos() {
+        return usuarioService.obtenerTodos();
+    }
+
+    public List<DeporteUsuarioDTO> obtenerPrefrecias(String id) {
+        return usuarioService.obtenerPrefrecias(id);
+    }
 }

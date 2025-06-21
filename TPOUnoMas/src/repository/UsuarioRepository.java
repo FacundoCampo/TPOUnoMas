@@ -1,6 +1,8 @@
 package repository;
 
+import model.DeporteUsuario;
 import model.Usuario;
+import model.dto.DeporteUsuarioDTO;
 import model.staticdb.DataBase;
 import repository.interfaces.IUsuarioRepository;
 
@@ -34,5 +36,10 @@ public class UsuarioRepository implements IUsuarioRepository {
             }
         }
         return false;
+    }
+
+    public List<DeporteUsuario> obtenerPrefrecias(String id) {
+        Usuario u = buscarPorEmail(id);
+        return u.getDeportesUsuario();
     }
 }

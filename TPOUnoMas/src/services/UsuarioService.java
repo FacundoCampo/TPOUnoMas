@@ -1,6 +1,7 @@
 package services;
 
 import enums.NivelJuego;
+import mapper.DeporteUsuarioMapper;
 import mapper.UsuarioMapper;
 import model.Deporte;
 import model.DeporteUsuario;
@@ -75,7 +76,6 @@ public class UsuarioService implements IUsuarioService {
         }
 
         usuario.setDeportesUsuario(preferencias);
-        usuarioRepository.actualizar(usuario);
     }
 
     public UsuarioDTO login(String email, String contrasena) {
@@ -91,10 +91,26 @@ public class UsuarioService implements IUsuarioService {
 
         return UsuarioMapper.toDTO(usuario);
     }
+    public List<Usuario> obtenerTodos() {
+        return usuarioRepository.obtenerTodos();
+    }
+
 
     private boolean ExisteUsuario(UsuarioDTO dto) {
         Usuario existente = usuarioRepository.buscarPorEmail(dto.getEmail());
         return existente != null;
+    }
+
+    public List<DeporteUsuarioDTO> obtenerPrefrecias(String id) {
+        List<DeporteUsuario> du = usuarioRepository.obtenerPrefrecias(id);
+        List<DeporteUsuarioDTO> dtoList = new ArrayList<>();
+
+        if (du != null) {
+            for (DeporteUsuario l : du) {
+                dtoList.add(DeporteUsuarioMapper.toDTO(l));
+            }
+        }
+        return dtoList;
     }
 
 }

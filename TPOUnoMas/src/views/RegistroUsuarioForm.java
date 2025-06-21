@@ -218,7 +218,7 @@ public class RegistroUsuarioForm extends JPanel {
                 listaPreferencias.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue()));
             }
 
-            uc.actualizarPreferencias(usuario.getEmail(), listaPreferencias);
+            if(!listaPreferencias.isEmpty()) uc.actualizarPreferencias(usuario.getEmail(), listaPreferencias);
         } catch (Exception ex) {
             lblMensaje.setText("Error: " + ex.getMessage());
             ex.printStackTrace();

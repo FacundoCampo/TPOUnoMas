@@ -6,12 +6,7 @@ public class DeporteUsuario {
     private Deporte deporte;
     private NivelJuego nivelJuego;
     private boolean favorito;
-    
-    public DeporteUsuario() {
-        this.favorito = false;
-        this.nivelJuego = NivelJuego.PRINCIPIANTE;
-    }
-    
+
     public DeporteUsuario(Deporte deporte, NivelJuego nivelJuego, boolean favorito) {
         this.deporte = deporte;
         this.nivelJuego = nivelJuego;
@@ -28,7 +23,7 @@ public class DeporteUsuario {
     public NivelJuego getNivelJuego() { return nivelJuego; }
     public void setNivelJuego(NivelJuego nivelJuego) { this.nivelJuego = nivelJuego; }
     
-    public boolean isFavorito() { return favorito; }
+    public boolean esFavorito() { return favorito; }
     public void setFavorito(boolean favorito) { this.favorito = favorito; }
     
     public boolean esPrincipiante() { return nivelJuego == NivelJuego.PRINCIPIANTE; }

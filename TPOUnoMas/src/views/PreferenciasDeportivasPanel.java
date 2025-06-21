@@ -1,11 +1,10 @@
 package views;
 
+import controller.DeporteController;
 import controller.UsuarioController;
 import enums.NivelJuego;
 import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
-import model.dto.UsuarioDTO;
-import services.DeporteService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,16 +15,14 @@ import java.util.List;
 public class PreferenciasDeportivasPanel extends JPanel {
 
     private final String usuarioId;
-    private final UsuarioDTO usuario;
     private final JList<String> listaDeportes;
     private final JPanel panelNiveles;
     private final Map<String, JComboBox<NivelJuego>> nivelesPorDeporte;
     private final JLabel lblMensaje;
-    private final DeporteService deporteService = new DeporteService();
+    private List<DeporteDTO> deportes;
 
     public PreferenciasDeportivasPanel(String usuarioId) {
         this.usuarioId = usuarioId;
-        this.usuario = UsuarioController.getInstance().buscarPorId(usuarioId);
         this.nivelesPorDeporte = new HashMap<>();
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -74,6 +71,8 @@ public class PreferenciasDeportivasPanel extends JPanel {
         lblMensaje.setForeground(Color.LIGHT_GRAY);
         add(Box.createVerticalStrut(10));
         add(lblMensaje);
+
+        cargarPreferenciasPrevias();
     }
 
     private JButton crearBotonVerde(String texto) {
@@ -111,9 +110,10 @@ public class PreferenciasDeportivasPanel extends JPanel {
     }
 
     private String[] obtenerNombresDeportes() {
-        List<DeporteDTO> lista = deporteService.obtenerTodos();
+        DeporteController dc = DeporteController.getInstance();
+        deportes = dc.obtenerTodos();
         List<String> nombres = new ArrayList<>();
-        for (DeporteDTO d : lista) {
+        for (DeporteDTO d : deportes) {
             nombres.add(d.getNombre());
         }
         return nombres.toArray(new String[0]);
@@ -127,7 +127,7 @@ public class PreferenciasDeportivasPanel extends JPanel {
             NivelJuego nivel = (NivelJuego) combo.getSelectedItem();
 
             DeporteDTO deporte = null;
-            for (DeporteDTO dto : deporteService.obtenerTodos()) {
+            for (DeporteDTO dto : deportes) {
                 if (dto.getNombre().equals(nombre)) {
                     deporte = dto;
                     break;
@@ -147,9 +147,33 @@ public class PreferenciasDeportivasPanel extends JPanel {
         }
     }
 
-    public JTabbedPane getTabbedPane() {
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Preferencias", this);
-        return tabs;
+    private void cargarPreferenciasPrevias() {
+        UsuarioController uc = UsuarioController.getInstance();
+        List<DeporteUsuarioDTO> preferencias = uc.obtenerPrefrecias(usuarioId);
+        if (preferencias == null || preferencias.isEmpty()) return;
+
+        List<String> nombresSeleccionados = new ArrayList<>();
+        for (DeporteUsuarioDTO pref : preferencias) {
+            nombresSeleccionados.add(pref.getDeporte().getNombre());
+        }
+
+        if (!nombresSeleccionados.isEmpty()) {
+            listaDeportes.setSelectedValue(nombresSeleccionados.get(0), true);
+        }
+
+        String deporteActual = listaDeportes.getSelectedValue();
+        if (deporteActual != null) {
+            for (DeporteUsuarioDTO pref : preferencias) {
+                if (pref.getDeporte().getNombre().equals(deporteActual)) {
+                    actualizarPanelNiveles();
+                    JComboBox<NivelJuego> combo = nivelesPorDeporte.get(deporteActual);
+                    if (combo != null) {
+                        combo.setSelectedItem(pref.getNivel());
+                    }
+                    break;
+                }
+            }
+        }
     }
+
 }

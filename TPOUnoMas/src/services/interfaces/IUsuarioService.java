@@ -1,5 +1,6 @@
 package services.interfaces;
 
+import model.Usuario;
 import model.dto.UsuarioDTO;
 import model.dto.DeporteUsuarioDTO;
 
@@ -11,4 +12,6 @@ public interface IUsuarioService {
     boolean actualizarPerfil(UsuarioDTO dto);
     void actualizarPreferencias(String usuarioId, List<DeporteUsuarioDTO> preferenciasDTO);
     UsuarioDTO login(String email, String contrasena);
+    List<Usuario> obtenerTodos();
+    List<DeporteUsuarioDTO> obtenerPrefrecias(String id);
 }
