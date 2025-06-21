@@ -92,9 +92,19 @@ public class UsuarioService implements IUsuarioService {
 
         return UsuarioMapper.toDTO(usuario);
     }
-    public List<Usuario> obtenerTodos() {
-        return usuarioRepository.obtenerTodos();
+
+    public List<UsuarioDTO> obtenerTodos() {
+        List<Usuario> usuarios = usuarioRepository.obtenerTodos();
+        List<UsuarioDTO> resultado = new ArrayList<>();
+
+        for (Usuario usuario : usuarios) {
+            UsuarioDTO dto = UsuarioMapper.toDTO(usuario);
+            resultado.add(dto);
+        }
+
+        return resultado;
     }
+
 
 
     private boolean ExisteUsuario(UsuarioDTO dto) {

@@ -78,6 +78,10 @@ public class Usuario {
         return getNivelJuegoParaDeporte(deporte) != null;
     }
 
+    public void actualizar(String mensaje) {
+        System.out.println("[NOTIFICACIÓN para " + this.email + "]: " + mensaje);
+    }
+
     @Override
     public String toString() {
         return "Usuario{nombre='" + nombre + "', email='" + email + "'}";

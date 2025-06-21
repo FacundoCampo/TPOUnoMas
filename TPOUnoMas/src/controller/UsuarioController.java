@@ -42,7 +42,7 @@ public class UsuarioController {
         return u != null;
     }
 
-    public List<Usuario> obtenerTodos() {
+    public List<UsuarioDTO> obtenerTodos() {
         return usuarioService.obtenerTodos();
     }
 

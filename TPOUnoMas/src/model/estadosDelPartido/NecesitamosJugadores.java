@@ -9,15 +9,39 @@ public class NecesitamosJugadores implements IEstadoPartido {
 
     @Override
     public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[NecesitamosJugadores] Intentando agregar jugador");
-        if (contexto == null || jugador == null) return false;
-        if (contexto.estaCompleto() || contexto.estaInscrito(jugador)) return false;
+        System.out.println("[NecesitamosJugadores] Intentando agregar jugador: " + (jugador != null ? jugador.getEmail() : "null"));
+
+        if (contexto == null) {
+            System.out.println("[NecesitamosJugadores] El contexto del partido es null.");
+            return false;
+        }
+
+        if (jugador == null) {
+            System.out.println("[NecesitamosJugadores] El jugador es null.");
+            return false;
+        }
+
+        if (contexto.estaCompleto()) {
+            System.out.println("[NecesitamosJugadores] El partido ya está completo.");
+            return false;
+        }
+
+        if (contexto.estaInscrito(jugador)) {
+            System.out.println("[NecesitamosJugadores] El jugador ya está inscrito en el partido.");
+            return false;
+        }
 
         boolean agregado = contexto.agregarJugadorDirecto(jugador);
+        System.out.println("[NecesitamosJugadores] Resultado de agregar jugador directamente: " + agregado);
+
         if (agregado) {
+            System.out.println("[NecesitamosJugadores] Agregado correctamente. Agregando a historial y verificando transición.");
             jugador.agregarPartidoAHistorial(contexto);
             verificarTransicion(contexto);
+        } else {
+            System.out.println("[NecesitamosJugadores] No se pudo agregar el jugador.");
         }
+
         return agregado;
     }
 

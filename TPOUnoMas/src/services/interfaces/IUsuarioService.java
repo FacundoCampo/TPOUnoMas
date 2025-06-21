@@ -12,6 +12,6 @@ public interface IUsuarioService {
     boolean actualizarPerfil(UsuarioDTO dto);
     void actualizarPreferencias(String usuarioId, List<DeporteUsuarioDTO> preferenciasDTO);
     UsuarioDTO login(String email, String contrasena);
-    List<Usuario> obtenerTodos();
+    List<UsuarioDTO> obtenerTodos();
     List<DeporteUsuarioDTO> obtenerPreferencias(String id);
 }

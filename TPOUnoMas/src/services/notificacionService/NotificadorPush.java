@@ -2,9 +2,11 @@ package services.notificacionService;
 
 import model.entity.Partido;
 import model.entity.Usuario;
+import services.notificacionService.interfaces.IStrategyNotificacion;
+
 import java.util.List;
 
-public class NotificadorPush implements StrategyNotificacion {
+public class NotificadorPush implements IStrategyNotificacion {
     private String apiKey;
     private boolean configurado;
     
