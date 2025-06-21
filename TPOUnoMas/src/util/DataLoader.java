@@ -28,13 +28,17 @@ public class DataLoader {
     public static void cargarUsuarios() {
         List<DeporteDTO> deportes = DeporteController.getInstance().obtenerTodos();
         Random rand = new Random();
+        String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Almagro"};
 
         for (int i = 1; i <= 20; i++) {
             String nombre = "Usuario" + i;
             String email = "usuario" + i + "@mail.com";
             String contrasena = "clave" + i;
-            String[] ubicaciones = {"Palermo", "Caballito", "Recoleta", "Villa Urquiza", "Belgrano", "Almagro"};
-            String ubicacion = ubicaciones[i % ubicaciones.length];
+
+            // Solo usuario11 debe tener ubicación fija en Almagro
+            String ubicacion = email.equalsIgnoreCase("usuario11@mail.com")
+                    ? "Almagro"
+                    : ubicaciones[i % ubicaciones.length];
 
             UsuarioDTO usuario = new UsuarioDTO(nombre, email, contrasena, ubicacion);
             Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
@@ -68,6 +72,7 @@ public class DataLoader {
             }
         }
     }
+
 
     public static void cargarPartidos() {
         PartidoController controller = PartidoController.getInstance();

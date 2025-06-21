@@ -2,6 +2,9 @@ package strategy;
 
 import model.entity.Partido;
 import model.entity.Usuario;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,15 +24,25 @@ public class EmparejamientoPorCercania implements IEstrategiaEmparejamiento {
         if (partido == null || candidatos == null) {
             throw new IllegalArgumentException("Parámetros no pueden ser null");
         }
-        
-        return candidatos.stream()
-            .filter(candidato -> esJugadorApto(partido, candidato))
-            .sorted((u1, u2) -> {
+
+        List<Usuario> aptos = new ArrayList<>();
+
+        for (Usuario candidato : candidatos) {
+            if (esJugadorApto(partido, candidato)) {
+                aptos.add(candidato);
+            }
+        }
+
+        aptos.sort(new Comparator<Usuario>() {
+            @Override
+            public int compare(Usuario u1, Usuario u2) {
                 double d1 = calcularDistancia(partido.getUbicacion(), u1.getUbicacion());
                 double d2 = calcularDistancia(partido.getUbicacion(), u2.getUbicacion());
                 return Double.compare(d1, d2);
-            })
-            .collect(Collectors.toList());
+            }
+        });
+
+        return aptos;
     }
     
     @Override
@@ -38,7 +51,7 @@ public class EmparejamientoPorCercania implements IEstrategiaEmparejamiento {
         if (partido.getUbicacion() == null || jugador.getUbicacion() == null) return false;
         if (partido.getJugadoresInscritos().contains(jugador)) return false;
         if (jugador.getNivelJuegoParaDeporte(partido.getDeporte()) == null) return false;
-        
+
         double distancia = calcularDistancia(partido.getUbicacion(), jugador.getUbicacion());
         return distancia <= radioKilometros;
     }
