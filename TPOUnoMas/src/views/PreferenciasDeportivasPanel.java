@@ -31,11 +31,31 @@ public class PreferenciasDeportivasPanel extends JPanel {
         setBackground(new Color(25, 25, 25));
         setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
 
+        // Panel título + botón Actualizar
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setLayout(new BoxLayout(panelTitulo, BoxLayout.X_AXIS));
+        panelTitulo.setOpaque(false);
+        panelTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JLabel lblTitulo = new JLabel("Tus preferencias deportivas");
-        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setForeground(new Color(46, 204, 113));
-        add(lblTitulo);
+
+        JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar.setPreferredSize(new Dimension(120, 35));
+        btnActualizar.setFont(new Font("Tahoma", Font.BOLD, 14));
+        btnActualizar.setForeground(Color.WHITE);
+        btnActualizar.setBackground(new Color(44, 62, 80));
+        btnActualizar.setFocusPainted(false);
+        btnActualizar.setBorderPainted(false);
+        btnActualizar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnActualizar.addActionListener(e -> cargarPreferenciasPrevias());
+
+        panelTitulo.add(lblTitulo);
+        panelTitulo.add(Box.createHorizontalStrut(20));
+        panelTitulo.add(btnActualizar);
+
+        add(panelTitulo);
         add(Box.createVerticalStrut(20));
 
         tabla = new JTable(tablaModel) {

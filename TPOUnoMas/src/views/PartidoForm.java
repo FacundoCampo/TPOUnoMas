@@ -38,7 +38,41 @@ public class PartidoForm extends JPanel {
         add(lblTitulo);
         add(Box.createVerticalStrut(20));
 
-        comboDeporte = crearComboBox("Deporte", obtenerNombresDeportesDesdeController());
+        // Label "Deporte"
+        JLabel lblDeporte = new JLabel("Deporte");
+        lblDeporte.setForeground(Color.WHITE);
+        lblDeporte.setFont(new Font("Tahoma", Font.BOLD, 14));
+        lblDeporte.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(lblDeporte);
+
+        // Panel horizontal para comboDeporte + botón Actualizar
+        JPanel panelCombo = new JPanel();
+        panelCombo.setLayout(new BoxLayout(panelCombo, BoxLayout.X_AXIS));
+        panelCombo.setOpaque(false);
+        panelCombo.setMaximumSize(new Dimension(400, 35));
+
+        comboDeporte = new JComboBox<>(obtenerNombresDeportesDesdeController());
+        comboDeporte.setMaximumSize(new Dimension(Short.MAX_VALUE, 35));
+        panelCombo.add(comboDeporte);
+
+        panelCombo.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        JButton btnActualizar = new JButton("Actualizar");
+        btnActualizar.setPreferredSize(new Dimension(100, 35));
+        btnActualizar.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnActualizar.setForeground(Color.WHITE);
+        btnActualizar.setBackground(new Color(44, 62, 80));
+        btnActualizar.setFocusPainted(false);
+        btnActualizar.setBorderPainted(false);
+        btnActualizar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnActualizar.addActionListener(e ->
+                comboDeporte.setModel(new DefaultComboBoxModel<>(obtenerNombresDeportesDesdeController()))
+        );
+        panelCombo.add(btnActualizar);
+
+        add(panelCombo);
+        add(Box.createVerticalStrut(10));
+
         txtDuracion = crearCampoTexto("Duración (minutos)");
         txtUbicacion = crearCampoTexto("Ubicación");
         txtFecha = crearCampoTexto("Fecha y hora (dd/MM/yyyy HH:mm)");

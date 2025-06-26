@@ -20,9 +20,11 @@ public class InternalPanel extends JTabbedPane {
 
         PartidoPanel pnlPartido = new PartidoPanel();
         PreferenciasDeportivasPanel pnlPref = new PreferenciasDeportivasPanel(id);
+        DeporteForm pnlDeporte = new DeporteForm();
 
         this.addTab("Partido", pnlPartido.setTab(id));
         this.addTab("Preferencias", pnlPref);
+        this.addTab("Deportes", pnlDeporte);
 
         setUI(new javax.swing.plaf.basic.BasicTabbedPaneUI() {
             @Override
