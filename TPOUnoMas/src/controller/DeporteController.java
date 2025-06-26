@@ -29,8 +29,8 @@ public class DeporteController {
         return servicio.buscarPorNombre(nombre);
     }
 
-    public void crearDeporte(DeporteDTO dto) {
-        servicio.crearDeporte(dto);
+    public boolean crearDeporte(DeporteDTO dto) {
+        return servicio.crearDeporte(dto);
     }
 
     public boolean modificarDeporte(String nombreViejo, DeporteDTO datosNuevos) {

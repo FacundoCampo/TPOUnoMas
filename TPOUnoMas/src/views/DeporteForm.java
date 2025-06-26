@@ -127,7 +127,14 @@ public class DeporteForm extends JPanel {
             }
 
             DeporteDTO dto = new DeporteDTO(null, nombre, cantidadJugadores);
-            DeporteController.getInstance().crearDeporte(dto);
+            boolean creado = DeporteController.getInstance().crearDeporte(dto);
+
+            if(!creado) {
+                lblMensaje.setText("✓ Deporte '" + nombre + "' no pudo ser creado.");
+                lblMensaje.setForeground(new Color(46, 204, 113));
+
+                return;
+            }
 
             lblMensaje.setText("✓ Deporte '" + nombre + "' creado correctamente. Recuerda actualizar las listas en Preferencias y Crear Partido.");
             lblMensaje.setForeground(new Color(46, 204, 113));
