@@ -136,15 +136,15 @@ public class RegistroUsuarioForm extends JPanel {
             UsuarioController uc = UsuarioController.getInstance();
             String nombre = txtNombre.getText().trim();
             String email = txtEmail.getText().trim();
-            String contraseña = new String(txtContraseña.getPassword()).trim();
+            String password = new String(txtContraseña.getPassword()).trim();
             String ubicacion = txtUbicacion.getText().trim();
 
-            if (nombre.isEmpty() || email.isEmpty() || contraseña.isEmpty()) {
-                lblMensaje.setText("Nombre, email y contraseña son obligatorios.");
+            if (nombre.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                lblMensaje.setText("Nombre, email y password son obligatorios.");
                 return;
             }
 
-            UsuarioDTO usuario = new UsuarioDTO(nombre, email, contraseña, ubicacion);
+            UsuarioDTO usuario = new UsuarioDTO(nombre, email, password, ubicacion);
             boolean ok = uc.registrar(usuario);
 
             if (!ok) {

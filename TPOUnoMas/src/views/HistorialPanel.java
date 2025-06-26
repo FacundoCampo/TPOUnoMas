@@ -27,7 +27,7 @@ public class HistorialPanel extends JPanel {
         JPanel topPanel = new JPanel(new FlowLayout());
         topPanel.setBackground(new Color(25, 25, 25));
 
-        JLabel lblTitulo = new JLabel("Mis Partidos como Organizador");
+        JLabel lblTitulo = new JLabel("Historial");
         lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 18));
         lblTitulo.setForeground(Color.WHITE);
         topPanel.add(lblTitulo);

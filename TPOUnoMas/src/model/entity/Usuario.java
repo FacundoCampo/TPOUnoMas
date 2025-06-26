@@ -9,22 +9,22 @@ import java.util.ArrayList;
 public class Usuario implements IObserver {
     private String nombre;
     private String email; //es unico y se utiliza como ID
-    private String contraseña;
+    private String password;
     private String ubicacion;
     private List<DeporteUsuario> deportesUsuario;
     private List<String> historialPartidos;
 
-    public Usuario(String nombre, String email, String contraseña, String ubicacion) {
+    public Usuario(String nombre, String email, String password, String ubicacion) {
         this.nombre = nombre;
         this.email = email;
-        this.contraseña = contraseña;
+        this.password = password;
         this.ubicacion = ubicacion;
         this.deportesUsuario = new ArrayList<>();
         this.historialPartidos = new ArrayList<>();
     }
     
-    public Usuario(String id, String nombre, String email, String contraseña, String ubicacion) {
-        this(nombre, email, contraseña, ubicacion);
+    public Usuario(String id, String nombre, String email, String password, String ubicacion) {
+        this(nombre, email, password, ubicacion);
     }
     
     // Getters y Setters
@@ -34,8 +34,8 @@ public class Usuario implements IObserver {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email.trim().toLowerCase(); }
     
-    public String getContraseña() { return contraseña; }
-    public void setContraseña(String contraseña) { this.contraseña = contraseña; }
+    public String getContraseña() { return password; }
+    public void setContraseña(String password) { this.password = password; }
     
     public String getUbicacion() { return ubicacion; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }

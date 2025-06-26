@@ -11,4 +11,5 @@ public interface IPartidoRepository {
     Partido buscarPorId(String id);
     List<Partido> obtenerPartidosDelUsuario(String usuarioid);
     List<Partido> obtenerHistorial(String usuarioid);
+    List<Partido> obtenerSoloPartidosDondeSeNecesitanJugadores();
 }

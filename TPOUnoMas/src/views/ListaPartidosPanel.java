@@ -1,20 +1,19 @@
 package views;
 
 import controller.PartidoController;
-import enums.TipoEmparejamiento;
 import model.dto.PartidoDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ListaPartidosPanel extends JPanel {
 
     private String usuarioid;
 
-    private JComboBox<String> comboEstado;
+    private JComboBox<String> comboZona;
     private DefaultListModel<PartidoDTO> listModel;
     private JList<PartidoDTO> listaPartidos;
     private JLabel lblMensaje;
@@ -28,20 +27,20 @@ public class ListaPartidosPanel extends JPanel {
         JPanel topPanel = new JPanel(new FlowLayout());
         topPanel.setBackground(new Color(25, 25, 25));
 
-        JLabel lblEstado = new JLabel("Filtrar por estado:");
-        lblEstado.setForeground(Color.WHITE);
-        lblEstado.setFont(new Font("Tahoma", Font.BOLD, 16));
-        topPanel.add(lblEstado);
+        JLabel lblZona = new JLabel("Filtrar por zona:");
+        lblZona.setForeground(Color.WHITE);
+        lblZona.setFont(new Font("Tahoma", Font.BOLD, 16));
+        topPanel.add(lblZona);
 
-        comboEstado = new JComboBox<>();
-        comboEstado.addItem("Todos");
-        cargarEstados();
-        comboEstado.setPreferredSize(new Dimension(180, 35));
-        comboEstado.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        comboEstado.setBackground(Color.WHITE);
-        comboEstado.setForeground(Color.BLACK);
-        comboEstado.addActionListener(this::filtrarPartidos);
-        topPanel.add(comboEstado);
+        comboZona = new JComboBox<>();
+        comboZona.addItem("Todas");
+        cargarZonas();
+        comboZona.setPreferredSize(new Dimension(180, 35));
+        comboZona.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        comboZona.setBackground(Color.WHITE);
+        comboZona.setForeground(Color.BLACK);
+        comboZona.addActionListener(this::filtrarPartidos);
+        topPanel.add(comboZona);
 
         JButton btnActualizar = new JButton("Actualizar");
         btnActualizar.setPreferredSize(new Dimension(100, 35));
@@ -98,35 +97,36 @@ public class ListaPartidosPanel extends JPanel {
         cargarPartidos();
     }
 
-    private void cargarEstados() {
-        List<PartidoDTO> todos = PartidoController.getInstance().obtenerTodos();
-        todos.stream()
-                .map(p -> p.getEstado().getNombre())
-                .distinct()
-                .forEach(comboEstado::addItem);
+    private void cargarZonas() {
+        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerSoloPartidosDondeSeNecesitanJugadores();
+        List<String> zonasAgregadas = new ArrayList<>();
+
+        for (PartidoDTO partido : partidos) {
+            String zona = partido.getUbicacion();
+            if (zona != null && !zonasAgregadas.contains(zona)) {
+                zonasAgregadas.add(zona);
+                comboZona.addItem(zona);
+            }
+        }
     }
 
     private void cargarPartidos() {
         listModel.clear();
-        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerTodos();
+        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerSoloPartidosDondeSeNecesitanJugadores();
         for (PartidoDTO dto : partidos) {
             listModel.addElement(dto);
         }
     }
 
     private void filtrarPartidos(ActionEvent e) {
-        String estadoSeleccionado = (String) comboEstado.getSelectedItem();
+        String zonaSeleccionada = (String) comboZona.getSelectedItem();
         listModel.clear();
-        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerTodos();
+        List<PartidoDTO> partidos = PartidoController.getInstance().obtenerSoloPartidosDondeSeNecesitanJugadores();
 
-        List<PartidoDTO> filtrados = "Todos".equals(estadoSeleccionado) ?
-                partidos :
-                partidos.stream()
-                        .filter(p -> p.getEstado().getNombre().equals(estadoSeleccionado))
-                        .collect(Collectors.toList());
-
-        for (PartidoDTO dto : filtrados) {
-            listModel.addElement(dto);
+        for (PartidoDTO dto : partidos) {
+            if ("Todas".equals(zonaSeleccionada) || dto.getUbicacion().equalsIgnoreCase(zonaSeleccionada)) {
+                listModel.addElement(dto);
+            }
         }
     }
 
@@ -177,5 +177,4 @@ public class ListaPartidosPanel extends JPanel {
             return this;
         }
     }
-
 }

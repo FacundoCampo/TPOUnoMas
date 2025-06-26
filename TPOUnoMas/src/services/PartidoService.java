@@ -45,6 +45,17 @@ public class PartidoService implements IPartidoService {
         return resultado;
     }
 
+    public List<PartidoDTO> obtenerSoloPartidosDondeSeNecesitanJugadores() {
+        List<Partido> lista = repository.obtenerSoloPartidosDondeSeNecesitanJugadores();
+        List<PartidoDTO> resultado = new ArrayList<>();
+
+        for (Partido p : lista) {
+            resultado.add(PartidoMapper.toDTO(p));
+        }
+
+        return resultado;
+    }
+
     public Partido buscarPorID(String id) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");

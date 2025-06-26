@@ -81,7 +81,7 @@ public class UsuarioService implements IUsuarioService {
 
     public UsuarioDTO login(String email, String contrasena) {
         if (email == null || email.trim().isEmpty() || contrasena == null || contrasena.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email y contraseña son obligatorios");
+            throw new IllegalArgumentException("Email y password son obligatorios");
         }
 
         Usuario usuario = usuarioRepository.buscarPorEmail(email.trim().toLowerCase());

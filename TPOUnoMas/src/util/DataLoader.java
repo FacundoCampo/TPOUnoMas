@@ -124,7 +124,7 @@ public class DataLoader {
         Random rand = new Random();
         boolean partidoConUnLugar = false;
 
-        for (int i = 0; i < partidos.size(); i++) {
+        for (int i = 0; i < 8; i++) {
             PartidoDTO partido = partidos.get(i);
             int cupo = partido.getDeporte().getCantidadJugadoresEstandar();
             Set<Integer> usados = new HashSet<>();

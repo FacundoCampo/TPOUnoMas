@@ -81,7 +81,7 @@ public class FrmPrincipal extends JFrame {
         tUsuario.setBounds(310, 170, 295, 35);
         panel.add(tUsuario);
 
-        JLabel lblPassword = new JLabel("CONTRASEÑA", SwingConstants.CENTER);
+        JLabel lblPassword = new JLabel("CONTRASEñA", SwingConstants.CENTER);
         lblPassword.setForeground(Color.WHITE);
         lblPassword.setFont(new Font("Tahoma", Font.BOLD, 16));
         lblPassword.setBounds(310, 215, 295, 25);
@@ -134,7 +134,7 @@ public class FrmPrincipal extends JFrame {
                         ex.printStackTrace();
                     }
                 } else {
-                    JOptionPane.showMessageDialog(pnlIntro, "No se reconoce ese DNI o contraseña.", "Error",
+                    JOptionPane.showMessageDialog(pnlIntro, "No se reconoce ese DNI o password.", "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }

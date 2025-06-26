@@ -60,5 +60,15 @@ public class PartidoRepository implements IPartidoRepository {
         return historial;
     }
 
+    public List<Partido> obtenerSoloPartidosDondeSeNecesitanJugadores() {
+        List<Partido> resultado = new ArrayList<>();
+        for (Partido p : DataBase.partidos) {
+            if (p.getEstado().getNombre() == "Necesitamos jugadores") {
+                resultado.add(p);
+            }
+        }
+        return resultado;
+    }
+
 
 }

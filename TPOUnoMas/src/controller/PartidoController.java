@@ -36,6 +36,10 @@ public class PartidoController {
         return partidoService.obtenerTodos();
     }
 
+    public List<PartidoDTO> obtenerSoloPartidosDondeSeNecesitanJugadores() {
+        return partidoService.obtenerSoloPartidosDondeSeNecesitanJugadores();
+    }
+
     public List<PartidoDTO> obtenerPartidosDelUsuario(String usuarioid) {
         return partidoService.obtenerPartidosDelUsuario(usuarioid);
     }
