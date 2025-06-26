@@ -130,7 +130,7 @@ public class DeporteForm extends JPanel {
             boolean creado = DeporteController.getInstance().crearDeporte(dto);
 
             if(!creado) {
-                lblMensaje.setText("✓ Deporte '" + nombre + "' no pudo ser creado.");
+                lblMensaje.setText("X Deporte '" + nombre + "' no pudo ser creado.");
                 lblMensaje.setForeground(new Color(46, 204, 113));
 
                 return;
