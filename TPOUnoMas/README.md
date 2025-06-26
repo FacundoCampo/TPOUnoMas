@@ -1,28 +1,51 @@
 # TPO UnoMas
 
-Este proyecto implementa una aplicación de escritorio en Java usando Swing que permite gestionar la creación y administración de partidos deportivos entre usuarios, aplicando distintas estrategias de emparejamiento. Se sigue el patrón de diseño **MVC** (Modelo-Vista-Controlador) y se simula la persistencia de datos en archivos `.txt`.
+**UnoMas** es una aplicación de escritorio desarrollada en **Java con Swing** que permite gestionar partidos deportivos entre usuarios, seleccionando deportes, estrategias de emparejamiento y participando de encuentros. El proyecto está estructurado bajo el patrón de diseño **MVC (Modelo-Vista-Controlador)**, simulando una persistencia en memoria.
 
-## Funcionalidades
+---
 
-- Crear nuevos partidos seleccionando deporte, estrategia y participantes.
-- Ver listado de partidos creados.
-- Unirse a un partido existente.
-- Eliminar partidos.
-- Aplicar diferentes estrategias de emparejamiento entre jugadores (Patrón Strategy).
-- Controlar el estado del partido (Patrón State).
-- Simulación de base de datos usando archivos de texto o clases in-memory.
+## 🏗️ Arquitectura y Patrones Aplicados
 
-## Tecnologías utilizadas
+Este proyecto fue diseñado teniendo en cuenta principios de diseño sólidos (SOLID) y GRASP, e implementa varios **patrones de diseño** reconocidos:
 
-- Java
-- Swing para interfaz gráfica
-- Patrón MVC
-- Patrón Strategy (para tipos de emparejamiento)
-- Patrón State (para estados del partido)
-- DTOs y mappers para desacoplar capas
-- Simulación de persistencia con clases o archivos `.txt`
+### ✅ Patrones de Diseño
 
-## Usuario para testear
-Usuario1@mail.com
-clave1
+| Patrón       | Uso                                                       | Justificación                                                          |
+|--------------|------------------------------------------------------------|------------------------------------------------------------------------|
+| **MVC**      | Separación de lógica de negocio, interfaz y controladores | Favorece la mantenibilidad y escalabilidad del sistema                 |
+| **Strategy** | Emparejamiento por cercanía, nivel o historial            | Permite intercambiar algoritmos en tiempo de ejecución (**OCP**)       |
+| **State**    | Manejo del ciclo de vida de un partido                    | Encapsula comportamientos por estado (**SRP**, **Polimorfismo GRASP**) |
+| **Adapter**  | Envío de notificaciones por distintos servicios           | Unifica interfaces externas de email.                                  |
+| **Observer** | Notificación a usuarios ante cambios en partidos          | Bajo acoplamiento entre sujeto (`Partido`) y observadores (`Usuario`)  |
+| **Repository** | Acceso abstracto a "base de datos"                      | Desacopla lógica de negocio de la persistencia (**DIP**, **SRP**)      |
+| **Factory**  | Creación de estrategias de emparejamiento                 | Centraliza la lógica de instanciación y mejora extensibilidad          |
 
+---
+
+## 🚀 Funcionalidades
+
+- Registro de nuevos usuarios con preferencias deportivas y niveles.
+- Creación de partidos seleccionando deporte, fecha, duración, estrategia de emparejamiento.
+- Emparejamiento automático de jugadores según estrategia elegida.
+- Visualización de partidos disponibles e historial.
+- Participación y eliminación de partidos.
+- Transición automática del estado del partido según jugadores y tiempo.
+- Notificación a los jugadores sobre eventos importantes del partido.
+
+---
+
+## ⚙️ Tecnologías Utilizadas
+
+- **Java SE**
+- **Swing** (interfaz gráfica)
+- **Principios SOLID & GRASP**
+- **DTOs & Mappers** (desacoplamiento entre capas)
+- **Simulación de persistencia** (con clases estáticas)
+
+---
+
+## 👤 Usuario para Pruebas
+
+```plaintext
+Email: Usuario1@mail.com  
+Contraseña: clave1
