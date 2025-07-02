@@ -26,7 +26,5 @@ public interface IPartidoService {
 
     boolean cancelarPartido(String partidoId, String motivo);
 
-    boolean iniciarPartidoSiCorresponde(String partidoId);
-
     boolean finalizarPartido(String partidoId);
 }

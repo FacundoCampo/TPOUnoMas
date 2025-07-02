@@ -64,10 +64,6 @@ public class PartidoController {
         return partidoService.cancelarPartido(partidoId, motivo);
     }
 
-    public boolean iniciarPartido(String partidoId) {
-        return partidoService.iniciarPartidoSiCorresponde(partidoId);
-    }
-
     public boolean finalizarPartido(String partidoId) {
         return partidoService.finalizarPartido(partidoId);
     }

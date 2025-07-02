@@ -144,10 +144,7 @@ public class DataLoader {
 
             if (inscritos < cupo) continue;
 
-            if (i % 4 == 0) {
-                controller.iniciarPartido(partido.getId());
-            } else if (i % 4 == 2) {
-                controller.iniciarPartido(partido.getId());
+            if (i % 4 == 2) {
                 controller.finalizarPartido(partido.getId());
             }
         }
@@ -201,10 +198,7 @@ public class DataLoader {
                 } catch (Exception ignored) {}
             }
 
-            if (i == 1) {
-                partidoController.iniciarPartido(partidoId);
-            } else if (i == 2) {
-                partidoController.iniciarPartido(partidoId);
+            if (i == 2) {
                 partidoController.finalizarPartido(partidoId);
             }
         }

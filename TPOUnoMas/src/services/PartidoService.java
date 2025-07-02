@@ -144,18 +144,6 @@ public class PartidoService implements IPartidoService {
         }
     }
 
-    public boolean iniciarPartidoSiCorresponde(String partidoId) {
-        Partido partido = repository.buscarPorId(partidoId);
-        PartidoContext contexto = new PartidoContext(partido);
-
-        try {
-            contexto.finalizar();
-            return true;
-        } catch (IllegalStateException e) {
-            return false;
-        }
-    }
-
     public boolean finalizarPartido(String partidoId) {
         Partido partido = repository.buscarPorId(partidoId);
         PartidoContext contexto = new PartidoContext(partido);
