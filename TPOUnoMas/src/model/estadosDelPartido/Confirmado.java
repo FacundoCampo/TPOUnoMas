@@ -1,44 +1,64 @@
 package model.estadosDelPartido;
 
+import enums.EstadoPartido;
+import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
+
+import java.util.Date;
 
 public class Confirmado implements IEstadoPartido {
 
     @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[Confirmado] No se pueden agregar jugadores");
-        return false;
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        throw new IllegalStateException("No se pueden agregar jugadores en estado Confirmado.");
     }
 
     @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[Confirmado] Jugadores ya confirmados");
-        return false;
+    public void cancelar(PartidoContext contexto) {
+        contexto.setEstadoActual(new Cancelado("Cancelado después de haber sido confirmado."));
+
+        Partido partido = contexto.getPartido();
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setFechaCreacion(new Date());
+        n.setMensaje("El partido confirmado fue cancelado por el organizador.");
+        partido.agregarNotificacion(n);
+
+        partido.notificarObservadores("El partido ha sido cancelado.");
     }
 
     @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[Confirmado] Partido cancelado");
-        if (contexto != null) {
-            contexto.setEstado(new Cancelado());
+    public void finalizar(PartidoContext contexto) {
+        Partido partido = contexto.getPartido();
+
+        if (!partido.estaCompleto()) {
+            contexto.setEstadoActual(new NecesitamosJugadores());
+            notificar(partido, "El partido ya no tiene suficientes jugadores.");
+            return;
+        }
+
+        long horas = partido.getHorasHastaPartido();
+
+        if (horas <= 0) {
+            contexto.setEstadoActual(new EnJuego());
+            notificar(partido, "¡El partido ha comenzado!");
+        } else {
+            throw new IllegalStateException("Aún no es la hora del partido.");
         }
     }
 
     @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[Confirmado] Verificando transición...");
-        if (contexto == null) return;
-        long horasHastaPartido = contexto.getHorasHastaPartido();
-        if (horasHastaPartido <= 0) {
-            contexto.setEstado(new EnJuego());
-        } else if (!contexto.estaCompleto()) {
-            contexto.setEstado(new NecesitamosJugadores());
-        }
+    public String getNombre() {
+        return EstadoPartido.CONFIRMADO.name();
     }
 
-    @Override
-    public String getNombre() { return "Confirmado"; }
-    @Override
-    public boolean puedeCancelar() { return true; }
+    private void notificar(Partido partido, String mensaje) {
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setMensaje(mensaje);
+        n.setFechaCreacion(new Date());
+        partido.agregarNotificacion(n);
+    }
 }

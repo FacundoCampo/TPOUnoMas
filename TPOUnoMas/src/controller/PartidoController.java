@@ -48,19 +48,28 @@ public class PartidoController {
         return partidoService.obtenerHistorial(usuarioid);
     }
 
-    public boolean cambiarEstado(String idPartido, IEstadoPartido estado) {
-        return partidoService.cambiarEstado(idPartido, estado);
-    }
-
-    public boolean sumarseAlPartido(String partidoid, String usuarioid) {
-        return partidoService.sumarseAlPartido(partidoid, usuarioid);
-    }
-
     public List<UsuarioDTO> emparejar(String partidoId) {
         return partidoService.emparejar(partidoId);
     }
-    public boolean cambiarTipoEmparejamiento(String id, TipoEmparejamiento nuevoTipo) {
-        return partidoService.cambiarTipoEmparejamiento(id, nuevoTipo);
+
+    public boolean cambiarTipoEmparejamiento(String partidoId, TipoEmparejamiento nuevoTipo) {
+        return partidoService.cambiarTipoEmparejamiento(partidoId, nuevoTipo);
+    }
+
+    public boolean agregarJugador(String partidoId, String jugador) {
+        return partidoService.agregarJugador(partidoId, jugador);
+    }
+
+    public boolean cancelarPartido(String partidoId, String motivo) {
+        return partidoService.cancelarPartido(partidoId, motivo);
+    }
+
+    public boolean iniciarPartido(String partidoId) {
+        return partidoService.iniciarPartidoSiCorresponde(partidoId);
+    }
+
+    public boolean finalizarPartido(String partidoId) {
+        return partidoService.finalizarPartido(partidoId);
     }
 
 }

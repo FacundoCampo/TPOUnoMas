@@ -5,9 +5,9 @@ import mapper.PartidoMapper;
 import mapper.UsuarioMapper;
 import model.dto.UsuarioDTO;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
 import model.dto.PartidoDTO;
-import model.estadosDelPartido.IEstadoPartido;
 import repository.PartidoRepository;
 import repository.UsuarioRepository;
 import repository.interfaces.IPartidoRepository;
@@ -56,31 +56,13 @@ public class PartidoService implements IPartidoService {
         return resultado;
     }
 
-    public Partido buscarPorID(String id) {
+    private Partido buscarPorID(String id) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("El ID no puede ser null o vacío");
         }
         Partido p = repository.buscarPorId(id);
 
         return repository.buscarPorId(id);
-    }
-
-    public boolean cambiarEstado(String idPartido, IEstadoPartido nuevoEstado) {
-        Partido partido = buscarPorID(idPartido);
-
-        if (partido != null && partido.getEstado().permiteTransicionA(nuevoEstado)) {
-            partido.setEstado(nuevoEstado);
-            return true;
-        }
-
-        return false;
-    }
-
-
-    public boolean sumarseAlPartido(String partidoid, String usuarioid) {
-        Partido partido = repository.buscarPorId(partidoid);
-        Usuario usuario = usuarioRepository.buscarPorEmail(usuarioid);
-        return partido.getEstado().manejarNuevoJugador(partido, usuario);
     }
 
     public List<PartidoDTO> obtenerPartidosDelUsuario(String usuarioid) {
@@ -124,11 +106,66 @@ public class PartidoService implements IPartidoService {
 
     public boolean cambiarTipoEmparejamiento(String id, TipoEmparejamiento nuevoTipo) {
         Partido partido = buscarPorID(id);
-        if (partido != null && partido.getEstado().permiteCambioDeEstrategia()) {
+        if (partido == null) return false;
+
+        PartidoContext contexto = new PartidoContext(partido);
+
+        if (contexto.permiteCambioDeEstrategia()) {
             partido.setTipoEmparejamiento(nuevoTipo);
             return true;
         }
+
         return false;
+    }
+
+
+    public boolean agregarJugador(String partidoId, String jugador) {
+        Partido partido = repository.buscarPorId(partidoId);
+        PartidoContext contexto = new PartidoContext(partido);
+        Usuario u = usuarioRepository.buscarPorEmail(jugador);
+
+        try {
+            contexto.agregarJugador(u);
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
+    public boolean cancelarPartido(String partidoId, String motivo) {
+        Partido partido = repository.buscarPorId(partidoId);
+        PartidoContext contexto = new PartidoContext(partido);
+
+        try {
+            contexto.cancelar(motivo);
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
+    public boolean iniciarPartidoSiCorresponde(String partidoId) {
+        Partido partido = repository.buscarPorId(partidoId);
+        PartidoContext contexto = new PartidoContext(partido);
+
+        try {
+            contexto.finalizar();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
+
+    public boolean finalizarPartido(String partidoId) {
+        Partido partido = repository.buscarPorId(partidoId);
+        PartidoContext contexto = new PartidoContext(partido);
+
+        try {
+            contexto.finalizar();
+            return true;
+        } catch (IllegalStateException e) {
+            return false;
+        }
     }
 
 }

@@ -1,108 +1,60 @@
 package model.estadosDelPartido;
 
+import enums.EstadoPartido;
 import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
 import java.util.Date;
 
 public class NecesitamosJugadores implements IEstadoPartido {
 
     @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[NecesitamosJugadores] Intentando agregar jugador: " + (jugador != null ? jugador.getEmail() : "null"));
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        Partido partido = contexto.getPartido();
 
-        if (contexto == null) {
-            System.out.println("[NecesitamosJugadores] El contexto del partido es null.");
-            return false;
-        }
+        if (partido == null || jugador == null) return;
 
-        if (jugador == null) {
-            System.out.println("[NecesitamosJugadores] El jugador es null.");
-            return false;
-        }
+        if (partido.estaCompleto() || partido.estaInscrito(jugador)) return;
 
-        if (contexto.estaCompleto()) {
-            System.out.println("[NecesitamosJugadores] El partido ya está completo.");
-            return false;
-        }
-
-        if (contexto.estaInscrito(jugador)) {
-            System.out.println("[NecesitamosJugadores] El jugador ya está inscrito en el partido.");
-            return false;
-        }
-
-        boolean agregado = contexto.agregarJugadorDirecto(jugador);
-        System.out.println("[NecesitamosJugadores] Resultado de agregar jugador directamente: " + agregado);
+        boolean agregado = partido.agregarJugadorDirecto(jugador);
 
         if (agregado) {
-            System.out.println("[NecesitamosJugadores] Agregado correctamente. Agregando a historial y verificando transición.");
-            jugador.agregarPartidoAHistorial(contexto.getId());
-            verificarTransicion(contexto);
-        } else {
-            System.out.println("[NecesitamosJugadores] No se pudo agregar el jugador.");
-        }
+            jugador.agregarPartidoAHistorial(partido.getId());
+            notificar(partido, "Jugador agregado: " + jugador.getEmail());
 
-        return agregado;
-    }
-
-    @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[NecesitamosJugadores] No se manejan confirmaciones en este estado");
-        return false;
-    }
-
-    @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[NecesitamosJugadores] Partido cancelado por falta de jugadores");
-        contexto.setEstado(new Cancelado());
-        notificarCancelacion(contexto);
-    }
-
-    @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[NecesitamosJugadores] Verificando si partido está completo");
-        if (contexto != null && contexto.estaCompleto()) {
-            contexto.setEstado(new PartidoArmadoI());
-            notificarPartidoArmado(contexto);
+            if (partido.estaCompleto()) {
+                notificar(partido, "¡El partido está armado!");
+                contexto.setEstadoActual(new PartidoArmadoI());
+            }
         }
     }
 
     @Override
-    public String getNombre() { return "Necesitamos jugadores"; }
-
-    @Override
-    public boolean puedeAgregarJugadores() { return true; }
-
-    @Override
-    public boolean puedeCancelar() { return true; }
-
-    private void notificarCancelacion(Partido contexto) {
-        try {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setIdPartido(contexto.getId());
-            notificacion.setMensaje("El partido ha sido cancelado");
-            notificacion.setFechaCreacion(new Date());
-            contexto.agregarNotificacion(notificacion);
-        } catch (Exception e) {
-            System.err.println("Error al notificar cancelación: " + e.getMessage());
-        }
-    }
-
-    private void notificarPartidoArmado(Partido contexto) {
-        try {
-            Notificacion notificacion = new Notificacion();
-            notificacion.setIdPartido(contexto.getId());
-            notificacion.setMensaje("¡El partido está armado! Se alcanzó el número de jugadores necesarios.");
-            notificacion.setFechaCreacion(new Date());
-            contexto.agregarNotificacion(notificacion);
-        } catch (Exception e) {
-            System.err.println("Error al notificar partido armado: " + e.getMessage());
-        }
+    public void cancelar(PartidoContext contexto) {
+        contexto.setEstadoActual(new Cancelado());
+        notificar(contexto.getPartido(), "El partido ha sido cancelado.");
     }
 
     @Override
-    public boolean permiteCambioDeEstrategia() {
-        return true;
+    public void finalizar(PartidoContext contexto) {
+        throw new IllegalStateException("No se puede finalizar un partido donde se necesitan jugadores.");
+    }
+
+    @Override
+    public String getNombre() {
+        return EstadoPartido.NECESITAMOSJUGADORES.name();
+    }
+
+    @Override
+    public boolean permiteCambioDeEstrategia() { return true; }
+
+    private void notificar(Partido partido, String mensaje) {
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setMensaje(mensaje);
+        n.setFechaCreacion(new Date());
+        partido.agregarNotificacion(n);
     }
 
 }

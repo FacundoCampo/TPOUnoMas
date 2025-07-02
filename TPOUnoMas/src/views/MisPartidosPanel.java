@@ -4,7 +4,6 @@ import controller.PartidoController;
 import enums.TipoEmparejamiento;
 import model.dto.PartidoDTO;
 import model.dto.UsuarioDTO;
-import model.estadosDelPartido.Cancelado;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,7 +100,6 @@ public class MisPartidosPanel extends JPanel {
         bottomPanel.add(Box.createVerticalStrut(8));
         bottomPanel.add(btnCambiarEstrategia);
 
-
         bottomPanel.add(Box.createVerticalStrut(8));
 
         lblMensaje = new JLabel("", SwingConstants.CENTER);
@@ -117,7 +115,6 @@ public class MisPartidosPanel extends JPanel {
     private void cargarPartidos() {
         listModel.clear();
         List<PartidoDTO> partidos = PartidoController.getInstance().obtenerPartidosDelUsuario(this.usuarioid);
-
         for (PartidoDTO dto : partidos) {
             listModel.addElement(dto);
         }
@@ -130,42 +127,8 @@ public class MisPartidosPanel extends JPanel {
             return;
         }
 
-        boolean resultado = PartidoController.getInstance().cambiarEstado(seleccionado.getId(), new Cancelado());
-        if (resultado) {
-            lblMensaje.setText("✔ Partido cancelado correctamente.");
-            cargarPartidos();
-        } else {
-            lblMensaje.setText("No se pudo cancelar el partido.");
-        }
-    }
-
-    private static class PartidoRenderer extends DefaultListCellRenderer {
-        @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                      boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-            if (value instanceof PartidoDTO dto) {
-                String deporte = dto.getDeporte().getNombre();
-                String fecha = new SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
-                String estado = dto.getEstado().getNombre();
-                String estrategia = dto.getTipoEmparejamiento().name();
-                int actuales = dto.getJugadoresInscritos().size();
-                int total = dto.getDeporte().getCantidadJugadoresEstandar();
-                int faltan = total - actuales;
-                String faltanTexto = faltan > 0 ? String.format(" (faltan %d)", faltan) : "";
-
-                setText(String.format(
-                        "%s - %s\nEstado: %s | Estrategia: %s | Jugadores: %d/%d%s",
-                        deporte, fecha, estado, estrategia, actuales, total, faltanTexto
-                ));
-
-                setForeground(Color.WHITE);
-                setBackground(isSelected ? new Color(44, 62, 80) : new Color(34, 34, 34));
-            }
-
-            return this;
-        }
+        boolean resultado = PartidoController.getInstance().cancelarPartido(seleccionado.getId(), null);
+        lblMensaje.setText(resultado ? "✔ Partido cancelado correctamente." : "No se pudo cancelar el partido.");
     }
 
     private void emparejarPartido(ActionEvent e) {
@@ -186,7 +149,6 @@ public class MisPartidosPanel extends JPanel {
                 .map(UsuarioDTO::getEmail)
                 .collect(Collectors.joining("\n"));
 
-        // Crear un JDialog personalizado
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Resultado del Emparejamiento", Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setSize(400, 250);
@@ -227,7 +189,6 @@ public class MisPartidosPanel extends JPanel {
         lblMensaje.setText("✔ Emparejamiento realizado con éxito.");
     }
 
-
     private void cambiarEstrategia(ActionEvent e) {
         PartidoDTO seleccionado = listaPartidos.getSelectedValue();
         if (seleccionado == null) {
@@ -264,8 +225,6 @@ public class MisPartidosPanel extends JPanel {
         combo.setBackground(new Color(44, 62, 80));
         combo.setForeground(Color.black);
         combo.setFocusable(false);
-
-        combo.setFocusable(false);
         combo.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         JPanel centerPanel = new JPanel();
@@ -283,14 +242,7 @@ public class MisPartidosPanel extends JPanel {
         btnAceptar.addActionListener(ev -> {
             TipoEmparejamiento seleccion = (TipoEmparejamiento) combo.getSelectedItem();
             boolean resultado = PartidoController.getInstance().cambiarTipoEmparejamiento(seleccionado.getId(), seleccion);
-
-            if (resultado) {
-                lblMensaje.setText("✔ Estrategia cambiada a: " + seleccion);
-                cargarPartidos();
-            } else {
-                lblMensaje.setText("No se pudo cambiar la estrategia.");
-            }
-
+            lblMensaje.setText(resultado ? "✔ Estrategia cambiada a: " + seleccion : "No se pudo cambiar la estrategia.");
             dialog.dispose();
         });
 
@@ -315,5 +267,32 @@ public class MisPartidosPanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    private static class PartidoRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                      boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
+            if (value instanceof PartidoDTO dto) {
+                String deporte = dto.getDeporte().getNombre();
+                String fecha = new SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
+                String estado = dto.getEstado().toString();
+                String estrategia = dto.getTipoEmparejamiento().name();
+                int actuales = dto.getJugadoresInscritos().size();
+                int total = dto.getDeporte().getCantidadJugadoresEstandar();
+                int faltan = total - actuales;
+                String faltanTexto = faltan > 0 ? String.format(" (faltan %d)", faltan) : "";
+
+                setText(String.format(
+                        "%s - %s\nEstado: %s | Estrategia: %s | Jugadores: %d/%d%s",
+                        deporte, fecha, estado, estrategia, actuales, total, faltanTexto
+                ));
+
+                setForeground(Color.WHITE);
+                setBackground(isSelected ? new Color(44, 62, 80) : new Color(34, 34, 34));
+            }
+
+            return this;
+        }
+    }
 }

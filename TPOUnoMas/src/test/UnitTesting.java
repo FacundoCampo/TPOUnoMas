@@ -23,11 +23,9 @@ import java.util.*;
 
 public class UnitTesting {
 
-	public static void main(String[] args) {
-		testStatePattern();
-		testEmailStrategy();
+	public static void main(String[] args) throws InterruptedException {
 		testPushStrategy();
-		testObserverPattern();
+		testEstadosPartido();
 		testEmparejamientoStrategy();
 		System.out.println("============================");
 		System.out.println("TEST COMPLETO FINALIZADO");
@@ -54,33 +52,39 @@ public class UnitTesting {
 		return partido;
 	}
 
-	public static void testStatePattern() {
+	public static void testEstadosPartido() throws InterruptedException {
 		System.out.println("============================");
-		System.out.println("TESTING PATRÓN STATE");
+		System.out.println("TESTING CICLO COMPLETO DE ESTADOS (PATRÓN STATE)");
 
-		Partido partido = prepararPartidoYJugadores();
+		Deporte futbol = new Deporte(null, "Fútbol", 2);
+		Partido partido = new Partido(futbol, 1, "Palermo", new Date(System.currentTimeMillis() + 2000), "org-1", TipoEmparejamiento.NIVEL); // empieza en 2 seg
+		PartidoContext contexto = new PartidoContext(partido);
 
-		for (Usuario u : partido.getJugadoresInscritos()) {
-			partido.getEstado().manejarNuevoJugador(partido, u);
+		Usuario u1 = new Usuario("Juan", "juan@mail.com", "123", "Palermo");
+		Usuario u2 = new Usuario("Ana", "ana@mail.com", "456", "Belgrano");
+
+		System.out.println("➤ Estado inicial: " + partido.getEstado());
+		contexto.agregarJugador(u1);
+		contexto.agregarJugador(u2); // debería transicionar a PartidoArmado
+
+		System.out.println("➤ Estado tras agregar jugadores: " + partido.getEstado());
+
+		try {
+			contexto.finalizar();
+			System.out.println("➤ Estado tras confirmar por hora: " + partido.getEstado());
+
+			contexto.finalizar();
+			System.out.println("➤ Estado tras iniciar partido: " + partido.getEstado());
+
+			contexto.finalizar(); // Finaliza
+			System.out.println("➤ Estado tras finalizar: " + partido.getEstado());
+
+			contexto.cancelar("Intento inválido");
+		} catch (Exception e) {
+			System.out.println("✔ No se puede cancelar un partido finalizado: " + e.getMessage());
 		}
-
-		partido.getEstado().verificarTransicion(partido);
-		partido.getEstado().manejarConfirmacion(partido, partido.getJugadoresInscritos().get(0));
-		partido.getEstado().verificarTransicion(partido);
-
-		System.out.println("Estado final: " + partido.getEstado().getNombre());
 	}
 
-	public static void testEmailStrategy() {
-		System.out.println("============================");
-		System.out.println("TESTING PATRÓN STRATEGY + ADAPTER (EMAIL)");
-
-		Partido partido = prepararPartidoYJugadores();
-		IStrategyNotificacion emailNotificador = new NotificadorEmail(new EmailServiceAdapter());
-
-		emailNotificador.notificarNuevoPartido(partido, partido.getJugadoresInscritos());
-		emailNotificador.notificarCambioEstado(partido, partido.getEstado().getNombre());
-	}
 
 	public static void testPushStrategy() {
 		System.out.println("============================");
@@ -91,15 +95,6 @@ public class UnitTesting {
 
 		pushNotificador.notificarNuevoPartido(partido, partido.getJugadoresInscritos());
 		pushNotificador.notificarCambioEstado(partido, "En juego");
-	}
-
-	public static void testObserverPattern() {
-		System.out.println("============================");
-		System.out.println("TESTING PATRÓN OBSERVER");
-
-		Partido partido = prepararPartidoYJugadores();
-		partido.setEstado(new EnJuego());
-		partido.setEstado(new Finalizado());
 	}
 
 	public static void testEmparejamientoStrategy() {
@@ -124,7 +119,7 @@ public class UnitTesting {
 
 		PartidoDTO partidoDTO = new PartidoDTO(futbol, 90, "Palermo", new Date(), organizador, TipoEmparejamiento.NIVEL);
 		String partidoId = partidoController.crearPartido(partidoDTO);
-		partidoController.sumarseAlPartido(partidoId, organizador);
+		partidoController.agregarJugador(partidoId, organizador);
 
 		// Crear candidatos
 		String[][] datos = {

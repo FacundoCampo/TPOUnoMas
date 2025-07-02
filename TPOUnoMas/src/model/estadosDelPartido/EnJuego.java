@@ -1,52 +1,62 @@
 package model.estadosDelPartido;
 
+import enums.EstadoPartido;
+import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
+
+import java.util.Date;
 
 public class EnJuego implements IEstadoPartido {
 
     @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[EnJuego] No se pueden agregar jugadores");
-        return false;
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        throw new IllegalStateException("No se pueden agregar jugadores mientras el partido está en juego.");
     }
 
     @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[EnJuego] No se pueden confirmar jugadores");
-        return false;
+    public void cancelar(PartidoContext contexto) {
+        throw new IllegalStateException("No se puede cancelar un partido que ya está en juego.");
     }
 
     @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[EnJuego] No se puede cancelar un partido en juego");
-    }
+    public void finalizar(PartidoContext contexto) {
+        Partido partido = contexto.getPartido();
 
-    @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[EnJuego] Verificando si debe finalizarse");
-        if (debeFinalizarse(contexto)) {
-            contexto.setEstado(new Finalizado());
-            for (Usuario jugador : contexto.getJugadoresInscritos()) {
-                jugador.agregarPartidoAHistorial(contexto.getId());
-            }
+        if (!debeFinalizarse(partido)) {
+            throw new IllegalStateException("El partido aún no terminó.");
         }
+
+        // Agregar al historial de todos los jugadores
+        for (Usuario jugador : partido.getJugadoresInscritos()) {
+            jugador.agregarPartidoAHistorial(partido.getId());
+        }
+
+        contexto.setEstadoActual(new Finalizado());
+        notificar(partido, "El partido ha finalizado.");
     }
 
     @Override
-    public String getNombre() { return "En juego"; }
-
-    @Override
-    public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
-        return false;
+    public String getNombre() {
+        return EstadoPartido.ENJUEGO.name();
     }
 
-    private boolean debeFinalizarse(Partido contexto) {
-        if (contexto.getFechaHora() == null) return false;
+    private boolean debeFinalizarse(Partido partido) {
+        if (partido.getFechaHora() == null) return false;
+
         long tiempoActual = System.currentTimeMillis();
-        long tiempoInicio = contexto.getFechaHora().getTime();
-        long duracionMs = contexto.getDuracion() * 60 * 1000L;
-        long tiempoFin = tiempoInicio + duracionMs;
-        return tiempoActual >= tiempoFin;
+        long tiempoInicio = partido.getFechaHora().getTime();
+        long duracionMs = partido.getDuracion() * 60 * 1000L;
+
+        return tiempoActual >= (tiempoInicio + duracionMs);
+    }
+
+    private void notificar(Partido partido, String mensaje) {
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setMensaje(mensaje);
+        n.setFechaCreacion(new Date());
+        partido.agregarNotificacion(n);
     }
 }

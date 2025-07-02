@@ -37,7 +37,7 @@ public class NotificadorPush implements IStrategyNotificacion {
         if (!configurado || partido == null) return;
         
         System.out.println("=== NOTIFICACIÓN PUSH ===");
-        System.out.println("Cambio de estado: " + estadoAnterior + " → " + partido.getEstado().getNombre());
+        System.out.println("Cambio de estado: " + estadoAnterior + " → " + partido.getEstado().toString());
         System.out.println("Enviando a " + partido.getJugadoresInscritos().size() + " jugadores");
     }
 }

@@ -1,8 +1,7 @@
 package model.entity;
 
+import enums.EstadoPartido;
 import enums.TipoEmparejamiento;
-import model.estadosDelPartido.IEstadoPartido;
-import model.estadosDelPartido.NecesitamosJugadores;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,25 +14,25 @@ public class Partido {
     private String ubicacion;
     private Date fechaHora;
     private List<Usuario> jugadoresInscritos;
-    private IEstadoPartido estado;
     private List<Notificacion> notificaciones;
     private TipoEmparejamiento tipoEmparejamiento;
     private String organizadorID;
+    private EstadoPartido estado;
 
+    // Constructor
     public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora, String organizadorID, TipoEmparejamiento tipoEmparejamiento) {
         this.deporte = deporte;
         this.duracion = duracion;
         this.ubicacion = ubicacion;
         this.fechaHora = fechaHora != null ? new Date(fechaHora.getTime()) : null;
-        this.estado = new NecesitamosJugadores();
         this.jugadoresInscritos = new ArrayList<>();
         this.notificaciones = new ArrayList<>();
         this.organizadorID = organizadorID;
-        setTipoEmparejamiento(tipoEmparejamiento);
+        this.estado = EstadoPartido.NECESITAMOSJUGADORES;
+        this.tipoEmparejamiento = tipoEmparejamiento;
     }
 
     // Getters y Setters
-    public String getOrganizadorID() { return organizadorID; }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -46,12 +45,28 @@ public class Partido {
     public String getUbicacion() { return ubicacion; }
     public void setUbicacion(String ubicacion) { this.ubicacion = ubicacion; }
 
-    public Date getFechaHora() { return fechaHora; }
-    public void setFechaHora(Date fechaHora) { this.fechaHora = fechaHora; }
+    public Date getFechaHora() {
+        return fechaHora != null ? new Date(fechaHora.getTime()) : null;
+    }
 
-    public List<Usuario> getJugadoresInscritos() { return new ArrayList<>(jugadoresInscritos); }
+    public void setFechaHora(Date fechaHora) {
+        this.fechaHora = fechaHora != null ? new Date(fechaHora.getTime()) : null;
+    }
+
+    public List<Usuario> getJugadoresInscritos() {
+        return new ArrayList<>(jugadoresInscritos);
+    }
+
     public void setJugadoresInscritos(List<Usuario> jugadoresInscritos) {
         this.jugadoresInscritos = jugadoresInscritos != null ? new ArrayList<>(jugadoresInscritos) : new ArrayList<>();
+    }
+
+    public List<Notificacion> getNotificaciones() {
+        return new ArrayList<>(notificaciones);
+    }
+
+    public void setNotificaciones(List<Notificacion> notificaciones) {
+        this.notificaciones = notificaciones != null ? new ArrayList<>(notificaciones) : new ArrayList<>();
     }
 
     public TipoEmparejamiento getTipoEmparejamiento() {
@@ -62,37 +77,55 @@ public class Partido {
         this.tipoEmparejamiento = tipoEmparejamiento;
     }
 
-    public IEstadoPartido getEstado() { return estado; }
-    public void setEstado(IEstadoPartido nuevoEstado) {
-        String estadoAnterior = (this.estado != null) ? this.estado.getNombre() : "Sin estado";
-        this.estado = nuevoEstado;
-        notificarObservadores("Estado cambiado: " + estadoAnterior + " → " + nuevoEstado.getNombre());
+    public String getOrganizadorID() {
+        return organizadorID;
     }
 
-    public List<Notificacion> getNotificaciones() { return new ArrayList<>(notificaciones); }
-    public void setNotificaciones(List<Notificacion> notificaciones) {
-        this.notificaciones = notificaciones != null ? new ArrayList<>(notificaciones) : new ArrayList<>();
+    public void setOrganizadorID(String organizadorID) {
+        this.organizadorID = organizadorID;
     }
 
+    public EstadoPartido getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoPartido estado) {
+        this.estado = estado;
+    }
+
+    /**
+     * Agrega un jugador directamente (sin verificación de estado).
+     */
     public boolean agregarJugadorDirecto(Usuario jugador) {
         if (jugador == null || jugadoresInscritos.contains(jugador)) return false;
         return jugadoresInscritos.add(jugador);
     }
 
+    /**
+     * Elimina un jugador directamente.
+     */
     public boolean removerJugador(Usuario jugador) {
         return jugador != null && jugadoresInscritos.remove(jugador);
     }
 
+    /**
+     * Verifica si el partido ya tiene todos los jugadores requeridos.
+     */
     public boolean estaCompleto() {
         if (deporte == null) return false;
-        int jugadoresNecesarios = deporte.getCantidadJugadoresEstandar();
-        return jugadoresInscritos != null && jugadoresInscritos.size() >= jugadoresNecesarios;
+        return jugadoresInscritos.size() >= deporte.getCantidadJugadoresEstandar();
     }
 
+    /**
+     * Verifica si un usuario ya está inscrito.
+     */
     public boolean estaInscrito(Usuario usuario) {
         return usuario != null && jugadoresInscritos.contains(usuario);
     }
 
+    /**
+     * Agrega una notificación al partido.
+     */
     public void agregarNotificacion(Notificacion notificacion) {
         if (notificacion != null) {
             if (notificacion.getIdPartido() == null && this.id != null) {
@@ -102,27 +135,23 @@ public class Partido {
         }
     }
 
+    /**
+     * Retorna las horas (enteras) que faltan hasta el partido.
+     */
     public long getHorasHastaPartido() {
-        if (fechaHora == null) return 0;
-        long tiempoActual = System.currentTimeMillis();
-        long tiempoPartido = fechaHora.getTime();
-        long diferencia = tiempoPartido - tiempoActual;
-        return diferencia / (60 * 60 * 1000); // Convertir a horas
+        if (fechaHora == null) return Long.MAX_VALUE;
+        long diferencia = fechaHora.getTime() - System.currentTimeMillis();
+        return diferencia / (1000 * 60 * 60);
     }
 
+    /**
+     * Notifica a todos los jugadores inscritos.
+     */
     public void notificarObservadores(String mensaje) {
         if (jugadoresInscritos != null) {
             for (Usuario jugador : jugadoresInscritos) {
                 jugador.actualizar(mensaje);
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Partido{id='" + id + "', deporte=" +
-                (deporte != null ? deporte.getNombre() : "null") +
-                ", ubicacion='" + ubicacion + "', estado=" +
-                (estado != null ? estado.getNombre() : "null") + "}";
     }
 }

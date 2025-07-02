@@ -91,7 +91,7 @@ public class HistorialPanel extends JPanel {
                 String deporte = dto.getDeporte().getNombre();
                 int totalJugadores = dto.getDeporte().getCantidadJugadoresEstandar();
                 String fecha = new SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
-                String estado = dto.getEstado().getNombre();
+                String estado = dto.getEstado().toString();
                 int duracion = dto.getDuracion();
                 String ubicacion = dto.getUbicacion();
                 String organizador = dto.getOrganizador();

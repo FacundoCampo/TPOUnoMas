@@ -1,38 +1,41 @@
 package model.estadosDelPartido;
 
+import enums.EstadoPartido;
+import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
+
+import java.util.Date;
 
 public class Finalizado implements IEstadoPartido {
 
+
     @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[Finalizado] No se pueden agregar jugadores");
-        return false;
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        throw new IllegalStateException("No se pueden agregar jugadores a un partido finalizado.");
     }
 
     @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[Finalizado] No se pueden confirmar jugadores");
-        return false;
+    public void cancelar(PartidoContext contexto) {
+        throw new IllegalStateException("No se puede cancelar un partido finalizado.");
     }
 
     @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[Finalizado] No se puede cancelar un partido finalizado");
+    public void finalizar(PartidoContext contexto) {
+        Partido partido = contexto.getPartido();
+
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setFechaCreacion(new Date());
+        n.setMensaje("El partido ha finalizado. ¡Gracias por participar!");
+        partido.agregarNotificacion(n);
+        partido.notificarObservadores("El partido ha finalizado.");
     }
 
     @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[Finalizado] Sin transiciones posibles");
-    }
-
-    @Override
-    public String getNombre() { return "Finalizado"; }
-
-    @Override
-    public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
-        return false;
+    public String getNombre() {
+        return EstadoPartido.FINALIZADO.name();
     }
 
 }

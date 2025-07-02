@@ -37,9 +37,9 @@ public class NotificadorEmail implements IStrategyNotificacion {
     public void notificarCambioEstado(Partido partido, String estadoAnterior) {
         if (partido == null) return;
         
-        String asunto = "Actualización de partido - " + partido.getEstado().getNombre();
+        String asunto = "Actualización de partido - " + partido.getEstado().toString();
         String contenido = "El partido cambió de '" + estadoAnterior + "' a '" + 
-                          partido.getEstado().getNombre() + "'";
+                          partido.getEstado().toString() + "'";
         
         for (Usuario jugador : partido.getJugadoresInscritos()) {
             if (jugador.getEmail() != null) {

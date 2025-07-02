@@ -2,88 +2,70 @@ package model.estadosDelPartido;
 
 import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
+import enums.EstadoPartido;
+
+import java.util.Date;
 
 public class PartidoArmadoI implements IEstadoPartido {
 
-    @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[PartidoArmado] Ya no se pueden agregar jugadores");
-        return false;
-    }
 
     @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[PartidoArmado] Confirmación recibida");
-        if (contexto == null || jugador == null) return false;
-        if (!contexto.estaInscrito(jugador)) return false;
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        throw new IllegalStateException("Ya no se pueden agregar jugadores en estado 'Partido armado'.");
+    }
+
+    public void confirmar(PartidoContext contexto, Usuario jugador) {
+        Partido partido = contexto.getPartido();
+
+        if (partido == null || jugador == null) return;
+        if (!partido.estaInscrito(jugador)) return;
 
         verificarTransicion(contexto);
-        return true;
     }
 
     @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[PartidoArmado] Cancelando partido");
-        contexto.setEstado(new Cancelado());
-        notificarCancelacion(contexto);
+    public void cancelar(PartidoContext contexto) {
+        contexto.setEstadoActual(new Cancelado());
+        notificar(contexto.getPartido(), "El partido ha sido cancelado.");
     }
 
     @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[PartidoArmado] Verificando transición de estado");
-        if (contexto == null) return;
+    public void finalizar(PartidoContext contexto) {
+        verificarTransicion(contexto);
+    }
 
-        long horasHastaPartido = contexto.getHorasHastaPartido();
+    private void verificarTransicion(PartidoContext contexto) {
+        Partido partido = contexto.getPartido();
 
-        if (!contexto.estaCompleto()) {
-            contexto.setEstado(new NecesitamosJugadores());
-            notificarNecesitamosJugadores(contexto);
+        if (!partido.estaCompleto()) {
+            contexto.setEstadoActual(new NecesitamosJugadores());
+            notificar(partido, "Un jugador se retiró. Necesitamos más jugadores.");
             return;
         }
 
-        if (horasHastaPartido <= 0) {
-            contexto.setEstado(new EnJuego());
-            notificarEnJuego(contexto);
-        } else if (horasHastaPartido <= 2) {
-            contexto.setEstado(new Confirmado());
-            notificarConfirmado(contexto);
+        long horas = partido.getHorasHastaPartido();
+
+        if (horas <= 0) {
+            contexto.setEstadoActual(new EnJuego());
+            notificar(partido, "¡El partido ha comenzado!");
+        } else if (horas <= 2) {
+            contexto.setEstadoActual(new Confirmado());
+            notificar(partido, "El partido ha sido confirmado. ¡Nos vemos en la cancha!");
         }
-
     }
 
     @Override
-    public String getNombre() { return "Partido armado"; }
-    @Override
-    public boolean puedeCancelar() { return true; }
-    @Override
-    public boolean puedeConfirmar() { return true; }
-
-    private void notificarCancelacion(Partido contexto) {
-        Notificacion notificacion = new Notificacion();
-        notificacion.setIdPartido(contexto.getId());
-        notificacion.setMensaje("El partido ha sido cancelado");
-        contexto.agregarNotificacion(notificacion);
+    public String getNombre() {
+        return EstadoPartido.PARTIDOARMADOI.name();
     }
 
-    private void notificarConfirmado(Partido contexto) {
-        Notificacion notificacion = new Notificacion();
-        notificacion.setIdPartido(contexto.getId());
-        notificacion.setMensaje("El partido ha sido confirmado. ¡Nos vemos en la cancha!");
-        contexto.agregarNotificacion(notificacion);
-    }
-
-    private void notificarEnJuego(Partido contexto) {
-        Notificacion notificacion = new Notificacion();
-        notificacion.setIdPartido(contexto.getId());
-        notificacion.setMensaje("¡El partido ha comenzado!");
-        contexto.agregarNotificacion(notificacion);
-    }
-
-    private void notificarNecesitamosJugadores(Partido contexto) {
-        Notificacion notificacion = new Notificacion();
-        notificacion.setIdPartido(contexto.getId());
-        notificacion.setMensaje("Un jugador se retiró. Necesitamos más jugadores para completar el partido.");
-        contexto.agregarNotificacion(notificacion);
+    private void notificar(Partido partido, String mensaje) {
+        Notificacion n = new Notificacion();
+        n.setIdPartido(partido.getId());
+        n.setMensaje(mensaje);
+        n.setFechaCreacion(new Date());
+        partido.agregarNotificacion(n);
     }
 }

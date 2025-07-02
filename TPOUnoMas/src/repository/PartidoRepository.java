@@ -1,5 +1,6 @@
 package repository;
 
+import enums.EstadoPartido;
 import model.dto.PartidoDTO;
 import model.entity.Partido;
 import model.entity.Usuario;
@@ -63,7 +64,7 @@ public class PartidoRepository implements IPartidoRepository {
     public List<Partido> obtenerSoloPartidosDondeSeNecesitanJugadores() {
         List<Partido> resultado = new ArrayList<>();
         for (Partido p : DataBase.partidos) {
-            if (p.getEstado().getNombre() == "Necesitamos jugadores") {
+            if (p.getEstado() == EstadoPartido.NECESITAMOSJUGADORES) {
                 resultado.add(p);
             }
         }

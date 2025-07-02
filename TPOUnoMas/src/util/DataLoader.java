@@ -9,9 +9,6 @@ import model.dto.DeporteDTO;
 import model.dto.DeporteUsuarioDTO;
 import model.dto.PartidoDTO;
 import model.dto.UsuarioDTO;
-import model.estadosDelPartido.Confirmado;
-import model.estadosDelPartido.EnJuego;
-import model.estadosDelPartido.Finalizado;
 
 import java.util.*;
 
@@ -35,16 +32,12 @@ public class DataLoader {
             String email = "usuario" + i + "@mail.com";
             String contrasena = "clave" + i;
 
-            // Solo usuario11 debe tener ubicación fija en Almagro
-            String ubicacion = email.equalsIgnoreCase("usuario11@mail.com")
-                    ? "Almagro"
-                    : ubicaciones[i % ubicaciones.length];
+            String ubicacion = email.equalsIgnoreCase("usuario11@mail.com") ? "Almagro" : ubicaciones[i % ubicaciones.length];
 
             UsuarioDTO usuario = new UsuarioDTO(nombre, email, contrasena, ubicacion);
             Map<DeporteDTO, NivelJuego> preferencias = new HashMap<>();
-
-            int cantidadPreferencias = rand.nextInt(3) + 1;
             List<Integer> usados = new ArrayList<>();
+            int cantidadPreferencias = rand.nextInt(3) + 1;
 
             while (preferencias.size() < cantidadPreferencias && deportes.size() > 0) {
                 int indice = rand.nextInt(deportes.size());
@@ -59,11 +52,9 @@ public class DataLoader {
             try {
                 UsuarioController.getInstance().registrar(usuario);
                 List<DeporteUsuarioDTO> preferenciasDTO = new ArrayList<>();
-
                 for (Map.Entry<DeporteDTO, NivelJuego> entry : preferencias.entrySet()) {
                     preferenciasDTO.add(new DeporteUsuarioDTO(entry.getKey(), entry.getValue(), false));
                 }
-
                 usuario.setPreferenciasDeportivas(preferenciasDTO);
             } catch (IllegalArgumentException e) {
                 System.out.println("Usuario duplicado: " + email);
@@ -72,7 +63,6 @@ public class DataLoader {
             }
         }
     }
-
 
     public static void cargarPartidos() {
         PartidoController controller = PartidoController.getInstance();
@@ -90,7 +80,7 @@ public class DataLoader {
 
         int partidoIndex = 0;
         for (UsuarioDTO organizador : usuarios) {
-            for (int i = 0; i < 2; i++) { // 2 partidos por usuario
+            for (int i = 0; i < 2; i++) {
                 DeporteDTO deporte = switch ((partidoIndex++) % 4) {
                     case 0 -> futbol;
                     case 1 -> tenis;
@@ -106,7 +96,7 @@ public class DataLoader {
                 String partidoId = controller.crearPartido(dto);
 
                 try {
-                    controller.sumarseAlPartido(partidoId, organizador.getEmail());
+                    controller.agregarJugador(partidoId, organizador.getEmail());
                 } catch (Exception e) {
                     System.out.println("No se pudo inscribir al organizador: " + organizador.getEmail());
                 }
@@ -124,46 +114,41 @@ public class DataLoader {
         Random rand = new Random();
         boolean partidoConUnLugar = false;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < Math.min(8, partidos.size()); i++) {
             PartidoDTO partido = partidos.get(i);
             int cupo = partido.getDeporte().getCantidadJugadoresEstandar();
+            int cantidadAInscribir = partidoConUnLugar ? cupo : cupo - 1;
+            partidoConUnLugar = true;
+
             Set<Integer> usados = new HashSet<>();
-
-            int cantidadAInscribir = cupo;
-
-            if (!partidoConUnLugar) {
-                cantidadAInscribir = cupo - 1;
-                partidoConUnLugar = true;
-            }
-
             while (partido.getJugadoresInscritos().size() < cantidadAInscribir && usados.size() < usuarios.size()) {
                 int index = rand.nextInt(usuarios.size());
                 if (usados.contains(index)) continue;
                 usados.add(index);
                 UsuarioDTO usuario = usuarios.get(index);
-
                 try {
-                    PartidoController.getInstance().sumarseAlPartido(partido.getId(), usuario.getEmail());
-                } catch (Exception ignored) {
-                }
+                    PartidoController.getInstance().agregarJugador(partido.getId(), usuario.getEmail());
+                } catch (Exception ignored) {}
             }
         }
     }
 
     private static void cambiarEstados() {
-        List<PartidoDTO> creados = PartidoController.getInstance().obtenerTodos();
+        PartidoController controller = PartidoController.getInstance();
+        List<PartidoDTO> partidos = controller.obtenerTodos();
 
-        for (int i = 0; i < creados.size(); i++) {
-            PartidoDTO partido = creados.get(i);
+        for (int i = 0; i < partidos.size(); i++) {
+            PartidoDTO partido = partidos.get(i);
+            int cupo = partido.getDeporte().getCantidadJugadoresEstandar();
             int inscritos = partido.getJugadoresInscritos().size();
-            int necesarios = partido.getDeporte().getCantidadJugadoresEstandar();
 
-            if (i % 4 == 0 && inscritos >= necesarios) {
-                PartidoController.getInstance().cambiarEstado(partido.getId(), new EnJuego());
-            } else if (i % 4 == 1 && inscritos >= necesarios) {
-                PartidoController.getInstance().cambiarEstado(partido.getId(), new Confirmado());
-            } else if (i % 4 == 2 && inscritos >= necesarios) {
-                PartidoController.getInstance().cambiarEstado(partido.getId(), new Finalizado());
+            if (inscritos < cupo) continue;
+
+            if (i % 4 == 0) {
+                controller.iniciarPartido(partido.getId());
+            } else if (i % 4 == 2) {
+                controller.iniciarPartido(partido.getId());
+                controller.finalizarPartido(partido.getId());
             }
         }
     }
@@ -180,8 +165,6 @@ public class DataLoader {
         }
 
         List<DeporteDTO> deportes = deporteController.obtenerTodos();
-        if (deportes.isEmpty()) return;
-
         TipoEmparejamiento[] estrategias = TipoEmparejamiento.values();
         String[] ubicaciones = {"Palermo", "Belgrano", "Caballito", "Recoleta", "Almagro"};
 
@@ -195,20 +178,17 @@ public class DataLoader {
             String partidoId = partidoController.crearPartido(dto);
 
             try {
-                partidoController.sumarseAlPartido(partidoId, usuario1.getEmail());
+                partidoController.agregarJugador(partidoId, usuario1.getEmail());
             } catch (Exception e) {
                 System.out.println("No se pudo inscribir al organizador: " + usuario1.getEmail());
             }
 
-            // Simular inscripción de jugadores para alcanzar cupo según el estado
             int cupo = deporte.getCantidadJugadoresEstandar();
             List<UsuarioDTO> otrosUsuarios = usuarioController.obtenerTodos();
             int cantidadAInscribir = switch (i) {
-                case 0 -> cupo;       // Confirmado
-                case 1 -> cupo;       // EnJuego
-                case 2 -> cupo;       // Finalizado
-                case 3 -> cupo - 1;   // NecesitamosJugadores (por defecto)
-                case 4 -> cupo / 2;   // Incompleto (para mostrar variedad)
+                case 0, 1, 2 -> cupo;
+                case 3 -> cupo - 1;
+                case 4 -> cupo / 2;
                 default -> 0;
             };
 
@@ -216,17 +196,16 @@ public class DataLoader {
             for (UsuarioDTO u : otrosUsuarios) {
                 if (inscriptos >= cantidadAInscribir || u.getEmail().equalsIgnoreCase(usuario1.getEmail())) continue;
                 try {
-                    partidoController.sumarseAlPartido(partidoId, u.getEmail());
+                    partidoController.agregarJugador(partidoId, u.getEmail());
                     inscriptos++;
                 } catch (Exception ignored) {}
             }
 
-            if (i == 0) {
-                partidoController.cambiarEstado(partidoId, new Confirmado());
-            } else if (i == 1) {
-                partidoController.cambiarEstado(partidoId, new EnJuego());
+            if (i == 1) {
+                partidoController.iniciarPartido(partidoId);
             } else if (i == 2) {
-                partidoController.cambiarEstado(partidoId, new Finalizado());
+                partidoController.iniciarPartido(partidoId);
+                partidoController.finalizarPartido(partidoId);
             }
         }
     }
@@ -236,20 +215,18 @@ public class DataLoader {
         DeporteController deporteController = DeporteController.getInstance();
 
         List<DeporteUsuarioDTO> preferencias = usuarioController.obtenerPreferencias("usuario8@mail.com");
-
-        DeporteDTO f = deporteController.buscarPorNombre("Fútbol");
+        DeporteDTO tenis = deporteController.buscarPorNombre("Tenis");
 
         boolean yaTieneTenis = preferencias.stream()
-                .anyMatch(p -> p.getDeporte().getNombre().equalsIgnoreCase("Fútbol"));
+                .anyMatch(p -> p.getDeporte().getNombre().equalsIgnoreCase("Tenis"));
 
         if (!yaTieneTenis) {
-            preferencias.add(new DeporteUsuarioDTO(f, NivelJuego.INTERMEDIO, false));
+            preferencias.add(new DeporteUsuarioDTO(tenis, NivelJuego.INTERMEDIO, false));
             usuarioController.actualizarPreferencias("usuario8@mail.com", preferencias);
         } else {
             System.out.println("usuario8@mail.com ya tenía Tenis en sus preferencias.");
         }
     }
-
 
     private static Date obtenerFecha(int diasFuturos) {
         Calendar cal = Calendar.getInstance();

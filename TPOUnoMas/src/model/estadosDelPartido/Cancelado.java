@@ -1,56 +1,60 @@
 package model.estadosDelPartido;
 
+import enums.EstadoPartido;
+import model.entity.Notificacion;
 import model.entity.Partido;
+import model.entity.PartidoContext;
 import model.entity.Usuario;
 import java.util.Date;
 
 public class Cancelado implements IEstadoPartido {
 
-    private Date fechaCancelacion;
-    private String motivoCancelacion;
+    private final Date fechaCancelacion;
+    private final String motivoCancelacion;
 
     public Cancelado() {
         this.fechaCancelacion = new Date();
         this.motivoCancelacion = "No especificado";
-        System.out.println("[STATE] Partido cambiado a estado Cancelado");
     }
 
-    public Cancelado(String motivoCancelacion) {
+    public Cancelado(String motivo) {
         this.fechaCancelacion = new Date();
-        this.motivoCancelacion = motivoCancelacion != null ? motivoCancelacion : "No especificado";
-        System.out.println("[STATE] Partido cambiado a estado Cancelado con motivo: " + this.motivoCancelacion);
+        this.motivoCancelacion = motivo != null ? motivo : "No especificado";
     }
 
     @Override
-    public boolean manejarNuevoJugador(Partido contexto, Usuario jugador) {
-        System.out.println("[Cancelado] No se pueden agregar jugadores");
-        return false;
+    public void agregarJugador(PartidoContext contexto, Usuario jugador) {
+        throw new IllegalStateException("No se pueden agregar jugadores a un partido cancelado.");
     }
 
     @Override
-    public boolean manejarConfirmacion(Partido contexto, Usuario jugador) {
-        System.out.println("[Cancelado] No se pueden confirmar jugadores");
-        return false;
+    public void cancelar(PartidoContext contexto) {
+        Partido partido = contexto.getPartido();
+        Notificacion notificacion = new Notificacion();
+        notificacion.setIdPartido(partido.getId());
+        notificacion.setFechaCreacion(fechaCancelacion);
+        notificacion.setMensaje("El partido ha sido cancelado. Motivo: " + motivoCancelacion);
+        partido.agregarNotificacion(notificacion);
+
+        partido.notificarObservadores("El partido ha sido cancelado.");
     }
 
     @Override
-    public void manejarCancelacion(Partido contexto) {
-        System.out.println("[Cancelado] Ya está cancelado desde: " + fechaCancelacion);
+    public void finalizar(PartidoContext contexto) {
+        throw new IllegalStateException("No se puede finalizar un partido cancelado.");
     }
 
     @Override
-    public void verificarTransicion(Partido contexto) {
-        System.out.println("[Cancelado] Sin transiciones disponibles");
+    public String getNombre() {
+        return EstadoPartido.CANCELADO.name();
     }
 
-    @Override
-    public boolean permiteTransicionA(IEstadoPartido nuevoEstado) {
-        return false;
+    public Date getFechaCancelacion() {
+        return fechaCancelacion;
     }
 
-    @Override
-    public String getNombre() { return "Cancelado"; }
+    public String getMotivoCancelacion() {
+        return motivoCancelacion;
+    }
 
-    public Date getFechaCancelacion() { return fechaCancelacion; }
-    public String getMotivoCancelacion() { return motivoCancelacion; }
 }

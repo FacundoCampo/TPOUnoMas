@@ -188,7 +188,7 @@ public class EmparejamientoContext {
         
         stats.append("Jugadores necesarios: ").append(calcularJugadoresFaltantes(partido)).append("\n");
         stats.append("Estado del partido: ").append(
-            partido.getEstado() != null ? partido.getEstado().getNombre() : "Sin estado").append("\n");
+            partido.getEstado() != null ? partido.getEstado().toString() : "Sin estado").append("\n");
         
         return stats.toString();
     }

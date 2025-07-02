@@ -166,7 +166,7 @@ public class PartidoForm extends JPanel {
 
             PartidoDTO dto = new PartidoDTO(deporte, duracion, ubicacion, fecha, this.usuarioID, tipo);
             String partidoID = PartidoController.getInstance().crearPartido(dto);
-            PartidoController.getInstance().sumarseAlPartido(partidoID, this.usuarioID);
+            PartidoController.getInstance().agregarJugador(partidoID, this.usuarioID);
 
             lblMensaje.setText("\u2713 Partido creado correctamente.");
         } catch (Exception ex) {

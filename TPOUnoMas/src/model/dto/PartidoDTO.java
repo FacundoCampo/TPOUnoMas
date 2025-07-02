@@ -1,7 +1,7 @@
 package model.dto;
 
+import enums.EstadoPartido;
 import enums.TipoEmparejamiento;
-import model.entity.Usuario;
 import model.estadosDelPartido.IEstadoPartido;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class PartidoDTO {
     private String ubicacion;
     private Date fechaHora;
     private List<UsuarioDTO> jugadoresInscritos;
-    private IEstadoPartido estado;
+    private EstadoPartido estado;
     private String organizador;
     private TipoEmparejamiento tipoEmparejamiento;
 
@@ -36,18 +36,15 @@ public class PartidoDTO {
     public int getDuracion() { return duracion; }
     public String getUbicacion() { return ubicacion; }
     public Date getFechaHora() { return fechaHora; }
-    public IEstadoPartido getEstado() { return this.estado; }
+    public EstadoPartido getEstado() { return this.estado; }
     public List<UsuarioDTO> getJugadoresInscritos() { return new ArrayList<>(jugadoresInscritos); }
     public TipoEmparejamiento getTipoEmparejamiento() {
         return tipoEmparejamiento;
     }
 
-    public void setTipoEmparejamiento(TipoEmparejamiento tipoEmparejamiento) {
-        this.tipoEmparejamiento = tipoEmparejamiento;
-    }
     public void setDeporte(DeporteDTO deporte) { this.deporte = deporte; }
     public void setId(String id) { this.id = id; }
-    public void setEstado(IEstadoPartido estado) { this.estado = estado; }
+    public void setEstado(EstadoPartido estado) { this.estado = estado; }
     public void setJugadoresInscritos(List<UsuarioDTO> jugadoresInscritos) {
         this.jugadoresInscritos = jugadoresInscritos != null ? new ArrayList<>(jugadoresInscritos) : new ArrayList<>();
     }

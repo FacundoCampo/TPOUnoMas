@@ -93,11 +93,13 @@ public class ListaPartidosPanel extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Cargar lista inicial
         cargarPartidos();
     }
 
     private void cargarZonas() {
+        comboZona.removeAllItems();
+        comboZona.addItem("Todas");
+
         List<PartidoDTO> partidos = PartidoController.getInstance().obtenerSoloPartidosDondeSeNecesitanJugadores();
         List<String> zonasAgregadas = new ArrayList<>();
 
@@ -137,12 +139,13 @@ public class ListaPartidosPanel extends JPanel {
             return;
         }
 
-        if (!seleccionado.getEstado().puedeAgregarJugadores()) {
+        boolean resultado = PartidoController.getInstance().agregarJugador(seleccionado.getId(), this.usuarioid);
+
+        if(!resultado) {
             lblMensaje.setText("Este partido no acepta más jugadores.");
             return;
         }
 
-        boolean resultado = PartidoController.getInstance().sumarseAlPartido(seleccionado.getId(), this.usuarioid);
         lblMensaje.setText(resultado ? "\u2713 Te uniste al partido correctamente" : "No fue posible unirse al partido");
     }
 
@@ -155,7 +158,7 @@ public class ListaPartidosPanel extends JPanel {
             if (value instanceof PartidoDTO dto) {
                 String deporte = dto.getDeporte().getNombre();
                 String fecha = new java.text.SimpleDateFormat("EEE dd/MM/yyyy HH:mm").format(dto.getFechaHora());
-                String estado = dto.getEstado().getNombre();
+                String estado = dto.getEstado().toString();
                 String organizador = dto.getOrganizador();
                 String estrategia = dto.getTipoEmparejamiento() != null ? dto.getTipoEmparejamiento().name() : "(Sin estrategia)";
 
