@@ -19,7 +19,6 @@ public class Partido {
     private String organizadorID;
     private EstadoPartido estado;
 
-    // Constructor
     public Partido(Deporte deporte, int duracion, String ubicacion, Date fechaHora, String organizadorID, TipoEmparejamiento tipoEmparejamiento) {
         this.deporte = deporte;
         this.duracion = duracion;
@@ -32,7 +31,6 @@ public class Partido {
         this.tipoEmparejamiento = tipoEmparejamiento;
     }
 
-    // Getters y Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
